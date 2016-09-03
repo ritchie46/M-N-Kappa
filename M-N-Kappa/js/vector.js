@@ -1,5 +1,8 @@
 ﻿'use strict'
 
+// vector namespace
+var vector = (function () {
+
 //class
 function Point(x, y) {
     this.x = x
@@ -79,3 +82,14 @@ function heighest_point(point_1, point_2, axis) {
 
     return lowest_point(point_1.negative(), point_2.negative(), axis).negative()
 };
+
+return {
+    interpolate_points,
+    Point,
+    heighest_point,
+    lowest_point
+
+
+}
+
+})();  // vector namespace

@@ -27,7 +27,7 @@ PolyGon.prototype.lowest_point = function (axis) {
     var low = this.point_list[0]
     
     for (var i = 1; i < this.point_list.length; i++) {
-        low = lowest_point(low, this.point_list[i], axis)
+        low = vector.lowest_point(low, this.point_list[i], axis)
     }
     return low
 }
@@ -36,7 +36,7 @@ PolyGon.prototype.heighest_point = function (axis) {
     var height = this.point_list[0]
 
     for (var i = 1; i < this.point_list.length; i++) {
-        height = heighest_point(height, this.point_list[i], axis)
+        height = vector.heighest_point(height, this.point_list[i], axis)
     }
     return height
 }
@@ -79,7 +79,7 @@ PolyGon.prototype.return_x_on_axis = function () {
             // y-value is between point at index a and point at index a + 1
             if ((this.point_list[a].y >= y) == !(this.point_list[a + 1].y >= y)) {
 
-                var interpolated_point = interpolate_points(this.point_list[a], this.point_list[a + 1], new Point(null, y));
+                var interpolated_point = vector.interpolate_points(this.point_list[a], this.point_list[a + 1], new vector.Point(null, y));
                 x_vals.push(interpolated_point.x)
             };
             
@@ -138,11 +138,11 @@ var cs = new PolyGon(
 
 
 var cs = new PolyGon(
-    [new Point(0, 0),
-    new Point(0, 200),
-    new Point(1000, 200),
-    new Point(1000, 0),
-    new Point(0, 0),
+    [new vector.Point(0, 0),
+    new vector.Point(0, 200),
+    new vector.Point(1000, 200),
+    new vector.Point(1000, 0),
+    new vector.Point(0, 0),
     ])
 
 cs.return_x_on_axis()
