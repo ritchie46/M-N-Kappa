@@ -8,6 +8,7 @@ function MomentKappa(cross_section, compressive_diagram, tensile_diagram) {
     // sum of the forces in the cross section
     this.force_tensile = 0
     this.force_compression = 0
+    this.normal_force = 0
 
     /** 
     rebar
@@ -34,7 +35,7 @@ function MomentKappa(cross_section, compressive_diagram, tensile_diagram) {
 
 MomentKappa.prototype.det_force_distribution = function (strain_top, strain_btm) {
     this.force_compression = 0
-    this.force_tensile = 0
+    this.force_tensile = 0 + this.normal_force
     this.stress = []
     this.strain_top = strain_top
     this.strain_btm = strain_btm
