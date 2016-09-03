@@ -6,7 +6,7 @@
 function PolyGon(point_list) {
     /// <param name="point_list" type="array">Array with objects from the Point class representing the polygons coordinates</param>
     this.point_list = point_list
-    this.n_value = 100
+    this.n_value = 1000
     this.top = this.heighest_point('y').y
     this.bottom = this.lowest_point('y').y
     this.y_val = this.det_height_array()
@@ -139,8 +139,8 @@ var cs = new PolyGon(
 
 var cs = new PolyGon(
     [new Point(0, 0),
-    new Point(0, 400),
-    new Point(1000, 400),
+    new Point(0, 200),
+    new Point(1000, 200),
     new Point(1000, 0),
     new Point(0, 0),
     ])

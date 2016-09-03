@@ -38,7 +38,7 @@ var std = (function () {
 
     function convergence_conditions(lhs, rhs) {
         var ratio = Math.abs(rhs) / Math.abs(lhs)
-        if (0.99 <= ratio && ratio <= 1.01) {
+        if (0.999 <= ratio && ratio <= 1.001) {
             return true
         }
         else {
