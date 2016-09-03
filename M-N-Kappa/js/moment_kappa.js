@@ -1,9 +1,9 @@
 ﻿'use strict'
 
 //class
-function MomentKappa(master_cross_section, compressive_diagram, tensile_diagram) {
-    this.master_cross_section = master_cross_section
-    this.master_stress = []
+function MomentKappa(cross_section, compressive_diagram, tensile_diagram) {
+    this.cross_section = cross_section
+    this.stress = []
     this.compressive_diagram = compressive_diagram
     this.tensile_diagram = tensile_diagram
     // sum of the forces in the cross section
@@ -17,54 +17,113 @@ function MomentKappa(master_cross_section, compressive_diagram, tensile_diagram)
     this.rebar_z = []
     // objects from the StressStrain class
     this.rebar_diagram = []
+
 }
 
-MomentKappa.prototype.det_stress = function (strain_top, strain_btm) {
+MomentKappa.prototype.det_force_distribution = function (strain_top, strain_btm) {
+    this.force_compression = 0
+    this.force_tensile = 0
+    this.stress = []
 
-    var mstr_btm = this.master_cross_section.y_val[0]
-    var mstr_top = this.master_cross_section.y_val[this.master_cross_section.y_val.length - 1]
+    // master = master cross section
+    var mstr_btm = this.cross_section.y_val[0]
+    var mstr_top = this.cross_section.y_val[this.cross_section.y_val.length - 1]
 
     // iterate over the y-axis of the master cross section and determine the stresses.
     // y-axis starts at bottom.
-    for (var i = 0; i < this.master_cross_section.y_val.length; i++) {
+    for (var i = 0; i < this.cross_section.y_val.length; i++) {
 
         // interpolate the strain at this y-value
         var strain_y = std.interpolate(mstr_btm, strain_btm,
-            mstr_top, strain_top, this.master_cross_section.y_val[i])
+            mstr_top, strain_top, this.cross_section.y_val[i])
+        
 
         // Send the strain value as parameter in the stress strain diagram
         var stress
         if (strain_y < 0) {
             stress = this.compressive_diagram.det_stress(Math.abs(strain_y))
-            this.force_compression += stress * this.master_cross_section.width_array[i]
+            this.force_compression += stress * this.cross_section.width_array[i]
 
         }
 
         else {
             stress = this.tensile_diagram.det_stress(strain_y)
-            this.force_tensile += stress* this.master_cross_section.width_array[i]
+            this.force_tensile += stress* this.cross_section.width_array[i]
         }
-        this.master_stress.push(stress)
+        this.stress.push(stress)
     }
+
     
     // determine rebar forces
     for (var i = 0; i < this.rebar_As.length; i++) {
         var strain = std.interpolate(mstr_btm, strain_btm, mstr_top, strain_top,
             this.rebar_z[i])
-        var stress = this.rebar_diagram[i].det_stress(strain);
+        var stress = this.rebar_diagram[i].det_stress(Math.abs(strain));
 
-        var force = this.rebar_As[i] * stress;
-
-        if (stress < 0) {
+        // absolute value
+        var force = this.rebar_As[i] * stress
+        
+        var stress_reduct
+        if (strain < 0) {
             this.force_compression += force
+            
+            // reduce rebar area from master element
+            stress_reduct = this.compressive_diagram.det_stress(Math.abs(strain))
+            this.force_compression -= this.rebar_As[i] * stress_reduct
+
         }
         else {
             this.force_tensile += force
+
+            // reduce rebar area from master element
+            stress_reduct = this.tensile_diagram.det_stress(strain)
+            this.force_tensile -= this.rebar_As[i] * stress_reduct
         }
     }
 
-    console.log(this.force_compression)
-    console.log(this.force_tensile)
+}
+
+MomentKappa.prototype.solver = function (strain_top, strain) {
+    /**
+    Return the .det_stress method several times and adapt the input untill the convergence criteria is met.
+
+    /// <param name="strain_top" type="bool">constant strain</param>
+    If the strain_top == true, the strain at the top will remain constant and the strain at the bottom will be iterated
+    over. If false vice versa for strain_bottom.
+    */
+    // default parameter
+    var strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
+
+    // first iteration
+    var btm_str = strain
+    var top_str = -strain
+
+    this.det_force_distribution(top_str, btm_str)    
+
+    if (strain_top) {
+
+        
+        // iterate untill the convergence criteria is met
+        var count = 0
+        while (1) {
+            if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
+                console.log("convergence after $s iterations".replace("$s", count))
+                break
+            }
+            
+            var factor = std.convergence(this.force_tensile, this.force_compression)
+            var btm_str = btm_str * factor
+            this.det_force_distribution(top_str, btm_str)
+
+            if (count > 100) {
+                console.log("no convergence found")
+                break
+            }
+            
+            count += 1
+        }
+    }
+
 }
 
 //end class
@@ -107,11 +166,12 @@ StressStrain.prototype.det_stress = function (strain) {
 
 
 var concrete_comp = new StressStrain([0, 1.75 * 0.001, 3.5 * 0.001], [0, 20, 20])
-var concrete_tensile = new StressStrain([0, 10], [0, 4])  // fictional for testing
+var concrete_tensile = new StressStrain([0], [0])  // fictional for testing
 
 var run = new MomentKappa(cs, concrete_comp, concrete_tensile)
 run.rebar_As.push(800)
-run.rebar_z.push(20)
+run.rebar_z.push(1)
 run.rebar_diagram.push(new StressStrain([0, 2.175 * 0.001, 10], [0, 500, 500]))
 
-run.det_stress(-3 * 0.001, 15 * 0.001)
+
+run.solver(true, 3.5e-3)

@@ -36,6 +36,16 @@ var std = (function () {
         return (ratio - 1) / 3 + 1
     }
 
+    function convergence_conditions(lhs, rhs) {
+        var ratio = Math.abs(rhs) / Math.abs(lhs)
+        if (0.99 <= ratio && ratio <= 1.01) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+
 
 
 
@@ -43,7 +53,8 @@ var std = (function () {
     // return from namespace
     return {
         interpolate,
-        convergence
+        convergence,
+        convergence_conditions
     }
     
 })();  // std namespace
