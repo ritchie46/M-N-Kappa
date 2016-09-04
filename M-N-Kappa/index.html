@@ -4,14 +4,64 @@
     <meta charset="utf-8" />
     <title>M_N_Kappa</title>
     <link href="css/default.css" rel="stylesheet" />
+
+    <link href="css/default.css" rel="stylesheet" />
+    <link href="bootstrap-3.3.7-dist/css/stylesheet.css" rel="stylesheet" />
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.css" rel="stylesheet" />
 </head>
 <body>
-    <div>Content goes here!</div>
+
+        <div class=".col-md-4" >
+        <div id="polygon_input" class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Add a cross section</h3>
+            </div>
+            <div id="pg_body" class="panel-body">
+                <div id="pg_row" class="row">
+                    <div class="col-md-5">
+                        <input name="xval" type="number" class="form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                    </div>
+                    <div class="col-md-5">
+                        <input name="yval" type="number" class="form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                    </div>
+                </div>
+
+                <div id="pg_row" class="row">
+                    <div class="col-md-5">
+                        <input name="xval" type="number" class="form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                    </div>
+                    <div class="col-md-5">
+                        <input name="yval" type="number" class="form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                    </div>
+                    <button type="button" class="btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                    </button>
+                </div>
+
+                <div id="pg_row" class="row">
+                    <div class="col-md-5">
+                        <input name="xval" type="number" class="form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                    </div>
+                    <div class="col-md-5">
+                        <input name="yval" type="number" class="form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                    </div>
+                    <button type="button" class="btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                    </button>
+                </div>     
+            </div>
+        </div>
+        </div>
+
+    <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="js/d3.min.js"></script>
     <script src="js/std.js"></script>
     <script src="js/vector.js"></script>
 	<script src="js/numeric-1.2.6.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/cross_section.js"></script>
     <script src="js/moment_kappa.js"></script>
+    <script src="js/plotter.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

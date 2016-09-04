@@ -157,8 +157,7 @@ var mkap = (function () {
 
                 var factor = std.convergence(this.force_compression, this.force_tensile)
                 var top_str = top_str * factor
-                console.log(factor)
-                console.log('str', top_str, "tens", this.force_tensile, "com", this.force_compression)
+     
                 this.det_force_distribution(top_str, btm_str)
 
                 if (count > 100) {
@@ -261,11 +260,11 @@ var mkap = (function () {
     //end class
 
 
-
+    /**
     var concrete_comp = new StressStrain([0, 1.75 * 0.001, 3.5 * 0.001], [0, 20, 20])
     var concrete_tensile = new StressStrain([0], [0])  // fictional for testing
 
-    var run = new MomentKappa(cs, concrete_comp, concrete_tensile)
+    var run = new MomentKappa(crsn.cs, concrete_comp, concrete_tensile)
     run.rebar_As.push(800)
     run.rebar_z.push(20)
     run.rebar_diagram.push(new StressStrain([0, 2.175 * 0.001, 10], [0, 435, 435]))
@@ -275,6 +274,7 @@ var mkap = (function () {
     run.det_m_kappa()
     console.log(run.moment / 1e6)
     console.log(run.kappa);
+    */
 
     return {MomentKappa,
         StressStrain,
