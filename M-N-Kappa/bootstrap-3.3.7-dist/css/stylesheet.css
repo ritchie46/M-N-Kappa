@@ -1,14 +1,10 @@
-﻿#polygon_input {
-    width: 50%;
-    
-}
-
-.pg_row, #add_coordinate_btn {
+﻿
+.pg_row, #add_coordinate_btn, .custom_row {
     padding-bottom: 3px;
     padding-top: 3px
 }
 
-#polygon_collapse_glyph {
+.glyphicon-triangle-bottom, .glyphicon-triangle-top {
     cursor: pointer;
 }
 

@@ -10,7 +10,7 @@ var plt = (function () {
         offset_origin_y: 0,
     }
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#pg_svg").append("svg")
     .attr("style", "float: right; float: top")
     .attr("width", settings.width)
     .attr("height", settings.height)

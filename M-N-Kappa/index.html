@@ -11,59 +11,125 @@
 </head>
 <body>
 
-        <div class=".col-md-5" >
-        <div id="polygon_input" class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    <span> Add a cross section </span>
-                    <span class="glyphicon glyphicon-triangle-bottom" id="polygon_collapse_glyph"></span>
-                </h3>
-            </div>
-            <div id="collapse_polygon" class="panel-collapse collapse">
-            <div id="pg_body" class="panel-body">
-                <div class="row pg_row">
-                    <div class="col-md-5">
-                        <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
-                    </div>
-                    <div class="col-md-5">
-                        <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
-                    </div>
-                    <button type="button" class="remove_pg_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
-                        <span class="glyphicon glyphicon-remove-circle"></span>
-                    </button>
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <div id="polygon_input" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span> Add a cross section </span>
+                        <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
+                    </h3>
                 </div>
+                <div id="collapse_polygon" class="panel-collapse collapse">
+                    <div id="pg_body" class="panel-body">
+                        <div class="row pg_row hidden">
+                            <div class="col-md-5">
+                                <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                            </div>
+                            <div class="col-md-5">
+                                <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                            </div>
+                            <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                            </button>
+                        </div>
 
-                <div class="row pg_row">
-                    <div class="col-md-5">
-                        <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
-                    </div>
-                    <div class="col-md-5">
-                        <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
-                    </div>
-                    <button type="button" class="remove_pg_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
-                        <span class="glyphicon glyphicon-remove-circle"></span>
-                    </button>
-                </div>
+                        <div class="row pg_row">
+                            <div class="col-md-5">
+                                <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                            </div>
+                            <div class="col-md-5">
+                                <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                            </div>
+                            <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                            </button>
+                        </div>
 
-                <div class="row pg_row">
-                    <div class="col-md-5">
-                        <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                        <div class="row pg_row">
+                            <div class="col-md-5">
+                                <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                            </div>
+                            <div class="col-md-5">
+                                <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                            </div>
+                            <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                            </button>
+                        </div>
+
+                        <div class="=col-md-4" id="add_coordinate_btn">
+                            <button type="button" class="btn btn-primary add_row" style="float: right">Add coordinate</button>
+                        </div>
                     </div>
-                    <div class="col-md-5">
-                        <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
-                    </div>
-                    <button type="button" class="remove_pg_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
-                        <span class="glyphicon glyphicon-remove-circle"></span>
-                    </button>
-                </div>   
-                
-                <div class="=col-md-4" id="add_coordinate_btn">
-                    <button type="button" id="add_coordinate" class="btn btn-primary" style="float: right">Add coordinate</button>
                 </div>
-            </div>
             </div>
         </div>
+
+        <div id="pg_svg"></div>
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <div id="comp_curve" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span> Set compression stress-strain-diagram </span>
+                        <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                    </h3>
+                </div>
+                <div id="collapse_input" class="panel-collapse collapse">
+                    <div id="comp_curve_body" class="panel-body">
+                        <div class="row custom_row hidden">
+                            <div class="col-md-2">
+                                <input type="number" class="comp_strain form-control" placeholder="strain" onchange="">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" class="comp_stress form-control" placeholder="stress" onchange="">
+                            </div>
+                            <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                            </button>
+                        </div>
+                        <div class="=col-md-4">
+                            <button type="button" class="btn btn-primary add_row" style="float: right">Add row</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <div id="tens_curve" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span> Set tensile stress-strain-diagram </span>
+                        <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                    </h3>
+                </div>
+                <div class="panel-collapse collapse">
+                    <div id="comp_curve_body" class="panel-body">
+                        <div class="row custom_row hidden">
+                            <div class="col-md-2">
+                                <input type="number" class="comp_strain form-control" placeholder="strain" onchange="">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" class="comp_stress form-control" placeholder="stress" onchange="">
+                            </div>
+                            <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                            </button>
+                        </div>
+                        <div class="=col-md-4">
+                            <button type="button" class="btn btn-primary add_row" style="float: right">Add row</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="js/jquery-3.1.0.min.js"></script>
     <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
