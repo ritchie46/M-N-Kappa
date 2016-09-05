@@ -11,44 +11,56 @@
 </head>
 <body>
 
-        <div class=".col-md-4" >
+        <div class=".col-md-5" >
         <div id="polygon_input" class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Add a cross section</h3>
+                <h3 class="panel-title">
+                    <span> Add a cross section </span>
+                    <span class="glyphicon glyphicon-triangle-bottom" id="polygon_collapse_glyph"></span>
+                </h3>
             </div>
+            <div id="collapse_polygon" class="panel-collapse collapse">
             <div id="pg_body" class="panel-body">
-                <div id="pg_row" class="row">
+                <div class="row pg_row">
                     <div class="col-md-5">
-                        <input name="xval" type="number" class="form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                        <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
                     </div>
                     <div class="col-md-5">
-                        <input name="yval" type="number" class="form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                        <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
                     </div>
-                </div>
-
-                <div id="pg_row" class="row">
-                    <div class="col-md-5">
-                        <input name="xval" type="number" class="form-control" placeholder="x-value" onchange="plt.draw_polygon()">
-                    </div>
-                    <div class="col-md-5">
-                        <input name="yval" type="number" class="form-control" placeholder="y-value" onchange="plt.draw_polygon()">
-                    </div>
-                    <button type="button" class="btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                    <button type="button" class="remove_pg_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                         <span class="glyphicon glyphicon-remove-circle"></span>
                     </button>
                 </div>
 
-                <div id="pg_row" class="row">
+                <div class="row pg_row">
                     <div class="col-md-5">
-                        <input name="xval" type="number" class="form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                        <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
                     </div>
                     <div class="col-md-5">
-                        <input name="yval" type="number" class="form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                        <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
                     </div>
-                    <button type="button" class="btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                    <button type="button" class="remove_pg_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                         <span class="glyphicon glyphicon-remove-circle"></span>
                     </button>
-                </div>     
+                </div>
+
+                <div class="row pg_row">
+                    <div class="col-md-5">
+                        <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                    </div>
+                    <div class="col-md-5">
+                        <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                    </div>
+                    <button type="button" class="remove_pg_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                    </button>
+                </div>   
+                
+                <div class="=col-md-4" id="add_coordinate_btn">
+                    <button type="button" id="add_coordinate" class="btn btn-primary" style="float: right">Add coordinate</button>
+                </div>
+            </div>
             </div>
         </div>
         </div>

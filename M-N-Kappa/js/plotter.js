@@ -46,9 +46,9 @@ var linefunc = d3.line()
 
     var row_count = 0
     function draw_polygon() {
-  
-        var x = document.getElementsByName("xval")
-        var y = document.getElementsByName("yval")
+        var x = document.getElementsByClassName("xval")
+        //var x = document.getElementsByName("xval")
+        var y = document.getElementsByClassName("yval")
         // returns a list with input fields
 
 
@@ -85,6 +85,11 @@ var linefunc = d3.line()
         var loc0 = { x: scale(-min_x), y: scale(-min_y) }
         data.push(loc0)
 
+        //location for the current sessions polygon
+        var loc_list = []
+        var loc_pg0 = new vector.Point(-min_x, -min_y)
+        loc_list.push(loc_pg0)
+
         for (var i = 0; i < y.length; i++) {
 
             if (x[i].value.length > 0 && y[i].value.length > 0) {
@@ -94,11 +99,24 @@ var linefunc = d3.line()
                     y: scale(parseFloat(y[i].value) - min_y) //+ settings.height
                 }
                 data.push(loc)
+
+
+                //location for the current sessions polygon
+                var loc_pg = new vector.Point(parseFloat(x[i].value) - min_x, parseFloat(y[i].value) - min_y)
+             
+                loc_list.push(loc_pg)
+
+                
             }
         }
         // set last value to origin
         data.push(loc0)
+        loc_list.push(loc_pg0)
+
         svg.select("path").attr("d", linefunc(data));
+
+        // add polygon to session
+        session.constructor = new crsn.PolyGon(loc_list)
 
     }
 

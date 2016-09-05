@@ -3,7 +3,12 @@
     
 }
 
-#pg_row {
+.pg_row, #add_coordinate_btn {
     padding-bottom: 3px;
     padding-top: 3px
 }
+
+#polygon_collapse_glyph {
+    cursor: pointer;
+}
+
