@@ -3,6 +3,7 @@
 
 // plt namespace
 var plt = (function () {
+
     var settings = {
         width: 300,
         height: 300,
@@ -10,41 +11,28 @@ var plt = (function () {
         offset_origin_y: 0,
     }
 
-    var svg = d3.select("#pg_svg").append("svg")
-    .attr("style", "float: right; float: top")
+    var svg_cross_section = d3.select("#pg_svg").append("svg")
     .attr("width", settings.width)
     .attr("height", settings.height)
     .append('g') // groups svg shapes
-    //.attr("transform", "translate( %1,%2)".replace("%1", settings.offset_origin_x).replace("%2", settings.offset_origin_y));
 
-/**
-<svg width="100" height="100">
-<path d=" M 10 25
-    L 10 75
-    L 60 75
-    stroke="red" stroke-width="2" fill="none" />
-</svg>
-*/
-
-    var data = [
-        { x: 0, y: 200 },
-    ];
 
 var linefunc = d3.line()
         .x(function(d) { return d.x; })
         .y(function(d) { return d.y; })
   
-    svg.selectAll("path")
-    .data(data)
+    svg_cross_section.selectAll("path")
+    .data([{ x: 0, y: 0 }])
     .enter()
     .append("path")
-    .attr("d", linefunc(data))
+    .attr("d", linefunc(0))
     .attr("stroke", "black")
     .attr("stroke-width", 2)
     .attr("fill", "#BDBDBD")
+
+
     
 
-    var row_count = 0
     function draw_polygon() {
         var x = document.getElementsByClassName("xval")
         //var x = document.getElementsByName("xval")
@@ -113,16 +101,135 @@ var linefunc = d3.line()
         data.push(loc0)
         loc_list.push(loc_pg0)
 
-        svg.select("path").attr("d", linefunc(data));
+        svg_cross_section.select("path").attr("d", linefunc(data));
 
-        // add polygon to session
-        session.constructor = new crsn.PolyGon(loc_list)
+        return loc_list
+
+    }
+    
+
+
+    /**
+    stress strain diagrams
+    */
+
+
+    var width= $('#comp_curve').width() * 0.9;
+    var height = 300;
+
+    // adding axes
+    var xaxis = d3.axisTop()
+                    .scale(d3.scaleLinear().domain([0, 10.5]).range([0, width]))
+    var yaxis = d3.axisRight()
+                    .scale(d3.scaleLinear().domain([0, 10.5]).range([height, 0]))
+
+    function set_stress_strain_svg(selector) {
+        var svg = d3.select(selector).append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append('g')
+        //.attr("transform", "translate(0," + settings.offset_origin_y + ")")
+
+        svg.selectAll("path")
+        .data([{ x: 0, y: 0 }])
+        .enter()
+        .append("path")
+        .attr("d", linefunc(0))
+        .attr("stroke", "blue")
+        .attr("stroke-width", 2)
+        .attr("fill", "none")
+
+        svg.append('g')
+        .attr("transform", "translate(0," + (height - 1) + ")")
+        .attr("class", "xaxis")
+        .call(xaxis)
+
+        svg.append('g')
+            .attr("class", "yaxis")
+            .call(yaxis)
+
+        return svg
+    }
+
+    var svg_comp = set_stress_strain_svg("#comp_strain_svg_div")
+    var svg_tens = set_stress_strain_svg("#tens_strain_svg_div")
+  
+
+    function det_min_max(array) {
+        /**
+        Input is an array of strings representing number values
+        */
+        var min = 0
+        var max = -1e9
+        for (var i = 0; i < array.length; i++) {
+            var val = parseFloat(array[i].value)
+            
+            // only execute if value is a number
+            if (!isNaN(val)) {
+                min = min > val ? val : min;
+                max = max < val ? val : max;
+            }
+        }
+        return {
+            max,
+            min
+        }
+    }
+
+    
+    function draw_lines(svg, xstr, ystr) {
+        /** 
+        Draws the strain diagrams and adds the diagrams to the current session
+        */
+
+        var x_bound = det_min_max(xstr)
+        var y_bound = det_min_max(ystr)
+
+        var scale_x = d3.scaleLinear()
+                .domain([0, x_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
+                .range([0, width])
+
+        var scale_y = d3.scaleLinear()
+        .domain([0, y_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
+        .range([0, height])
+
+
+        var data = [
+            { x: 0, y: height },
+        ]
+
+        for (var i = 0; i < xstr.length; i++) {
+            if (xstr[i].value.length > 0 && ystr[i].value.length > 0) {
+      
+                var loc = {
+                    x: scale_x(parseFloat(xstr[i].value) - x_bound.min),
+                    y: -scale_y(parseFloat(ystr[i].value) - y_bound.min) + height
+                }
+                data.push(loc)
+               
+            }
+        }
+        svg.select("path").attr("d", linefunc(data));
+        
+        // update the axes
+        var xaxis = d3.axisTop()
+                     .scale(d3.scaleLinear().domain([0, x_bound.max * 1.05]).range([0, width]))
+        var yaxis = d3.axisRight()
+                        .scale(d3.scaleLinear().domain([0, y_bound.max * 1.05]).range([height, 0]))
+
+        svg.selectAll("g.xaxis")
+            .call(xaxis)
+        svg.selectAll("g.yaxis")
+            .call(yaxis)
 
     }
 
 
     return {
-        draw_polygon
+        draw_polygon,
+        draw_lines,
+        svg_comp,
+        svg_tens
     }
 
 })();  // plt namespace

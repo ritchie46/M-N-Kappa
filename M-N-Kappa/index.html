@@ -11,8 +11,8 @@
 </head>
 <body>
 
-    <div class="col-md-12">
-        <div class="col-md-6">
+    <div class="col-xs-12">
+        <div class="col-xs-6">
             <div id="polygon_input" class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
@@ -22,54 +22,36 @@
                 </div>
                 <div id="collapse_polygon" class="panel-collapse collapse">
                     <div id="pg_body" class="panel-body">
-                        <div class="row pg_row hidden">
-                            <div class="col-md-5">
-                                <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
+                        <div class="row pg_row custom_row hidden">
+                            <div class="col-xs-5">
+                                <input type="number" class="xval form-control" placeholder="x-value" onchange="trigger_polygon()">
                             </div>
-                            <div class="col-md-5">
-                                <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
-                            </div>
-                            <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
-                                <span class="glyphicon glyphicon-remove-circle"></span>
-                            </button>
-                        </div>
-
-                        <div class="row pg_row">
-                            <div class="col-md-5">
-                                <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
-                            </div>
-                            <div class="col-md-5">
-                                <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
+                            <div class="col-xs-5">
+                                <input type="number" class="yval form-control" placeholder="y-value" onchange="trigger_polygon()">
                             </div>
                             <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                                 <span class="glyphicon glyphicon-remove-circle"></span>
                             </button>
                         </div>
 
-                        <div class="row pg_row">
-                            <div class="col-md-5">
-                                <input type="number" class="xval form-control" placeholder="x-value" onchange="plt.draw_polygon()">
-                            </div>
-                            <div class="col-md-5">
-                                <input type="number" class="yval form-control" placeholder="y-value" onchange="plt.draw_polygon()">
-                            </div>
-                            <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
-                                <span class="glyphicon glyphicon-remove-circle"></span>
-                            </button>
-                        </div>
-
-                        <div class="=col-md-4" id="add_coordinate_btn">
+                        <div class="=col-xs-4" id="add_coordinate_btn">
                             <button type="button" class="btn btn-primary add_row" style="float: right">Add coordinate</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div id="pg_svg"></div>
+        <div class="=col-xs-4">
+            <div id="pg_svg"></div>
+        </div>
+        <div class="col-xs-2">
+            <ul class="list-group">
+                <li id="area" class="list-group-item">Area:</li>
+            </ul>
+        </div>
     </div>
-    <div class="col-md-12">
-        <div class="col-md-6">
+    <div class="col-xs-12">
+        <div class="col-xs-6">
             <div id="comp_curve" class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
@@ -80,27 +62,48 @@
                 <div id="collapse_input" class="panel-collapse collapse">
                     <div id="comp_curve_body" class="panel-body">
                         <div class="row custom_row hidden">
-                            <div class="col-md-2">
-                                <input type="number" class="comp_strain form-control" placeholder="strain" onchange="">
+                            <div class="col-xs-5">
+                                <input type="number" class="comp_strain form-control strain_comp" placeholder="strain" onchange="">
                             </div>
-                            <div class="col-md-2">
-                                <input type="number" class="comp_stress form-control" placeholder="stress" onchange="">
+                            <div class="col-xs-5">
+                                <input type="number" class="comp_stress form-control stress_comp" placeholder="stress" onchange="">
                             </div>
                             <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                                 <span class="glyphicon glyphicon-remove-circle"></span>
                             </button>
                         </div>
-                        <div class="=col-md-4">
-                            <button type="button" class="btn btn-primary add_row" style="float: right">Add row</button>
+
+                        <div class="row custom_row">
+                            <div class="col-xs-5">
+                                <input type="number" class="comp_strain form-control strain_comp" placeholder="strain" onchange="">
+                            </div>
+                            <div class="col-xs-5">
+                                <input type="number" class="comp_stress form-control stress_comp" placeholder="stress" onchange="">
+                            </div>
+                            <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                            </button>
                         </div>
+
+
+                        <div class="=col-xs-4">
+                            <button id="btn_comp_strain" type="button" class="btn btn-primary add_row" style="float: right">Add row</button>
+                        </div>
+
+                        <div class="row">
+                            <div class="=col-xs-12 strain_svg" id="comp_strain_svg_div">
+
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-12">
-        <div class="col-md-6">
+
+
+        <div class="col-xs-6">
             <div id="tens_curve" class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
@@ -109,21 +112,43 @@
                     </h3>
                 </div>
                 <div class="panel-collapse collapse">
-                    <div id="comp_curve_body" class="panel-body">
+                    <div id="tens_curve_body" class="panel-body">
                         <div class="row custom_row hidden">
-                            <div class="col-md-2">
-                                <input type="number" class="comp_strain form-control" placeholder="strain" onchange="">
+                            <div class="col-xs-5">
+                                <input type="number" class="tens_strain form-control" placeholder="strain" onchange="">
                             </div>
-                            <div class="col-md-2">
-                                <input type="number" class="comp_stress form-control" placeholder="stress" onchange="">
+                            <div class="col-xs-5">
+                                <input type="number" class="tens_stress form-control" placeholder="stress" onchange="">
                             </div>
                             <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                                 <span class="glyphicon glyphicon-remove-circle"></span>
                             </button>
                         </div>
-                        <div class="=col-md-4">
+
+                        <div class="row custom_row">
+                            <div class="col-xs-5">
+                                <input type="number" class="tens_strain form-control" placeholder="strain" onchange="">
+                            </div>
+                            <div class="col-xs-5">
+                                <input type="number" class="tens_stress form-control" placeholder="stress" onchange="">
+                            </div>
+                            <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                            </button>
+                        </div>
+
+                        
+                        <div class="=col-xs-5">
                             <button type="button" class="btn btn-primary add_row" style="float: right">Add row</button>
                         </div>
+
+
+                        <div class="row">
+                            <div class="=col-xs-12 strain_svg" id="tens_strain_svg_div">
+
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

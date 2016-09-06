@@ -8,3 +8,15 @@
     cursor: pointer;
 }
 
+#pg_svg {
+    float: left;
+    padding-top: 20px;
+    padding-left: 50px;
+}
+
+.strain_svg {
+    padding-top: 80px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+}

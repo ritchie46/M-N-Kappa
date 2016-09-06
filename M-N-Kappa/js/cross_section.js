@@ -7,7 +7,7 @@ var crsn = (function () {
 function PolyGon(point_list) {
     /// <param name="point_list" type="array">Array with objects from the Point class representing the polygons coordinates</param>
     this.point_list = point_list
-    this.n_value = 1000
+    this.n_value = 100
     this.top = this.heighest_point('y').y
     this.bottom = this.lowest_point('y').y
     this.y_val = this.det_height_array()
@@ -66,7 +66,7 @@ PolyGon.prototype.return_x_on_axis = function () {
         coordinate is underneath the y-value.
         */
 
-        var y = this.y_val[i]
+        var y = this.y_val[i] - this.y_val[1] * 0.5
 
         // the x_values that intersect the polygon on this y increment.
         var x_vals = []
@@ -74,7 +74,6 @@ PolyGon.prototype.return_x_on_axis = function () {
 
         // iterate through the coordinates
         for (var a = 0; a < this.point_list.length - 1; a++) {
-
 
 
             // y-value is between point at index a and point at index a + 1
@@ -109,13 +108,13 @@ PolyGon.prototype.return_x_on_axis = function () {
 };
 
 PolyGon.prototype.area = function () {
-    var dy = this.y_val[1]
+    var dy = this.y_val[1] 
     var area = 0
     for (var i = 0; i < this.y_val.length; i++) {
         area += dy * this.width_array[i]
-        
     }
-    return area
+    area = Math.round(area * 100) / 100
+    return Math.abs(area)
 }
 
 // end class
