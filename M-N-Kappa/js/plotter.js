@@ -5,8 +5,8 @@
 var plt = (function () {
 
     var settings = {
-        width: 300,
-        height: 300,
+        width: 350,
+        height: 350,
         offset_origin_x: 0,
         offset_origin_y: 0,
     }
@@ -63,7 +63,7 @@ var linefunc = d3.line()
         }
 
         // functions that scales the input to the svg size
-        var scale = d3.scaleLinear()
+        var scale_x = d3.scaleLinear()
                       .domain([0, max_val -min_val])  // make sure that all the values fit in the domain, thus also negative values
                       .range([0, Math.max(settings.width, settings.height)])
 
