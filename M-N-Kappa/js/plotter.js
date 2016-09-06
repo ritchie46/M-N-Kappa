@@ -153,6 +153,7 @@ var linefunc = d3.line()
 
     var svg_comp = set_stress_strain_svg("#comp_strain_svg_div")
     var svg_tens = set_stress_strain_svg("#tens_strain_svg_div")
+    //var rebar_svg = set_stress_strain_svg("#rebar_svg_1")
   
 
     function det_min_max(array) {
@@ -229,7 +230,8 @@ var linefunc = d3.line()
         draw_polygon,
         draw_lines,
         svg_comp,
-        svg_tens
+        svg_tens,
+        set_stress_strain_svg
     }
 
 })();  // plt namespace

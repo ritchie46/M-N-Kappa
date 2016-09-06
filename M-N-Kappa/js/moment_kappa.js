@@ -276,10 +276,8 @@ var mkap = (function () {
     console.log(run.kappa);
     */
 
-    return {MomentKappa,
-        StressStrain,
-
-
+    return {    MomentKappa,
+                StressStrain,
     }
 
 })();  // mkap namespace
