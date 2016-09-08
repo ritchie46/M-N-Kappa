@@ -63,14 +63,14 @@ var linefunc = d3.line()
         }
 
         // functions that scales the input to the svg size
-        var scale_x = d3.scaleLinear()
+        var scale = d3.scaleLinear()
                       .domain([0, max_val -min_val])  // make sure that all the values fit in the domain, thus also negative values
                       .range([0, Math.max(settings.width, settings.height)])
 
         // data that will be attached to the svg path
         var data = []
         // set first value to origin.
-        var loc0 = { x: scale(-min_x), y: scale(-min_y) }
+        var loc0 = { x: scale(-min_x), y: -scale(-min_y) + settings.height }
         data.push(loc0)
 
         //location for the current sessions polygon
@@ -84,7 +84,7 @@ var linefunc = d3.line()
                  
                 var loc = {
                     x: scale(parseFloat(x[i].value) - min_x),
-                    y: scale(parseFloat(y[i].value) - min_y) //+ settings.height
+                    y: -scale(parseFloat(y[i].value) - min_y) + settings.height
                 }
                 data.push(loc)
 

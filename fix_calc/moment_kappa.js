@@ -1,4 +1,4 @@
-﻿'use strict'
+'use strict'
 
 // mkap namespace
 var mkap = (function () {
@@ -39,10 +39,14 @@ var mkap = (function () {
     MomentKappa.prototype.det_force_distribution = function (strain_top, strain_btm) {
         this.force_compression = 0
         this.force_tensile = 0 + this.normal_force
+        console.log("start tens", this.force_tensile)
         this.stress = []
         this.strain_top = strain_top
         this.strain_btm = strain_btm
+        
 
+        console.log("strain_top", strain_top, "strain_btm", strain_btm)
+        
         // height of the sections
         var dh = this.cross_section.y_val[1];
 
@@ -61,16 +65,21 @@ var mkap = (function () {
 
             // Send the strain value as parameter in the stress strain diagram
             var stress
+            
             if (strain_y < 0) {
                 stress = -this.compressive_diagram.det_stress(Math.abs(strain_y))
                 this.force_compression -= stress * this.cross_section.width_array[i] * dh
-
+                console.log(this.cross_section.width_array[i])
             }
 
             else {
                 stress = this.tensile_diagram.det_stress(strain_y)
                 this.force_tensile += stress* this.cross_section.width_array[i] * dh
-            }
+                
+                //console.log(this.force_tensile)
+                
+            }   
+                
             this.stress.push(stress)
         }
 
@@ -83,6 +92,9 @@ var mkap = (function () {
             this.rebar_strain.push(strain)
 
             var stress = this.rebar_diagram[i].det_stress(Math.abs(strain));
+            console.log(strain, "strain rebar")
+            console.log(stress, "stress rebar")
+            console.log("rebardiagram", this.rebar_diagram[0])
 
             // absolute value
             var force = this.rebar_As[i] * stress
@@ -99,7 +111,10 @@ var mkap = (function () {
 
             }
             else {
+                console.log(force, "force")
+                
                 this.force_tensile += force
+                console.log(this.force_tensile, "force tens")
                 this.rebar_force.push(force)
 
                 // reduce rebar area from master element
@@ -111,6 +126,7 @@ var mkap = (function () {
     }
 
     MomentKappa.prototype.solver = function (strain_top, strain) {
+
         /**
         Return the .det_stress method several times and adapt the input untill the convergence criteria is met.
     
@@ -141,10 +157,12 @@ var mkap = (function () {
                 this.det_force_distribution(top_str, btm_str)
 
                 if (count > 100) {
+                    console.log(this.force_tensile)
                     console.log("no convergence found after %s iterations".replace("%s", count))
                     break
                 }
                 count += 1
+                
             }
         }
         else { // bottom strain remains constant
@@ -189,7 +207,6 @@ var mkap = (function () {
 
         // center of gravity offset of a section
         this.kappa = this.strain_btm / (this.zero_line - this.cross_section.bottom)
-        this.moment = 0
         var offset = this.cross_section.y_val[1] * 0.5
 
         // height of the sections

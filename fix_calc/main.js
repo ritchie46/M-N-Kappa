@@ -1,4 +1,4 @@
-﻿/**
+/**
 Note to self:
     The plotter also adds the objects uses for calculations to the sessions
 */
@@ -166,7 +166,7 @@ $(document).ready(function () {
             session.mkap.rebar_z[i] = z
             session.mkap.rebar_diagram[i] = session.rebar_diagrams[no_of_diagram - 1]
         }
-        
+        console.log(session.mkap.rebar_diagram)
     }
 
     
@@ -214,28 +214,29 @@ function Session() {
 
 
 Session.prototype.det_mkap_compressive_points = function () {
-    /**
+    
     session.mkap.cross_section = new crsn.PolyGon(
     [new vector.Point(0, 0),
     new vector.Point(200, 0),
     new vector.Point(200, 200),
     new vector.Point(0, 200),
-    new vector.Point(0, 0)
+    new vector.Point(0, 0),
     ]);
+    session.mkap.cross_section.return_x_on_axis()
     session.mkap.tensile_diagram = new mkap.StressStrain([0], [0])
     session.mkap.compressive_diagram = new mkap.StressStrain([0, 1.75, 3.5], [0, 20, 20])
     session.mkap.rebar_As = [1200]
     session.mkap.rebar_z = [20]
     session.mkap.rebar_diagram = [new mkap.StressStrain([0, 2.175, 100], [0, 435, 435])]
 
-    
+
     console.log(
         session.mkap.compressive_diagram, 'comp\n',
-        session.mkap.tensile_diagram, 'tens\n',
-        session.mkap.rebar_As, 'as\n',
-        session.mkap.rebar_z, 'z\n',
-        session.mkap.rebar_diagram, 'rebar diagram\n',
-        session.mkap.cross_section, "cross_section")
+        session.mkap.tensile_diagram, 'tens',
+        session.mkap.rebar_As, 'as',
+        session.mkap.rebar_z, 'z',
+        session.mkap.rebar_diagram, 'rebar diagram',
+        session.mkap.cross_section)
 
 
     /** 

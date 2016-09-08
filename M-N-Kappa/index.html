@@ -11,11 +11,12 @@
 </head>
 <body>
 
-
+    <!--ROW 1 -->
     <div class="col-xs-12">
 
+        <!--ROW 1.column 1 -->
         <!--Input polygon and stress strain diagrams -->
-        <div class="col-xs-4">
+        <div class="col-xs-4 cstm_left_column">
             <div class="row">
                 <div id="polygon_input" class="panel panel-default">
                     <div class="panel-heading">
@@ -58,10 +59,10 @@
                         <div id="comp_curve_body" class="panel-body">
                             <div class="row custom_row hidden">
                                 <div class="col-xs-5">
-                                    <input type="number" class="comp_strain form-control strain_comp" placeholder="strain" onchange="">
+                                    <input type="number" min="0" class="comp_strain form-control strain_comp" placeholder="strain" onchange="">
                                 </div>
                                 <div class="col-xs-5">
-                                    <input type="number" class="comp_stress form-control stress_comp" placeholder="stress" onchange="">
+                                    <input type="number" min="0" class="comp_stress form-control stress_comp" placeholder="stress" onchange="">
                                 </div>
                                 <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                                     <span class="glyphicon glyphicon-remove-circle"></span>
@@ -70,10 +71,10 @@
 
                             <div class="row custom_row">
                                 <div class="col-xs-5">
-                                    <input type="number" class="comp_strain form-control strain_comp" placeholder="strain" onchange="">
+                                    <input type="number" min="0" class="comp_strain form-control strain_comp" placeholder="strain" onchange="">
                                 </div>
                                 <div class="col-xs-5">
-                                    <input type="number" class="comp_stress form-control stress_comp" placeholder="stress" onchange="">
+                                    <input type="number" min="0" class="comp_stress form-control stress_comp" placeholder="stress" onchange="">
                                 </div>
                                 <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                                     <span class="glyphicon glyphicon-remove-circle"></span>
@@ -108,10 +109,10 @@
                         <div id="tens_curve_body" class="panel-body">
                             <div class="row custom_row hidden">
                                 <div class="col-xs-5">
-                                    <input type="number" class="tens_strain form-control" placeholder="strain" onchange="">
+                                    <input type="number" min="0" class="tens_strain form-control" placeholder="strain" onchange="">
                                 </div>
                                 <div class="col-xs-5">
-                                    <input type="number" class="tens_stress form-control" placeholder="stress" onchange="">
+                                    <input type="number" min="0" class="tens_stress form-control" placeholder="stress" onchange="">
                                 </div>
                                 <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                                     <span class="glyphicon glyphicon-remove-circle"></span>
@@ -120,10 +121,10 @@
 
                             <div class="row custom_row">
                                 <div class="col-xs-5">
-                                    <input type="number" class="tens_strain form-control" placeholder="strain" onchange="">
+                                    <input type="number" min="0" class="tens_strain form-control" placeholder="strain" onchange="">
                                 </div>
                                 <div class="col-xs-5">
-                                    <input type="number" class="tens_stress form-control" placeholder="stress" onchange="">
+                                    <input type="number" min="0" class="tens_stress form-control" placeholder="stress" onchange="">
                                 </div>
                                 <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                                     <span class="glyphicon glyphicon-remove-circle"></span>
@@ -147,83 +148,156 @@
                 </div>
             </div>
 
+            <!--Rebar input -->
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span>Add rebar</span>
+                            <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                        </h3>
+                    </div>
+
+                    <div class="panel-collapse collapse">
+                        <div class="panel-body rebar_input">
+
+                            <div class="row custom_row hidden">
+                                <div class="col-xs-3">
+                                    <input type="number" class="rebar_As form-control" placeholder="As" data-toggle="tooltip" data-placement="top" title="Area of the rebar">
+                                </div>
+                                <div class="col-xs-3">
+                                    <input type="number" class="rebar_d form-control show_tip" placeholder="d" data-toggle="tooltip" data-placement="top" title="Distance rebar to top cross-section">
+                                </div>
+                                <div class="col-xs-4">
+                                    <select class="form-control rebar_material_select" data-toggle="tooltip" data-placement="top" title="Stress-strain-diagram">
+                                        <option>diagram #1</option>
+                                    </select>
+                                </div>
+
+                                <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                </button>
+                            </div>
+
+                            <div class="row custom_row">
+                                <div class="col-xs-3">
+                                    <input type="number" class="rebar_As form-control" placeholder="As" data-toggle="tooltip" data-placement="top" title="Area of the rebar">
+                                </div>
+                                <div class="col-xs-3">
+                                    <input type="number" class="rebar_d form-control show_tip" placeholder="d" data-toggle="tooltip" data-placement="top" title="Distance rebar to top cross-section">
+                                </div>
+                                <div class="col-xs-4">
+                                    <select class="form-control rebar_material_select"  data-toggle="tooltip" data-placement="top" title="Stress-strain-diagram">
+                                        <option>diagram #1</option>
+                                    </select>
+                                </div>
+
+                                <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                </button>
+                            </div>
+                            
+
+
+                            <div class="=col-xs-5">
+                                <button type="button" class="btn btn-primary add_row" style="float: right">Add row</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--stress strain diagrams Rebar -->
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span> Rebar stress-strain-diagram #1</span>
+                            <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                        </h3>
+                    </div>
+
+                    <div class="panel-collapse collapse">
+                        <div class="panel-body rebar_curve" id="rebar_curve_1">
+                            <div class="row custom_row hidden">
+                                <div class="col-xs-5">
+                                    <input type="number" class="rebar_strain form-control" placeholder="strain" onchange="">
+                                </div>
+                                <div class="col-xs-5">
+                                    <input type="number" class="rebar_stress form-control" placeholder="stress" onchange="">
+                                </div>
+                                <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                </button>
+                            </div>
+
+                            <div class="row custom_row">
+                                <div class="col-xs-5">
+                                    <input type="number" class="rebar_strain form-control" placeholder="strain" onchange="">
+                                </div>
+                                <div class="col-xs-5">
+                                    <input type="number" class="rebar_stress form-control" placeholder="stress" onchange="">
+                                </div>
+                                <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                </button>
+                            </div>
+
+
+                            <div class="=col-xs-5">
+                                <button type="button" class="btn btn-primary add_row" style="float: right">Add row</button>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="=col-xs-12 rebar_strain_svg_div" id="rebar_svg_1">
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
 
         </div>
 
-
+        <!--ROW 1.column 2 -->
         <!-- SVG polygon-->
-        <div class="col-xs-8 text-center">
+        <div class="col-xs-8 text-center cstm_right_column">
             
             <div class="row center-block" id="pg_svg"></div>
 
-            <ul class="list-group row">
+            <ul class="list-group">
                 <li id="area" class="list-group-item">Area:</li>
             </ul>
+
+            <div class="row mkappa_svg">
+                
+            </div>
+            <button type="button" class="btn btn-primary" id="calculate">Calculate</button>
+
 
         </div>
 
 
 
     </div>
+    <!--ROW 1 END -->
 
 
 
-        <div class="col-xs-12">
 
             <ul style="list-style-type:none" class="col-xs-4">
                 <li>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">
-                                <span> Rebar stress-strain-diagram #1</span>
-                                <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
-                            </h3>
-                        </div>
 
-                        <div class="panel-collapse collapse">
-                            <div class="panel-body rebar_curve" id="rebar_curve_1">
-                                <div class="row custom_row hidden">
-                                    <div class="col-xs-5">
-                                        <input type="number" class="rebar_strain form-control" placeholder="strain" onchange="">
-                                    </div>
-                                    <div class="col-xs-5">
-                                        <input type="number" class="rebar_stress form-control" placeholder="stress" onchange="">
-                                    </div>
-                                    <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
-                                        <span class="glyphicon glyphicon-remove-circle"></span>
-                                    </button>
-                                </div>
-
-                                <div class="row custom_row">
-                                    <div class="col-xs-5">
-                                        <input type="number" class="rebar_strain form-control" placeholder="strain" onchange="">
-                                    </div>
-                                    <div class="col-xs-5">
-                                        <input type="number" class="rebar_stress form-control" placeholder="stress" onchange="">
-                                    </div>
-                                    <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
-                                        <span class="glyphicon glyphicon-remove-circle"></span>
-                                    </button>
-                                </div>
-
-
-                                <div class="=col-xs-5">
-                                    <button type="button" class="btn btn-primary add_row" style="float: right">Add row</button>
-                                </div>
-
-
-                                <div class="row">
-                                    <div class="=col-xs-12 rebar_strain_svg_div" id="rebar_svg_1">
-
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
                 </li>
             </ul>
-        </div>
+
 
 
 
