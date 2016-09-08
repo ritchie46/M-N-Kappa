@@ -156,7 +156,7 @@ var linefunc = d3.line()
     //var rebar_svg = set_stress_strain_svg("#rebar_svg_1")
   
 
-    function det_min_max(array) {
+    function det_min_max_str(array) {
         /**
         Input is an array of strings representing number values
         */
@@ -177,14 +177,38 @@ var linefunc = d3.line()
         }
     }
 
+
     
-    function draw_lines(svg, xstr, ystr) {
+    function draw_lines(svg, xstr, ystr, floats) {
+        /// <param name="svg" type="object">d3 svg object</param>
+        /// <param name="xstr" type="array of strings">array from html input</param>
+        /// <param name="ystr" type="array of strings">array from html input</param>
+        /// <param name="lists" type="boolean">If true the x and y arrays may contain floats</param>
+
         /** 
-        Draws the strain diagrams and adds the diagrams to the current session
+        Draws lines on a given svg canvast. Input is standard form listst, thus contains strings.
         */
 
-        var x_bound = det_min_max(xstr)
-        var y_bound = det_min_max(ystr)
+        // default parameter
+        var floats = (typeof floats !== "undefined") ? floats : false;
+
+        if (floats) {
+            var x_bound = {
+                max: Math.max(Math.max(xstr), 1e-9),
+                min: Math.min(Math.min(xstr), 0)
+            }
+
+            var y_bound = {
+                max: Math.max(Math.max(ystr), 1e-9),
+                min: Math.min(Math.min(ystr), 0)
+            }
+        }
+
+        else {
+            
+            var x_bound = det_min_max_str(xstr)
+            var y_bound = det_min_max_str(ystr)
+        }
 
         var scale_x = d3.scaleLinear()
                 .domain([0, x_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
@@ -200,16 +224,27 @@ var linefunc = d3.line()
         ]
 
         for (var i = 0; i < xstr.length; i++) {
-            if (xstr[i].value.length > 0 && ystr[i].value.length > 0) {
-      
+
+            if (floats) {
                 var loc = {
-                    x: scale_x(parseFloat(xstr[i].value) - x_bound.min),
-                    y: -scale_y(parseFloat(ystr[i].value) - y_bound.min) + height
+                    x: scale_x(xstr[i] - x_bound.min),
+                    y: -scale_y(ystr[i] - y_bound.min) + height
                 }
+
                 data.push(loc)
-               
+
+            }
+            else {
+                if (xstr[i].value.length > 0 && ystr[i].value.length > 0) {
+                    var loc = {
+                        x: scale_x(parseFloat(xstr[i].value) - x_bound.min),
+                        y: -scale_y(parseFloat(ystr[i].value) - y_bound.min) + height
+                    }
+                    data.push(loc)
+                }
             }
         }
+        console.log(data)
         svg.select("path").attr("d", linefunc(data));
         
         // update the axes

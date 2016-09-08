@@ -189,7 +189,14 @@ $(document).ready(function () {
         var svg = plt.set_stress_strain_svg('.mkappa_svg')
         //plt.draw_lines(svg, strain, stress)
 
-        session.det_mkap_compressive_points()
+        sol = session.det_mkap_compressive_points()
+        moment = sol.moment
+        kappa = sol.moment
+
+        moment.unshift(0)
+        kappa.unshift(0)
+
+        plt.draw_lines()
 
 
     }
@@ -256,6 +263,13 @@ Session.prototype.det_mkap_compressive_points = function () {
 
     console.log(moment)
     console.log(kappa)
+
+    return {
+        moment,
+        kappa
+    }
+
+
 
 }
 // end class
