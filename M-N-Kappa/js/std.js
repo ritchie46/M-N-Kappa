@@ -2,6 +2,10 @@
 // std namespace
 var std = (function () {
 
+    function is_number(obj) {
+        return !isNaN(parseFloat(obj))
+    }
+
     function interpolate(start_x, start_y, end_x, end_y, req_x) {
         /**
         Determinates the y-value by interpolation for the given x- and y-values.
@@ -31,14 +35,19 @@ var std = (function () {
         /// <param name="rhs" type="flt">left hand side of equation</param>
         /// <returns type="flt" />
         */
+ 
 
         var ratio = Math.abs(rhs) / Math.abs(lhs)
         return (ratio - 1) / 3 + 1
     }
 
-    function convergence_conditions(lhs, rhs) {
+    function convergence_conditions(lhs, rhs, limit_up, limit_lower) {
+        // default parameter
+        var limit_up = (typeof limit_up !== "undefined") ? limit_up : 1.001;
+        var limit_lower = (typeof limit_lower !== "undefined") ? limit_lower : 0.999;
+
         var ratio = Math.abs(rhs) / Math.abs(lhs)
-        if (0.999 <= ratio && ratio <= 1.001) {
+        if (limit_lower <= ratio && ratio <= limit_up) {
             return true
         }
         else {
@@ -54,7 +63,8 @@ var std = (function () {
     return {
         interpolate,
         convergence,
-        convergence_conditions
+        convergence_conditions,
+        is_number
     }
     
 })();  // std namespace

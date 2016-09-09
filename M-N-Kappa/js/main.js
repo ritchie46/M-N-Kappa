@@ -189,14 +189,14 @@ $(document).ready(function () {
         var svg = plt.set_stress_strain_svg('.mkappa_svg')
         //plt.draw_lines(svg, strain, stress)
 
-        sol = session.det_mkap_compressive_points()
-        moment = sol.moment
-        kappa = sol.moment
+        var sol = session.det_mkap_compressive_points()
+        var moment = sol.moment
+        var kappa = sol.kappa
 
         moment.unshift(0)
         kappa.unshift(0)
 
-        plt.draw_lines()
+        plt.draw_lines(svg, kappa, moment, true)
 
 
     }
@@ -251,19 +251,81 @@ Session.prototype.det_mkap_compressive_points = function () {
     var moment = []
     var kappa = []
 
+    // Solve for significant points in compression diagram
     for (var i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
         var strain = this.mkap.compressive_diagram.strain[i]
-        
+
         this.mkap.solver(true, strain)
         this.mkap.det_m_kappa()
 
-        moment.push(this.mkap.moment)
-        kappa.push(this.mkap.kappa)
+        if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)) {
+            moment.push(Math.abs(this.mkap.moment))
+            kappa.push(Math.abs(this.mkap.kappa))
+        }
+    }
+    
+    
+    // Solve for significant points in tensile diagram
+    for (var i = 1; i < this.mkap.tensile_diagram.strain.length; i++) {
+        var strain = this.mkap.tensile_diagram.strain[i]
+        
+        this.mkap.solver(false, strain)
+        this.mkap.det_m_kappa()
+
+        if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)) {
+            moment.push(Math.abs(this.mkap.moment))
+            kappa.push(Math.abs(this.mkap.kappa))
+        }
     }
 
-    console.log(moment)
-    console.log(kappa)
+    
+    // Solve for significant in the rebars material diagram. 
+    //Loop for the variable number of rebar inputs
+    for (var i = 0; i < this.mkap.rebar_As.length; i++) {
 
+        // Loop for the siginificant points in the rebars material stress strain diagram.
+        for (var a = 1; a < this.mkap.rebar_diagram[i].strain.length; a++) {
+            var sign_strain = this.mkap.rebar_diagram[i].strain[a] // siginificant point
+
+            top_str = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1]
+            // looper rebar
+            this.mkap.solver(true, top_str, false)
+
+            // iterate untill the convergence criteria is met
+            var count = 0
+            while (1) {
+                if (std.convergence_conditions(sign_strain, this.mkap.rebar_strain[i], 1.01, 0.99)) {
+                    console.log("rebar convergence after %s iterations".replace("%s", count))
+                    this.mkap.det_m_kappa()
+
+                    if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)) {
+
+                        moment.push(Math.abs(this.mkap.moment))
+                        kappa.push(Math.abs(this.mkap.kappa))
+                    }
+                    break
+                }
+
+                var factor = std.convergence(this.mkap.rebar_strain[i], sign_strain)
+                var top_str = top_str * factor
+                
+                this.mkap.solver(true, top_str, false)
+
+                if (count > 50) {
+                    console.log("no rebar convergence found after %s iterations".replace("%s", count))
+                    break
+                }
+                count += 1
+            }
+  
+        }
+
+    }
+
+    moment.sort(function (a, b) { return a - b })
+    kappa.sort(function (a, b) { return a - b })
+    console.log(moment)
+  
     return {
         moment,
         kappa

@@ -40,6 +40,7 @@ var mkap = (function () {
         this.force_compression = 0
         this.force_tensile = 0 + this.normal_force
         this.stress = []
+        this.rebar_strain = []
         this.strain_top = strain_top
         this.strain_btm = strain_btm
 
@@ -110,7 +111,7 @@ var mkap = (function () {
 
     }
 
-    MomentKappa.prototype.solver = function (strain_top, strain) {
+    MomentKappa.prototype.solver = function (strain_top, strain, print) {
         /**
         Return the .det_stress method several times and adapt the input untill the convergence criteria is met.
     
@@ -120,6 +121,7 @@ var mkap = (function () {
         */
         // default parameter
         var strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
+        var print = (typeof print !== "undefined") ? print : true;
 
         // first iteration
         var btm_str = strain
@@ -132,7 +134,9 @@ var mkap = (function () {
             // iterate untill the convergence criteria is met
             while (1) {
                 if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
-                    console.log("convergence after %s iterations".replace("%s", count))
+                    if (print) {
+                        console.log("convergence after %s iterations".replace("%s", count))
+                    }
                     break
                 }
             
@@ -141,7 +145,9 @@ var mkap = (function () {
                 this.det_force_distribution(top_str, btm_str)
 
                 if (count > 100) {
-                    console.log("no convergence found after %s iterations".replace("%s", count))
+                    if (print) {
+                        console.log("no convergence found after %s iterations".replace("%s", count))
+                    }
                     break
                 }
                 count += 1
@@ -151,7 +157,9 @@ var mkap = (function () {
             // iterate untill the convergence criteria is met
             while (1) {
                 if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
-                    console.log("convergence after %s iterations".replace("%s", count))
+                    if (print) {
+                        console.log("convergence after %s iterations".replace("%s", count))
+                    }
                     break
                 }
 
@@ -161,7 +169,9 @@ var mkap = (function () {
                 this.det_force_distribution(top_str, btm_str)
 
                 if (count > 100) {
-                    console.log("no convergence found after %s iterations".replace("%s", count))
+                    if (print) {
+                        console.log("no convergence found after %s iterations".replace("%s", count))
+                    }
                     break
                 }
                 count += 1
@@ -188,7 +198,7 @@ var mkap = (function () {
         */
 
         // center of gravity offset of a section
-        this.kappa = this.strain_btm / (this.zero_line - this.cross_section.bottom)
+        this.kappa = (Math.abs(this.strain_top) + Math.abs(this.strain_btm)) / (this.cross_section.top - this.cross_section.bottom)  //this.strain_btm / (this.zero_line - this.cross_section.bottom)
         this.moment = 0
         var offset = this.cross_section.y_val[1] * 0.5
 
@@ -201,6 +211,9 @@ var mkap = (function () {
        
             this.moment += arm * force;
         }
+
+        // N normal force share
+        this.moment += this.normal_force * (this.cross_section.top - this.cross_section.bottom) * 0.5
 
         // rebar share
         for (var i = 0; i < this.rebar_As.length; i++) {

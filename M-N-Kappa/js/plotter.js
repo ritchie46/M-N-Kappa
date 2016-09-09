@@ -192,15 +192,19 @@ var linefunc = d3.line()
         // default parameter
         var floats = (typeof floats !== "undefined") ? floats : false;
 
+        /**
+        Math.max.apply(null, xstr) determines the max value of a string. .apply() is a method for applying arrays on the object.
+        */
+
         if (floats) {
             var x_bound = {
-                max: Math.max(Math.max(xstr), 1e-9),
-                min: Math.min(Math.min(xstr), 0)
+                max: Math.max(Math.max.apply(null, xstr), 1e-9),
+                min: Math.min(Math.min.apply(null, xstr), 0)
             }
 
             var y_bound = {
-                max: Math.max(Math.max(ystr), 1e-9),
-                min: Math.min(Math.min(ystr), 0)
+                max: Math.max(Math.max.apply(null, ystr), 1e-9),
+                min: Math.min(Math.min.apply(null, ystr), 0)
             }
         }
 
@@ -244,7 +248,7 @@ var linefunc = d3.line()
                 }
             }
         }
-        console.log(data)
+  
         svg.select("path").attr("d", linefunc(data));
         
         // update the axes
