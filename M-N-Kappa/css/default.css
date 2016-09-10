@@ -1,5 +1,29 @@
-﻿body {
-  /* Uncomment this to enable scrolling and zooming
-  touch-action: manipulation;
-  */
+﻿
+.pg_row, .add_row, .custom_row {
+    padding-bottom: 4px;
+    padding-top: 4px
+}
+
+.glyphicon-triangle-bottom, .glyphicon-triangle-top {
+    cursor: pointer;
+}
+
+#pg_svg {
+    padding-bottom: 20px;
+}
+
+.strain_svg, .rebar_strain_svg_div {
+    padding-top: 80px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+}
+
+.cstm_left_column, cstm_right_column {
+    padding-left: 10px;
+    padding-right: 5px;
+}
+
+.add_row {
+    float: right;
 }

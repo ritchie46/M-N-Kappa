@@ -25,17 +25,27 @@ $(document).ready(function () {
     });
 
     // General add row logic
-    $(".add_row").click(function () {
-        var $row = $(this).closest(".panel-body").children(".custom_row").last();
+    function add_row(self) {
+        var $row = self.closest(".panel-body").children(".custom_row").last();
         var $clone = $row.clone()
         $clone.removeClass('hidden')
         $row.after($clone);
+    }
+        
+    $(".add_row").click(function () {
+        add_row($(this))
     })
 
+
     // General remove panel row logic
+    function remove_row(self) {
+        self.closest('.custom_row').remove()
+    }
+
     $(".panel").on("click", ".remove_row", function () {
-        $(this).closest('.custom_row').remove()
+        remove_row($(this))
     })
+
 
     //Call polygon draw function if row is removed
     $('#pg_body').on("click", ".remove_row", function () {
@@ -71,18 +81,26 @@ $(document).ready(function () {
         stress = extract_floats(stress)
         strain.unshift(0)
         stress.unshift(0)
+    
+        // reduce with the material factor
+        for (var i = 0; i < stress.length; i++) {
+            stress[i] /= parseFloat($("#comp_material_factor").val())
+        }
         session.mkap.compressive_diagram = new mkap.StressStrain(strain, stress)
     }
 
 
     $('#comp_curve_body').on('change', 'input', function () {
+        $("#compression_material").val('custom')
         trigger_comp_strain();
     });
 
     $('#comp_curve_body').on('click', '.remove_row', function () {
+        $("#compression_material").val('custom')
         $(this).closest('.custom_row').remove()
         trigger_comp_strain();
     });
+
 
     // tensile stress strain
     var trigger_tens_strain = function () {
@@ -115,9 +133,9 @@ $(document).ready(function () {
     There can be more than one rebar stress strain diagram
     */
 
-    var trigger_rebar_strain = function ($location) {
+    var trigger_rebar_strain = function (parent) {
         // find the panel that send the request.
-        var id = $location.closest('.rebar_curve').attr('id');
+        var id = parent.attr('id');
         var strain = $('#' + id).find('.rebar_strain');
         var stress = $('#' + id).find('.rebar_stress');
         
@@ -133,19 +151,27 @@ $(document).ready(function () {
         strain.unshift(0)
         stress.unshift(0)
 
+        var fact = parseFloat($(parent).find(".rebar_material_factor").val())
+        // reduce with the material factor
+        for (var i = 0; i < stress.length; i++) {
+            stress[i] /= fact
+            strain[i] /= fact
+        }
         var rebar_number = id[id.length - 1]
         session.rebar_diagrams[rebar_number - 1] = new mkap.StressStrain(strain, stress)
     }
 
     $('.rebar_curve').on('click', '.remove_row', function () {
-        var $location = $(this)
+        var parent = $(this).closest('.rebar_curve');
         $(this).closest('.custom_row').remove();
-        trigger_rebar_strain($location);
+        trigger_rebar_strain(parent);
+        $(parent).find(".rebar_material").val("custom")
     })
 
     $('.rebar_curve').on('change', 'input', function () {
-        var $location = $(this)
-        trigger_rebar_strain($location);
+        var parent = $(this).closest('.rebar_curve')
+        trigger_rebar_strain(parent);
+        $(parent).find(".rebar_material").val("custom")
     });
 
 
@@ -171,9 +197,7 @@ $(document).ready(function () {
             session.mkap.rebar_z[i] = z
             session.mkap.rebar_diagram[i] = session.rebar_diagrams[no_of_diagram - 1]
         }
-        
     }
-
     
     $('.rebar_input').on('click', '.remove_row', function () {
         $(this).closest('.custom_row').remove();
@@ -216,7 +240,61 @@ $(document).ready(function () {
     });
 
 
- 
+    // Material library
+
+    // compression material
+    $("#compression_material").change(function () {
+        if (this.value !== "custom") {
+            // get the value between 'C' and '/' in for instance C20/25
+            var end_index = this.value.indexOf('/')
+            var fc = this.value.substring(1, end_index)
+
+            // 3 input rows are needed. Two for the material. 1 hidden.
+            var n = document.getElementsByClassName("comp_strain").length;
+
+            for (n; n < 3; n++) {
+                add_row($("#compression_add_row"));
+
+            };
+            for (n; n > 3; n--) {
+                var row = $("#comp_curve_body").children(".custom_row").last();
+                remove_row(row);
+            }
+            $("#comp_curve_body").find(".comp_strain")[1].value = 1.75
+            $("#comp_curve_body").find(".comp_strain")[2].value = 3.5
+            $("#comp_curve_body").find(".comp_stress")[1].value = fc
+            $("#comp_curve_body").find(".comp_stress")[2].value = fc
+            trigger_comp_strain()
+        }
+    })
+   
+    // rebar material
+    $(".rebar_material").change(function () {
+        if (this.value !== "custom") {
+            // get the value between after 'B' in for instance 'B500'
+            
+            var fy = this.value.substring(1, 4)
+
+            // 3 input rows are needed. Two for the material. 1 hidden.
+            parent = $(this).closest(".rebar_curve");
+            var n = $(parent).find(".rebar_strain").length;
+          
+     
+            for (n; n < 3; n++) {
+                add_row($(parent).find(".add_row"));
+
+            };
+            for (n; n > 3; n--) {
+                var row = $(parent).children(".custom_row").last();
+                remove_row(row);
+            }
+            $(parent).find(".rebar_strain")[1].value = parseFloat(fy) / 200
+            $(parent).find(".rebar_strain")[2].value = 50
+            $(parent).find(".rebar_stress")[1].value = fy
+            $(parent).find(".rebar_stress")[2].value = fy
+            trigger_rebar_strain(parent)
+        }
+    })
 
 });
 
