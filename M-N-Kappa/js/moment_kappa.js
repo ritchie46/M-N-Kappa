@@ -1,5 +1,7 @@
 ﻿'use strict'
 
+var DEBUG = true
+
 // mkap namespace
 var mkap = (function () {
 
@@ -135,7 +137,9 @@ var mkap = (function () {
             while (1) {
                 if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                     if (print) {
-                        console.log("convergence after %s iterations".replace("%s", count))
+                        if (window.DEBUG) {
+                            console.log("convergence after %s iterations".replace("%s", count))
+                        }
                     }
                     break
                 }
@@ -146,7 +150,9 @@ var mkap = (function () {
 
                 if (count > 100) {
                     if (print) {
-                        console.log("no convergence found after %s iterations".replace("%s", count))
+                        if (window.DEBUG) {
+                            console.log("no convergence found after %s iterations".replace("%s", count))
+                        }
                     }
                     break
                 }
@@ -158,7 +164,9 @@ var mkap = (function () {
             while (1) {
                 if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                     if (print) {
-                        console.log("convergence after %s iterations".replace("%s", count))
+                        if (window.DEBUG) {
+                            console.log("convergence after %s iterations".replace("%s", count))
+                        }
                     }
                     break
                 }
@@ -170,7 +178,9 @@ var mkap = (function () {
 
                 if (count > 100) {
                     if (print) {
-                        console.log("no convergence found after %s iterations".replace("%s", count))
+                        if (window.DEBUG) {
+                            console.log("no convergence found after %s iterations".replace("%s", count))
+                        }
                     }
                     break
                 }

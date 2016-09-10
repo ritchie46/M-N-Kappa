@@ -1,6 +1,5 @@
 ﻿'use strict'
 
-
 // crsn namespace
 var crsn = (function () {
 

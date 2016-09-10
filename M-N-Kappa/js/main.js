@@ -4,7 +4,7 @@ Note to self:
 */
 
 "use strict"
-
+var DEBUG = true
 
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
@@ -56,7 +56,7 @@ $(document).ready(function () {
 
         // add polygon to session
         session.mkap.cross_section = new crsn.PolyGon(point_list)
-        session.mkap.cross_section.return_x_on_axis()
+        //session.mkap.cross_section.return_x_on_axis()
         $("#area").html("Area: " + session.mkap.cross_section.area())
     }
 
@@ -88,7 +88,12 @@ $(document).ready(function () {
     var trigger_tens_strain = function () {
         var strain = document.getElementsByClassName("tens_strain")
         var stress = document.getElementsByClassName("tens_stress")
-        plt.draw_lines(plt.svg_tens, strain, stress)
+
+        // remove old svg
+        $('#tens_strain_svg_div').find('svg').remove()
+
+        var svg = plt.add_svg("#tens_strain_svg_div")
+        plt.draw_lines(svg, strain, stress)
 
         strain = extract_floats(strain)
         stress = extract_floats(stress)
@@ -120,7 +125,7 @@ $(document).ready(function () {
         $('#' + id).find('svg').remove()
         // add new svg
         
-        var svg = plt.set_stress_strain_svg('#rebar_svg_' + id[id.length - 1])
+        var svg = plt.add_svg('#rebar_svg_' + id[id.length - 1])
         plt.draw_lines(svg, strain, stress)
 
         strain = extract_floats(strain)
@@ -182,14 +187,16 @@ $(document).ready(function () {
 
     var calculate_mkappa = function () {
         trigger_rebar_input()
+        trigger_comp_strain()
+        trigger_comp_strain()
 
         // remove old svg
         $('.mkappa_svg').find('svg').remove()
         // add new svg
-        var svg = plt.set_stress_strain_svg('.mkappa_svg')
+        var svg = plt.add_svg('.mkappa_svg')
         //plt.draw_lines(svg, strain, stress)
 
-        var sol = session.det_mkap_compressive_points()
+        var sol = session.calculate_significant_points()
         var moment = sol.moment
         var kappa = sol.kappa
 
@@ -198,6 +205,9 @@ $(document).ready(function () {
 
         plt.draw_lines(svg, kappa, moment, true)
 
+        var html_moment = Math.round(Math.max.apply(null, moment) / Math.pow(10, 6) * 100) / 100
+        $("#MRd").removeClass("hidden")
+        $("#MRd").html("Maximum moment: %s * 10^6".replace("%s", html_moment))
 
     }
 
@@ -220,7 +230,7 @@ function Session() {
 }
 
 
-Session.prototype.det_mkap_compressive_points = function () {
+Session.prototype.calculate_significant_points = function () {
     /**
     session.mkap.cross_section = new crsn.PolyGon(
     [new vector.Point(0, 0),
@@ -287,7 +297,7 @@ Session.prototype.det_mkap_compressive_points = function () {
         for (var a = 1; a < this.mkap.rebar_diagram[i].strain.length; a++) {
             var sign_strain = this.mkap.rebar_diagram[i].strain[a] // siginificant point
 
-            top_str = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1]
+            top_str = sign_strain * 0.5  // start the iteration at the half of the rebar strain.
             // looper rebar
             this.mkap.solver(true, top_str, false)
 
@@ -295,7 +305,9 @@ Session.prototype.det_mkap_compressive_points = function () {
             var count = 0
             while (1) {
                 if (std.convergence_conditions(sign_strain, this.mkap.rebar_strain[i], 1.01, 0.99)) {
-                    console.log("rebar convergence after %s iterations".replace("%s", count))
+                    if (window.DEBUG) {
+                        console.log("rebar convergence after %s iterations".replace("%s", count))
+                    }
                     this.mkap.det_m_kappa()
 
                     if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)) {
@@ -312,7 +324,9 @@ Session.prototype.det_mkap_compressive_points = function () {
                 this.mkap.solver(true, top_str, false)
 
                 if (count > 50) {
-                    console.log("no rebar convergence found after %s iterations".replace("%s", count))
+                    if (window.DEBUG) {
+                        console.log("no rebar convergence found after %s iterations".replace("%s", count))
+                    }
                     break
                 }
                 count += 1
@@ -321,10 +335,30 @@ Session.prototype.det_mkap_compressive_points = function () {
         }
 
     }
+    // sort the arrays on inclining kappa.
 
-    moment.sort(function (a, b) { return a - b })
-    kappa.sort(function (a, b) { return a - b })
-    console.log(moment)
+    var a = []
+    
+    // first combine them in array a
+    for (var i in kappa) {
+        a.push(
+            { m: moment[i], k: kappa[i] }
+            )
+    };
+
+    // sort them
+    a.sort(function (b, c) {
+        return ((b.k < c.k) ? -1 : ((b.k < c.k) ? 0 : 1));
+    });
+
+    for (var i = 0; i < a.length; i++) {
+        moment[i] = a[i].m
+        kappa[i] = a[i].k
+    }
+
+    if (DEBUG) {
+        console.log(moment)
+    }
   
     return {
         moment,
@@ -338,6 +372,7 @@ Session.prototype.det_mkap_compressive_points = function () {
 
 var session = new Session()
 session.mkap = new mkap.MomentKappa()
+session.mkap.tensile_diagram = new mkap.StressStrain([0], [0])
 
 
 var extract_floats = function (arr) {

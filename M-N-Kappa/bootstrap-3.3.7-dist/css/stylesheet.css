@@ -25,3 +25,7 @@
     padding-left: 10px;
     padding-right: 5px;
 }
+
+.add_row {
+    float: right;
+}

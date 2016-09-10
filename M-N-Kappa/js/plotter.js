@@ -123,7 +123,7 @@ var linefunc = d3.line()
     var yaxis = d3.axisRight()
                     .scale(d3.scaleLinear().domain([0, 10.5]).range([height, 0]))
 
-    function set_stress_strain_svg(selector) {
+    function add_svg(selector) {
         var svg = d3.select(selector).append("svg")
                 .attr("width", width)
                 .attr("height", height)
@@ -151,10 +151,8 @@ var linefunc = d3.line()
         return svg
     }
 
-    var svg_comp = set_stress_strain_svg("#comp_strain_svg_div")
-    var svg_tens = set_stress_strain_svg("#tens_strain_svg_div")
-    //var rebar_svg = set_stress_strain_svg("#rebar_svg_1")
-  
+    var svg_comp = add_svg("#comp_strain_svg_div")
+
 
     function det_min_max_str(array) {
         /**
@@ -269,8 +267,7 @@ var linefunc = d3.line()
         draw_polygon,
         draw_lines,
         svg_comp,
-        svg_tens,
-        set_stress_strain_svg
+        add_svg
     }
 
 })();  // plt namespace
