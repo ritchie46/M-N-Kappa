@@ -9,15 +9,6 @@ var DEBUG = true
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 
-    // Logic for collapsing the polygon input div
-    $("#collapse_polygon").collapse("show");
-
-    // add 3 input elements for the polygon input
-    var $row = $(".pg_row")
-    for (var i = 0; i < 3; i++) {
-        $row.after($row.clone().removeClass('hidden'))
-    }
-
     // General collapse panel logic
     $(".collapse_glyph").click(function () {
         $(this).closest(".panel").children(".collapse").toggle()
@@ -26,7 +17,7 @@ $(document).ready(function () {
 
     // General add row logic
     function add_row(self) {
-        var $row = self.closest(".panel-body").children(".custom_row").last();
+        var $row = self.closest(".panel-body").find(".custom_row").last();
         var $clone = $row.clone()
         $clone.removeClass('hidden')
         $row.after($clone);
@@ -62,12 +53,31 @@ $(document).ready(function () {
     // create polygon
     function trigger_polygon() {
         // plotter draws polygon and returns the polygons Points (Point class) in a list.
-        var point_list = plt.draw_polygon();
+        
+        if ($("#cross_section_type").val() == "custom") {
+            var x = document.getElementsByClassName("xval")
+            var y = document.getElementsByClassName("yval")
+            var point_list = plt.draw_polygon(x, y);
+            // add polygon to session
+            session.mkap.cross_section = new crsn.PolyGon(point_list)
+            //session.mkap.cross_section.return_x_on_axis()
+            $("#area").html("Area: " + session.mkap.cross_section.area())
+        }
+        else if ($("#cross_section_type").val() == "rectangle") {
+            var width = parseFloat(document.getElementById("width").value);
+            var height = parseFloat(document.getElementById("height").value);
+            var x = [width, width, 0];
+            var y = [0, height, height];
+            if (width > 0 && height > 0) {
+                var point_list = plt.draw_polygon(x, y);
+                // add polygon to session
+                session.mkap.cross_section = new crsn.PolyGon(point_list)
+                //session.mkap.cross_section.return_x_on_axis()
+                $("#area").html("Area: " + session.mkap.cross_section.area())
+            }
+        };
 
-        // add polygon to session
-        session.mkap.cross_section = new crsn.PolyGon(point_list)
-        //session.mkap.cross_section.return_x_on_axis()
-        $("#area").html("Area: " + session.mkap.cross_section.area())
+        
     }
 
     
@@ -243,7 +253,7 @@ $(document).ready(function () {
     // Material library
 
     // compression material
-    $("#compression_material").change(function () {
+    $("#compression_material").on("change", function () {
         if (this.value !== "custom") {
             // get the value between 'C' and '/' in for instance C20/25
             var end_index = this.value.indexOf('/')
@@ -295,6 +305,46 @@ $(document).ready(function () {
             trigger_rebar_strain(parent)
         }
     })
+    
+
+    // cross-section type
+    $("#cross_section_type").change(function () {
+        if (this.value == "rectangle") {
+            $("#polygon_rows").addClass("hidden")
+            $("#rectangle_rows").removeClass("hidden")
+        }
+        if (this.value == "custom") {
+            $("#polygon_rows").removeClass("hidden")
+            $("#rectangle_rows").addClass("hidden")
+        }
+    })
+
+
+
+
+
+
+
+    // setting up the presettings
+    $("#compression_material").val("C20/25")
+    $("#compression_material").trigger("change")
+    $(".rebar_material").val("B500")
+    $(".rebar_material").trigger("change")
+    $("#cross_section_type").val("rectangle")
+    $("#cross_section_type").trigger("change")
+    $("#width").val(1000)
+    $("#height").val(200)
+    trigger_polygon()
+
+
+
+    // Logic for collapsing the input divs
+    $("#collapse_polygon").collapse("show");
+    $("#comp_curve").find(".panel-collapse").collapse("show");
+    $("#rebar_input").find(".panel-collapse").collapse("show");
+    $("#rebar_curve_1").closest(".panel-collapse").collapse("show");
+
+       
 
 });
 
@@ -309,29 +359,6 @@ function Session() {
 
 
 Session.prototype.calculate_significant_points = function () {
-    /**
-    session.mkap.cross_section = new crsn.PolyGon(
-    [new vector.Point(0, 0),
-    new vector.Point(200, 0),
-    new vector.Point(200, 200),
-    new vector.Point(0, 200),
-    new vector.Point(0, 0)
-    ]);
-    session.mkap.tensile_diagram = new mkap.StressStrain([0], [0])
-    session.mkap.compressive_diagram = new mkap.StressStrain([0, 1.75, 3.5], [0, 20, 20])
-    session.mkap.rebar_As = [1200]
-    session.mkap.rebar_z = [20]
-    session.mkap.rebar_diagram = [new mkap.StressStrain([0, 2.175, 100], [0, 435, 435])]
-
-    
-    console.log(
-        session.mkap.compressive_diagram, 'comp\n',
-        session.mkap.tensile_diagram, 'tens\n',
-        session.mkap.rebar_As, 'as\n',
-        session.mkap.rebar_z, 'z\n',
-        session.mkap.rebar_diagram, 'rebar diagram\n',
-        session.mkap.cross_section, "cross_section")
-
 
     /** 
     determines the moment and kappa points for the given significant strain points in the compression stress strain diagram

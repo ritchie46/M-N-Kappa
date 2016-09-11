@@ -13,7 +13,7 @@
 
         <!--ROW 1.column 1 -->
         <!--Input polygon and stress strain diagrams -->
-        <div class="col-xs-4 cstm_left_column">
+        <div class="col-xs-5 cstm_left_column">
             <div class="row">
                 <div id="polygon_input" class="panel panel-default">
                     <div class="panel-heading">
@@ -24,21 +24,60 @@
                     </div>
                     <div id="collapse_polygon" class="panel-collapse collapse">
                         <div id="pg_body" class="panel-body">
-                            <div class="row pg_row custom_row hidden">
-                                <div class="col-xs-5">
-                                    <input type="number" class="xval form-control" placeholder="x-value">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Cross section type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="col-xs-8">
+                                            <select class="form-control" id="cross_section_type">
+                                                <option>custom</option>
+                                                <option>rectangle</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="polygon_rows">
+                                <div class="row pg_row custom_row hidden">
+                                    <div class="col-xs-5">
+                                        <input type="number" class="xval form-control" placeholder="x-value">
+                                    </div>
+                                    <div class="col-xs-5">
+                                        <input type="number" class="yval form-control" placeholder="y-value">
+                                    </div>
+                                    <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                        <span class="glyphicon glyphicon-remove-circle"></span>
+                                    </button>
                                 </div>
-                                <div class="col-xs-5">
-                                    <input type="number" class="yval form-control" placeholder="y-value">
+                                <div class="row pg_row custom_row">
+                                    <div class="col-xs-5">
+                                        <input type="number" class="xval form-control" placeholder="x-value">
+                                    </div>
+                                    <div class="col-xs-5">
+                                        <input type="number" class="yval form-control" placeholder="y-value">
+                                    </div>
+                                    <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                        <span class="glyphicon glyphicon-remove-circle"></span>
+                                    </button>
                                 </div>
-                                <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
-                                    <span class="glyphicon glyphicon-remove-circle"></span>
-                                </button>
+
+                                <div class="=col-xs-4">
+                                    <button type="button" class="btn btn-primary add_row">Add coordinate</button>
+                                </div>
                             </div>
 
-                            <div class="=col-xs-4">
-                                <button type="button" class="btn btn-primary add_row">Add coordinate</button>
-                            </div>
+                            <div id="rectangle_rows" class="hidden">
+                                <div class="rectangle_row">
+                                    <input type="number" min="0.1" id="width" class="form-control show_tip" placeholder="width" data-toggle="tooltip" data-placement="top" title="Width of the cross section">
+                                </div>
+                                <div class="rectangle_row">
+                                    <input type="number" min="0.1" id="height" class="form-control show_tip" placeholder="height" data-toggle="tooltip" data-placement="top" title="Height of the cross section">
+                                </div>
+                            </div>  
                         </div>
                     </div>
                 </div>
@@ -53,7 +92,7 @@
                             <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
                         </h3>
                     </div>
-                    <div id="collapse_input" class="panel-collapse collapse">
+                    <div  class="panel-collapse collapse">
                         <div id="comp_curve_body" class="panel-body">
                             <table class="table">
                                 <thead>
@@ -164,7 +203,7 @@
 
             <!--Rebar input -->
             <div class="row">
-                <div class="panel panel-default">
+                <div class="panel panel-default" id="rebar_input">
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <span>Add rebar</span>
@@ -194,10 +233,10 @@
 
                             <div class="row custom_row">
                                 <div class="col-xs-3">
-                                    <input type="number" class="rebar_As form-control" placeholder="As" data-toggle="tooltip" data-placement="top" title="Area of the rebar">
+                                    <input type="number" class="rebar_As form-control" value="400" placeholder="As" data-toggle="tooltip" data-placement="top" title="Area of the rebar">
                                 </div>
                                 <div class="col-xs-3">
-                                    <input type="number" class="rebar_d form-control show_tip" placeholder="d" data-toggle="tooltip" data-placement="top" title="Distance rebar to top cross-section">
+                                    <input type="number" class="rebar_d form-control show_tip" value="180" placeholder="d" data-toggle="tooltip" data-placement="top" title="Distance rebar to top cross-section">
                                 </div>
                                 <div class="col-xs-4">
                                     <select class="form-control rebar_material_select"  data-toggle="tooltip" data-placement="top" title="Stress-strain-diagram">
@@ -306,7 +345,7 @@
 
         <!--ROW 1.column 2 -->
         <!-- SVG polygon-->
-        <div class="col-xs-8 text-center cstm_right_column">
+        <div class="col-xs-7 text-center cstm_right_column">
             
             <div class="row center-block" id="pg_svg"></div>
 

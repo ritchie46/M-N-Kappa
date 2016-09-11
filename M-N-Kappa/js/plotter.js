@@ -31,14 +31,25 @@ var linefunc = d3.line()
     .attr("fill", "#BDBDBD")
 
 
+    function input_strings_to_floats(arr) {
+        var new_arr = []
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].value.length > 0)
+                new_arr.push(parseFloat(arr[i].value))
+        }
+        return new_arr
+}
+
     
 
-    function draw_polygon() {
-        var x = document.getElementsByClassName("xval")
-        //var x = document.getElementsByName("xval")
-        var y = document.getElementsByClassName("yval")
-        // returns a list with input fields
 
+    function draw_polygon(x, y) {
+        
+        if (typeof x[0] === "object") {  // x and y are probably from input field.
+            x = input_strings_to_floats(x)
+            y = input_strings_to_floats(y)
+        }
+        // else x and y are probably an array with floats.
 
         // Determine the max and min values for scaling
         var max_val = 0
@@ -49,8 +60,8 @@ var linefunc = d3.line()
         var max_y = 0
         for (var i = 0; i < y.length; i++) {
 
-            var xval = parseFloat(x[i].value)
-            var yval = parseFloat(y[i].value)
+            var xval = x[i]
+            var yval = y[i]
 
             max_val = max_val < xval ? xval : max_val
             max_val = max_val < yval ? yval : max_val
@@ -78,29 +89,22 @@ var linefunc = d3.line()
         var loc_pg0 = new vector.Point(-min_x, -min_y)
         loc_list.push(loc_pg0)
 
-        for (var i = 0; i < y.length; i++) {
-
-            if (x[i].value.length > 0 && y[i].value.length > 0) {
-                 
-                var loc = {
-                    x: scale(parseFloat(x[i].value) - min_x),
-                    y: -scale(parseFloat(y[i].value) - min_y) + settings.height
-                }
-                data.push(loc)
-
-
-                //location for the current sessions polygon
-                var loc_pg = new vector.Point(parseFloat(x[i].value) - min_x, parseFloat(y[i].value) - min_y)
-             
-                loc_list.push(loc_pg)
-
-                
+        for (var i = 0; i < y.length; i++) {    
+            var loc = {
+                x: scale(x[i] - min_x),
+                y: -scale(y[i] - min_y) + settings.height
             }
+            data.push(loc)
+
+            //location for the current sessions polygon
+            var loc_pg = new vector.Point(x[i] - min_x, y[i] - min_y)
+             
+            loc_list.push(loc_pg)                
+
         }
         // set last value to origin
         data.push(loc0)
         loc_list.push(loc_pg0)
-
         svg_cross_section.select("path").attr("d", linefunc(data));
 
         return loc_list

@@ -235,7 +235,7 @@ var mkap = (function () {
                 this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
             }
             else {
-                var stress_reduct = this.compression_diagram.det_stress(Math.abs(this.rebar_strain[i]))
+                var stress_reduct = this.compressive_diagram.det_stress(Math.abs(this.rebar_strain[i]))
                 this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
             }
         }
