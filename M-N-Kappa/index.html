@@ -89,7 +89,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <span> Compression stress-strain-diagram </span>
-                            <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                            <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
                         </h3>
                     </div>
                     <div  class="panel-collapse collapse">
@@ -207,7 +207,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <span>Add rebar</span>
-                            <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                            <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
                         </h3>
                     </div>
 
@@ -266,7 +266,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <span> Rebar stress-strain-diagram #1</span>
-                            <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                            <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
                         </h3>
                     </div>
 
@@ -349,17 +349,37 @@
             
             <div class="row center-block" id="pg_svg"></div>
 
+            <button type="button" class="btn btn-primary" id="calculate">Calculate</button>
+
+            <h2>Results</h2>
             <ul class="list-group">
                 <li id="area" class="list-group-item">Area:</li>
                 <li id="MRd" class="list-group-item hidden"></li>
             </ul>
 
-            <div class="row mkappa_svg">
-                
+            <div class="row mkappa_svg"></div>
+
+            <table class="table hidden results_table_compression_diagram">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>moment</th>
+                        <th>kappa</th>
+                    </tr>
+                </thead>
+                <tbody class=".results_table_body_comp">
+                    <tr class="results_table_row_comp">
+                        <th class="signifcant_row_no"></th>
+                        <td class="signifcant_moment"> </td>
+                        <td class="signifcant_kappa"> </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="result_tables">
+
+
             </div>
-            <button type="button" class="btn btn-primary" id="calculate">Calculate</button>
-
-
         </div>
 
 
@@ -370,11 +390,6 @@
 
 
 
-            <ul style="list-style-type:none" class="col-xs-4">
-                <li>
-
-                </li>
-            </ul>
 
 
 
@@ -382,10 +397,10 @@
 
         <script src="js/jquery-3.1.0.min.js"></script>
         <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+        <script src="js/numeric-1.2.6.min.js"></script>
         <script src="js/d3.min.js"></script>
         <script src="js/std.js"></script>
         <script src="js/vector.js"></script>
-        <script src="js/numeric-1.2.6.min.js"></script>
         <script src="js/cross_section.js"></script>
         <script src="js/moment_kappa.js"></script>
         <script src="js/plotter.js"></script>

@@ -115,41 +115,11 @@ PolyGon.prototype.area = function () {
     for (var i = 0; i < this.y_val.length; i++) {
         area += dy * this.width_array[i]
     }
-    area = Math.round(area * 100) / 100
+    area = Math.round(area) 
     return Math.abs(area)
 }
 
 // end class
-
-/**
-var cs = new PolyGon(
-    [new Point(0, 0),
-    new Point(-3, 1),
-    new Point(-2, 2),
-    new Point(-1, 1.5),
-    new Point(-0.5, 4),
-    new Point(0.5, 5),
-    new Point(2, 4),
-    new Point(3, 2),
-    new Point(1, 0.5),
-    new Point(0.5, 4),
-    new Point(0, 0)
-    ]);
-*/
-
-
-    /**
-var cs = new PolyGon(
-    [new vector.Point(0, 0),
-    new vector.Point(0, 200),
-    new vector.Point(1000, 200),
-    new vector.Point(1000, 0),
-    new vector.Point(0, 0),
-    ])
-
-cs.return_x_on_axis()
-console.log(cs.area())
-*/
 
 // return from namespace
 return {

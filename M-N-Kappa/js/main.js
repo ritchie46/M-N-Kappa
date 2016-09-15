@@ -241,7 +241,26 @@ $(document).ready(function () {
 
         var html_moment = Math.round(Math.max.apply(null, moment) / Math.pow(10, 6) * 100) / 100
         $("#MRd").removeClass("hidden")
-        $("#MRd").html("Maximum moment: %s * 10^6".replace("%s", html_moment))
+        $("#MRd").html("Maximum moment: %s * 10<sup>6</sup>".replace("%s", html_moment))
+
+        // display results in result tables
+        console.log($(".results_table_compression_diagram").length)
+        if ($(".results_table_compression_diagram").length > 1) {
+            $(".results_table_compression_diagram").last().remove()
+        }
+
+        var table = $(".results_table_compression_diagram").first().clone().removeClass("hidden")
+        $("#result_tables").append(table)
+
+        for (var i = 0; i < session.moment_compression.length; i++) {
+            $(".results_table_row_comp").last().find(".signifcant_moment").html(Math.round(session.moment_compression[i] / 1e4) / 100)
+
+            $(".results_table_row_comp").last().find(".signifcant_row_no").last().html(i + 1)
+            $(".results_table_row_comp").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_compression[i] * 1e4) / 100)
+            $(".results_table_row_comp").first().clone().insertAfter($(".results_table_row_comp").last())
+
+        }
+
 
     }
 
@@ -321,10 +340,6 @@ $(document).ready(function () {
 
 
 
-
-
-
-
     // setting up the presettings
     $("#compression_material").val("C20/25")
     $("#compression_material").trigger("change")
@@ -352,6 +367,9 @@ $(document).ready(function () {
 //class
 function Session() {
     this.mkap = null
+    // significant points compression diagram
+    this.moment_compression = []
+    this.kappa_compression = []
     // the diagrams in order
     this.rebar_diagrams = []
     
@@ -366,6 +384,7 @@ Session.prototype.calculate_significant_points = function () {
     var moment = []
     var kappa = []
 
+
     // Solve for significant points in compression diagram
     for (var i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
         var strain = this.mkap.compressive_diagram.strain[i]
@@ -376,6 +395,8 @@ Session.prototype.calculate_significant_points = function () {
         if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)) {
             moment.push(Math.abs(this.mkap.moment))
             kappa.push(Math.abs(this.mkap.kappa))
+            this.moment_compression.push(Math.abs(this.mkap.moment))
+            this.kappa_compression.push(Math.abs(this.mkap.kappa))
         }
     }
     
@@ -414,9 +435,9 @@ Session.prototype.calculate_significant_points = function () {
                         console.log("rebar convergence after %s iterations".replace("%s", count))
                     }
                     this.mkap.det_m_kappa()
-
-                    if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)) {
-
+                    if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)
+                        && this.mkap.strain_top >= -this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1]) {
+                        
                         moment.push(Math.abs(this.mkap.moment))
                         kappa.push(Math.abs(this.mkap.kappa))
                     }
@@ -440,8 +461,9 @@ Session.prototype.calculate_significant_points = function () {
         }
 
     }
-    // sort the arrays on inclining kappa.
 
+
+    // sort the arrays on inclining kappa.
     var a = []
     
     // first combine them in array a
@@ -463,6 +485,7 @@ Session.prototype.calculate_significant_points = function () {
 
     if (DEBUG) {
         console.log(moment)
+        console.log(kappa)
     }
   
     return {

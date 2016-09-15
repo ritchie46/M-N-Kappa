@@ -143,11 +143,32 @@ var mkap = (function () {
                     }
                     break
                 }
-            
-                var factor = std.convergence(this.force_tensile, this.force_compression)
-                var btm_str = btm_str * factor
-                this.det_force_distribution(top_str, btm_str)
+                
+                // if the rebar is above the zero line, there will sometimes be no tensile force
+                var low = Math.min.apply(null, this.rebar_z);
+                for (var i = 0; i < this.rebar_As.length; i++) {
+                    if (this.rebar_z[i] == low) {
+                        var str_rbr = this.rebar_strain[i]
+                        var rbr_index = i
+                        }
+                    };
 
+
+                if (this.force_tensile === 0 && str_rbr <= 0) {
+                    // Extrapolate the from the first significant rebar strain point, to the bottom strain.
+                    // Needed when the rebar is above the neutral line.
+                    var btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
+                         
+                }
+                else if (isNaN(this.force_tensile)) {
+                    var btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
+                }
+                else {
+                    var factor = std.convergence(this.force_tensile, this.force_compression)
+                    var btm_str = btm_str * factor
+                }
+                
+                this.det_force_distribution(top_str, btm_str)
                 if (count > 100) {
                     if (print) {
                         if (window.DEBUG) {

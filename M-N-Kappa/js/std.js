@@ -9,6 +9,7 @@ var std = (function () {
     function interpolate(start_x, start_y, end_x, end_y, req_x) {
         /**
         Determinates the y-value by interpolation for the given x- and y-values.
+        Does also extrapolate
         */
 
         // Differencte between end point and start point
@@ -22,8 +23,6 @@ var std = (function () {
 
         return start_y + delta_y
     }
-
-
 
     function convergence(lhs, rhs) {
         /**Converting by adapting one value by a factor. The factor is determined by the ratio of the left hand side and
