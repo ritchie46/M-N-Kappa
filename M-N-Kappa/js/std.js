@@ -60,10 +60,10 @@ var std = (function () {
 
     // return from namespace
     return {
-        interpolate,
-        convergence,
-        convergence_conditions,
-        is_number
+        interpolate: interpolate,
+        convergence: convergence,
+        convergence_conditions: convergence_conditions,
+        is_number: is_number
     }
     
 })();  // std namespace

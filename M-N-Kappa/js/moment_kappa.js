@@ -1,6 +1,6 @@
 ﻿'use strict'
 
-var DEBUG = true
+var DEBUG = false
 
 // mkap namespace
 var mkap = (function () {
@@ -321,8 +321,8 @@ var mkap = (function () {
     console.log(run.kappa);
     */
 
-    return {    MomentKappa,
-                StressStrain,
+    return {    MomentKappa: MomentKappa,
+                StressStrain: StressStrain
     }
 
 })();  // mkap namespace

@@ -174,8 +174,8 @@ var linefunc = d3.line()
             }
         }
         return {
-            max,
-            min
+            max: max,
+            min: min
         }
     }
 
@@ -268,10 +268,10 @@ var linefunc = d3.line()
 
 
     return {
-        draw_polygon,
-        draw_lines,
-        svg_comp,
-        add_svg
+        draw_polygon: draw_polygon,
+        draw_lines: draw_lines,
+        svg_comp: svg_comp,
+        add_svg: add_svg
     }
 
 })();  // plt namespace

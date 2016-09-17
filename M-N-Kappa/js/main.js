@@ -4,7 +4,7 @@ Note to self:
 */
 
 "use strict"
-var DEBUG = true
+var DEBUG = false
 
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
@@ -190,12 +190,13 @@ $(document).ready(function () {
         var As = document.getElementsByClassName("rebar_As")
         var d = document.getElementsByClassName("rebar_d")
         var rebar_diagram = document.getElementsByClassName("rebar_material_select")
+        $("#option_rebar_results").empty()
 
         As = extract_floats(As)
         d = extract_floats(d)
-
+        
         var height = session.mkap.cross_section.top
-  
+        
         for (var i = 0; i < As.length; i++) {
             var z = height - d[i]
             
@@ -206,18 +207,52 @@ $(document).ready(function () {
             session.mkap.rebar_As[i] = As[i]
             session.mkap.rebar_z[i] = z
             session.mkap.rebar_diagram[i] = session.rebar_diagrams[no_of_diagram - 1]
+
+            // set the rebar options in the results table
+            $("#option_rebar_results").append("<option>rebar row #%s</option>".replace("%s", i + 1))
         }
     }
     
     $('.rebar_input').on('click', '.remove_row', function () {
         $(this).closest('.custom_row').remove();
-        
         trigger_rebar_input();
     })
 
     $('.rebar_input').on('change', 'input', function () {
         trigger_rebar_input();
     });
+
+    $('.rebar_input').on('click', '.add_row', function () {
+        trigger_rebar_input();
+    });
+
+
+    //-- Set rebar result table
+
+    function update_rebar_results(index) {
+
+        // tensile results table
+        if ($(".results_table_rebar_diagram").length > 1) {
+            $(".results_table_rebar_diagram").last().remove()
+        }
+
+        var table = $(".results_table_rebar_diagram").first().clone().removeClass("hidden")
+        $("#result_table_div_rbr").append(table)
+
+        for (var i = 0; i < session.moment_rebar[index].length; i++) {
+            $(".results_table_row_rbr").last().find(".signifcant_moment").html(Math.round(session.moment_rebar[index][i] / 1e4) / 100)
+            $(".results_table_row_rbr").last().find(".signifcant_row_no").last().html(i + 1)
+            $(".results_table_row_rbr").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_rebar[index][i] * 100) / 100)
+            $(".results_table_row_rbr").first().clone().insertAfter($(".results_table_row_rbr").last())
+        }
+    }
+    
+    $("#result_table_div_rbr").on("change", "#option_rebar_results", function () {
+        var index = parseInt($("#option_rebar_results").val().replace("rebar row #", "")) - 1
+        update_rebar_results(index)
+    })
+
+
 
     var calculate_mkappa = function () {
         trigger_rebar_input()
@@ -228,7 +263,7 @@ $(document).ready(function () {
         $('.mkappa_svg').find('svg').remove()
         // add new svg
         var svg = plt.add_svg('.mkappa_svg')
-        //plt.draw_lines(svg, strain, stress)
+
 
         var sol = session.calculate_significant_points()
         var moment = sol.moment
@@ -243,25 +278,40 @@ $(document).ready(function () {
         $("#MRd").removeClass("hidden")
         $("#MRd").html("Maximum moment: %s * 10<sup>6</sup>".replace("%s", html_moment))
 
-        // display results in result tables
-        console.log($(".results_table_compression_diagram").length)
+        //-- display results in result tables --//
+
+        // compression results table
         if ($(".results_table_compression_diagram").length > 1) {
             $(".results_table_compression_diagram").last().remove()
         }
 
         var table = $(".results_table_compression_diagram").first().clone().removeClass("hidden")
-        $("#result_tables").append(table)
+        $("#result_table_div_comp").append(table)
 
         for (var i = 0; i < session.moment_compression.length; i++) {
             $(".results_table_row_comp").last().find(".signifcant_moment").html(Math.round(session.moment_compression[i] / 1e4) / 100)
-
             $(".results_table_row_comp").last().find(".signifcant_row_no").last().html(i + 1)
-            $(".results_table_row_comp").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_compression[i] * 1e4) / 100)
+            $(".results_table_row_comp").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_compression[i] * 100) / 100)
             $(".results_table_row_comp").first().clone().insertAfter($(".results_table_row_comp").last())
-
         }
 
+        // tensile results table
+        if ($(".results_table_tensile_diagram").length > 1) {
+            $(".results_table_tensile_diagram").last().remove()
+        }
 
+        var table = $(".results_table_tensile_diagram").first().clone().removeClass("hidden")
+        $("#result_table_div_tens").append(table)
+
+        for (var i = 0; i < session.moment_tensile.length; i++) {
+            $(".results_table_row_tens").last().find(".signifcant_moment").html(Math.round(session.moment_tensile[i] / 1e4) / 100)
+            $(".results_table_row_tens").last().find(".signifcant_row_no").last().html(i + 1)
+            $(".results_table_row_tens").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_tensile[i] * 100) / 100)
+            $(".results_table_row_tens").first().clone().insertAfter($(".results_table_row_tens").last())
+        }
+
+        // rebar results table
+        update_rebar_results(0)
     }
 
     $('#calculate').click(function () {
@@ -370,8 +420,12 @@ function Session() {
     // significant points compression diagram
     this.moment_compression = []
     this.kappa_compression = []
+    this.moment_tensile = []
+    this.kappa_tensile = []
     // the diagrams in order
     this.rebar_diagrams = []
+    this.moment_rebar = []
+    this.kappa_rebar = []
     
 }
 
@@ -383,8 +437,14 @@ Session.prototype.calculate_significant_points = function () {
     */
     var moment = []
     var kappa = []
-
-
+    this.moment_compression = []
+    this.kappa_compression = []
+    this.moment_tensile = []
+    this.kappa_tensile = []
+    // in these are array representing the significant points of different layers of rebar
+    this.moment_rebar = []
+    this.kappa_rebar = []
+    
     // Solve for significant points in compression diagram
     for (var i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
         var strain = this.mkap.compressive_diagram.strain[i]
@@ -411,6 +471,8 @@ Session.prototype.calculate_significant_points = function () {
         if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)) {
             moment.push(Math.abs(this.mkap.moment))
             kappa.push(Math.abs(this.mkap.kappa))
+            this.moment_tensile.push(Math.abs(this.mkap.moment))
+            this.kappa_tensile.push(Math.abs(this.mkap.kappa))
         }
     }
 
@@ -418,6 +480,8 @@ Session.prototype.calculate_significant_points = function () {
     // Solve for significant in the rebars material diagram. 
     //Loop for the variable number of rebar inputs
     for (var i = 0; i < this.mkap.rebar_As.length; i++) {
+        this.moment_rebar[i] = []
+        this.kappa_rebar[i] = []
 
         // Loop for the siginificant points in the rebars material stress strain diagram.
         for (var a = 1; a < this.mkap.rebar_diagram[i].strain.length; a++) {
@@ -436,10 +500,13 @@ Session.prototype.calculate_significant_points = function () {
                     }
                     this.mkap.det_m_kappa()
                     if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)
-                        && this.mkap.strain_top >= -this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1]) {
-                        
+                        && this.mkap.strain_top >= -this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1]) {     
                         moment.push(Math.abs(this.mkap.moment))
                         kappa.push(Math.abs(this.mkap.kappa))
+
+                        this.moment_rebar[i].push(Math.abs(this.mkap.moment))
+                        this.kappa_rebar[i].push(Math.abs(this.mkap.kappa))
+                        
                     }
                     break
                 }
@@ -489,8 +556,8 @@ Session.prototype.calculate_significant_points = function () {
     }
   
     return {
-        moment,
-        kappa
+        moment: moment,
+        kappa: kappa
     }
 
 

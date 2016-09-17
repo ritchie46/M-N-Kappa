@@ -1,0 +1,25 @@
+{
+  "name": "m-n-kappa",
+  "version": "0.1.0",
+  "description": "M-N-Kappa-tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ritchie46/M-N-Kappa.git"
+  },
+  "author": "Ritchie Vink",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ritchie46/M-N-Kappa/issues"
+  },
+  "homepage": "https://github.com/ritchie46/M-N-Kappa#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat-util": "^0.5.5",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-uglify": "^2.0.0"
+  }
+}

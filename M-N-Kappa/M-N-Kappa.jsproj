@@ -70,7 +70,6 @@
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="js\cross_section.js" />
     <Content Include="css\default.css" />
-    <Content Include="js\numeric-1.2.6.min.js" />
     <Content Include="js\moment_kappa.js" />
     <Content Include="js\plotter.js" />
     <Content Include="js\main.js" />

@@ -84,10 +84,10 @@ function heighest_point(point_1, point_2, axis) {
 };
 
 return {
-    interpolate_points,
-    Point,
-    heighest_point,
-    lowest_point
+    interpolate_points: interpolate_points,
+    Point: Point,
+    heighest_point: heighest_point,
+    lowest_point: lowest_point
 
 
 }

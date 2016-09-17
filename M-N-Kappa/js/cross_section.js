@@ -19,8 +19,7 @@ function PolyGon(point_list) {
 };
 
 PolyGon.prototype.det_height_array = function () {
-
-    return numeric.linspace(0, this.top, this.n_value)
+    return linspace(0, this.top, this.n_value)
 };
 
 PolyGon.prototype.lowest_point = function (axis) {
@@ -109,6 +108,19 @@ PolyGon.prototype.return_x_on_axis = function () {
     
 };
 
+function linspace (a, b, n) {
+    if (typeof n === 'undefined') n = Math.max(Math.round(b - a) + 1, 1)
+    if (n < 2) {
+        return n === 1 ? [a] : []
+    }
+    var i, ret = Array(n)
+    n--
+    for (i = n; i >= 0; i--) {
+        ret[i] = (i * b + (n - i) * a) / n
+    }
+    return ret
+}
+
 PolyGon.prototype.area = function () {
     var dy = this.y_val[1] 
     var area = 0
@@ -123,8 +135,7 @@ PolyGon.prototype.area = function () {
 
 // return from namespace
 return {
-    PolyGon,
-    //cs
+    PolyGon: PolyGon
 }
     
 })();  // crsn namespace
