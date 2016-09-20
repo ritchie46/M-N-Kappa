@@ -27,6 +27,7 @@ var mkap = (function () {
         /**
         results
         */
+        this.solution = null
         this.rebar_force = []
         this.rebar_strain = []
         this.stress = []
@@ -39,8 +40,8 @@ var mkap = (function () {
     }
 
     MomentKappa.prototype.det_force_distribution = function (strain_top, strain_btm) {
-        this.force_compression = 0
-        this.force_tensile = 0 + this.normal_force
+        this.force_compression = 0 
+        this.force_tensile = 0 - this.normal_force
         this.stress = []
         this.rebar_strain = []
         this.strain_top = strain_top
@@ -125,6 +126,8 @@ var mkap = (function () {
         var strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
         var print = (typeof print !== "undefined") ? print : true;
 
+        this.solution = false
+
         // first iteration
         var btm_str = strain
         var top_str = -strain
@@ -136,6 +139,7 @@ var mkap = (function () {
             // iterate untill the convergence criteria is met
             while (1) {
                 if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
+                    this.solution = true
                     if (print) {
                         if (window.DEBUG) {
                             console.log("convergence after %s iterations".replace("%s", count))
@@ -184,6 +188,7 @@ var mkap = (function () {
             // iterate untill the convergence criteria is met
             while (1) {
                 if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
+                    this.solution = true
                     if (print) {
                         if (window.DEBUG) {
                             console.log("convergence after %s iterations".replace("%s", count))
@@ -251,12 +256,12 @@ var mkap = (function () {
             this.moment += this.rebar_force[i] * this.rebar_z[i]
 
             // reduction of master cross section at place of rebar
-            if (this.rebar_force[i] > 0) {
+            if (this.rebar_force[i] > 0) {  // tensile stress
                 var stress_reduct = this.tensile_diagram.det_stress(this.rebar_strain[i])
                 this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
             }
-            else {
-                var stress_reduct = this.compressive_diagram.det_stress(Math.abs(this.rebar_strain[i]))
+            else {  // compression stress
+                var stress_reduct = -this.compressive_diagram.det_stress(Math.abs(this.rebar_strain[i]))
                 this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
             }
         }

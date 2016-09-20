@@ -1102,6 +1102,11 @@ $(document).ready(function () {
 
     // rebar area
     function trigger_rebar_input() {
+        // reset
+        session.mkap.rebar_As = []
+        session.mkap.rebar_z = []
+        session.mkap.rebar_diagram = []
+
         var As = document.getElementsByClassName("rebar_As")
         var d = document.getElementsByClassName("rebar_d")
         var rebar_diagram = document.getElementsByClassName("rebar_material_select")

@@ -4,7 +4,7 @@ Note to self:
 */
 
 "use strict"
-var DEBUG = false
+var DEBUG = true
 
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
@@ -99,6 +99,17 @@ $(document).ready(function () {
         session.mkap.compressive_diagram = new mkap.StressStrain(strain, stress)
     }
 
+    function trigger_normal_force() {
+        var N = parseFloat($("#normal_force").val()) * 1e3
+        if (isNaN(N)) {
+            N = 0
+        }
+        session.mkap.normal_force = N
+    }
+
+    $("#normal_force").change(function () {
+        trigger_normal_force()
+    })
 
     $('#comp_curve_body').on('change', 'input', function () {
         $("#compression_material").val('custom')
@@ -457,7 +468,8 @@ Session.prototype.calculate_significant_points = function () {
         this.mkap.solver(true, strain)
         this.mkap.det_m_kappa()
 
-        if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)) {
+        if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)
+            && this.mkap.solution) {
             moment.push(Math.abs(this.mkap.moment))
             kappa.push(Math.abs(this.mkap.kappa))
             this.moment_compression.push(Math.abs(this.mkap.moment))
@@ -473,7 +485,8 @@ Session.prototype.calculate_significant_points = function () {
         this.mkap.solver(false, strain)
         this.mkap.det_m_kappa()
 
-        if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)) {
+        if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)
+            && this.mkap.solution) {
             moment.push(Math.abs(this.mkap.moment))
             kappa.push(Math.abs(this.mkap.kappa))
             this.moment_tensile.push(Math.abs(this.mkap.moment))

@@ -27,3 +27,9 @@
 .add_row {
     float: right;
 }
+
+.cstm_block {
+    padding-bottom: 20px;
+    padding-top: 20px;
+   
+}

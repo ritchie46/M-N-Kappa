@@ -347,145 +347,171 @@
         <!-- SVG polygon-->
         <div class="col-xs-7 text-center cstm_right_column">
 
-            <div class="row center-block" id="pg_svg"></div>
 
-            <button type="button" class="btn btn-primary" id="calculate">Calculate</button>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row center-block" id="pg_svg"></div>
+                </div>
+            </div>
 
-            <h2>Results</h2>
-            <ul class="list-group">
-                <li id="area" class="list-group-item">Area:</li>
-                <li id="MRd" class="list-group-item hidden"></li>
-            </ul>
+            <div class="panel panel-default cstm_block">
+                <div class="panel-body">
+                    <div class="input-group col-xs-4">
+                        <input type="number" class="form-control" placeholder="normal force" id="normal_force">
+                        <span class="input-group-addon">* 10<sup>3</sup></span>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="calculate">Calculate</button>
+                </div>
+            </div>
 
-            <div class="row mkappa_svg"></div>
+            <div class="panel panel-default cstm_block">
+                <div class="panel-body">
+                    <h2><label>Results</label></h2>
+                    <ul class="list-group">
+                        <li id="area" class="list-group-item">Area:</li>
+                        <li id="MRd" class="list-group-item hidden"></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row mkappa_svg"></div>
+                </div>
+            </div>
+
             <div style="padding-bottom: 40px"></div>
 
-            <div class="col-xs-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            Significant points compression curve
-                            <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
-                        </h3>
+
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="col-xs-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    Significant points compression curve
+                                    <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                                </h3>
+                            </div>
+
+                            <div class="panel-collapse collapse">
+                                <div id="result_table_div_comp" class="panel-body">
+
+                                    <table class="table results_table_compression_diagram hidden">
+                                        <thead>
+                                            <tr>
+                                                <th>point</th>
+                                                <th>moment</th>
+                                                <th>kappa</th>
+                                            </tr>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>*10<sup>6</sup></th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class=".results_table_body_comp">
+                                            <tr class="results_table_row_comp">
+                                                <td class="signifcant_row_no"></td>
+                                                <td class="signifcant_moment"></td>
+                                                <td class="signifcant_kappa"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="panel-collapse collapse">
-                        <div id="result_table_div_comp" class="panel-body">
 
-                            <table class="table results_table_compression_diagram hidden">
-                                <thead>
-                                    <tr>
-                                        <th>point</th>
-                                        <th>moment</th>
-                                        <th>kappa</th>
-                                    </tr>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>*10<sup>6</sup></th>
-                                       
-                                    </tr>
-                                </thead>
-                                <tbody class=".results_table_body_comp">
-                                    <tr class="results_table_row_comp">
-                                        <td class="signifcant_row_no"></td>
-                                        <td class="signifcant_moment"></td>
-                                        <td class="signifcant_kappa"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="col-xs-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    Significant points tensile curve
+                                    <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                                </h3>
+                            </div>
+
+                            <div class="panel-collapse collapse">
+                                <div id="result_table_div_tens" class="panel-body">
+
+                                    <table class="table results_table_tensile_diagram hidden">
+                                        <thead>
+                                            <tr>
+                                                <th>point</th>
+                                                <th>moment</th>
+                                                <th>kappa</th>
+                                            </tr>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>*10<sup>6</sup></th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class=".results_table_body_tens">
+                                            <tr class="results_table_row_tens">
+                                                <td class="signifcant_row_no"></td>
+                                                <td class="signifcant_moment"></td>
+                                                <td class="signifcant_kappa"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    Significant points rebar curves
+                                    <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                                </h3>
+                            </div>
+
+                            <div class="panel-collapse collapse">
+                                <div id="result_table_div_rbr" class="panel-body">
+
+                                    <select class="form-control" id="option_rebar_results">
+                                        <option>rebar row #1</option>
+                                    </select>
+
+                                    <table class="table results_table_rebar_diagram hidden">
+                                        <thead>
+                                            <tr>
+                                                <th>point</th>
+                                                <th>moment</th>
+                                                <th>kappa</th>
+                                            </tr>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>*10<sup>6</sup></th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class=".results_table_body_rbr">
+                                            <tr class="results_table_row_rbr">
+                                                <td class="signifcant_row_no"></td>
+                                                <td class="signifcant_moment"></td>
+                                                <td class="signifcant_kappa"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            
-            <div class="col-xs-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            Significant points tensile curve
-                            <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
-                        </h3>
-                    </div>
-
-                    <div class="panel-collapse collapse">
-                        <div id="result_table_div_tens" class="panel-body">
-
-                            <table class="table results_table_tensile_diagram hidden">
-                                <thead>
-                                    <tr>
-                                        <th>point</th>
-                                        <th>moment</th>
-                                        <th>kappa</th>
-                                    </tr>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>*10<sup>6</sup></th>
-
-                                    </tr>
-                                </thead>
-                                <tbody class=".results_table_body_tens">
-                                    <tr class="results_table_row_tens">
-                                        <td class="signifcant_row_no"></td>
-                                        <td class="signifcant_moment"></td>
-                                        <td class="signifcant_kappa"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xs-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            Significant points rebar curves
-                            <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
-                        </h3>
-                    </div>
-
-                    <div class="panel-collapse collapse">
-                        <div id="result_table_div_rbr" class="panel-body">
-
-                            <select class="form-control" id="option_rebar_results">
-                                <option>rebar row #1</option>
-                            </select>
-
-                            <table class="table results_table_rebar_diagram hidden">
-                                <thead>
-                                    <tr>
-                                        <th>point</th>
-                                        <th>moment</th>
-                                        <th>kappa</th>
-                                    </tr>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>*10<sup>6</sup></th>
-
-                                    </tr>
-                                </thead>
-                                <tbody class=".results_table_body_rbr">
-                                    <tr class="results_table_row_rbr">
-                                        <td class="signifcant_row_no"></td>
-                                        <td class="signifcant_moment"></td>
-                                        <td class="signifcant_kappa"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
         </div>
 
 
 
-    </div>
-    <!--ROW 1 END -->
+            </div>
+            <!--ROW 1 END -->
 
 
 
@@ -495,14 +521,14 @@
 
 
 
-        <script src="js/jquery-3.1.0.min.js"></script>
-        <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-        <script src="js/d3.min.js"></script>
-        <script src="js/std.js"></script>
-        <script src="js/vector.js"></script>
-        <script src="js/cross_section.js"></script>
-        <script src="js/moment_kappa.js"></script>
-        <script src="js/plotter.js"></script>
-        <script src="js/main.js"></script>
+            <script src="js/jquery-3.1.0.min.js"></script>
+            <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+            <script src="js/d3.min.js"></script>
+            <script src="js/std.js"></script>
+            <script src="js/vector.js"></script>
+            <script src="js/cross_section.js"></script>
+            <script src="js/moment_kappa.js"></script>
+            <script src="js/plotter.js"></script>
+            <script src="js/main.js"></script>
 </body>
 </html>
