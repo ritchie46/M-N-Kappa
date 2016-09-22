@@ -24,7 +24,7 @@ var std = (function () {
         return start_y + delta_y
     }
 
-    function convergence(lhs, rhs) {
+    function convergence(lhs, rhs, div) {
         /**Converting by adapting one value by a factor. The factor is determined by the ratio of the left hand side and
     the right hand side of the equation. 
     
@@ -34,10 +34,11 @@ var std = (function () {
         /// <param name="rhs" type="flt">left hand side of equation</param>
         /// <returns type="flt" />
         */
- 
+        // default parameter
+        var div = (typeof div !== "undefined") ? div: 4;
 
         var ratio = Math.abs(rhs) / Math.abs(lhs)
-        return (ratio - 1) / 3 + 1
+        return (ratio - 1) / div + 1
     }
 
     function convergence_conditions(lhs, rhs, limit_up, limit_lower) {

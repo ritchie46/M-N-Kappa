@@ -245,6 +245,8 @@ $(document).ready(function () {
 
     //-- Set rebar result table
 
+
+
     function update_rebar_results(index) {
 
         // tensile results table
@@ -413,8 +415,8 @@ $(document).ready(function () {
     $(".rebar_material").trigger("change")
     $("#cross_section_type").val("rectangle")
     $("#cross_section_type").trigger("change")
-    $("#width").val(1000)
-    $("#height").val(200)
+    $("#width").val(500)
+    $("#height").val(800)
     trigger_polygon()
 
 
@@ -424,6 +426,7 @@ $(document).ready(function () {
     $("#comp_curve").find(".panel-collapse").collapse("show");
     $("#rebar_input").find(".panel-collapse").collapse("show");
     $("#rebar_curve_1").closest(".panel-collapse").collapse("show");
+    $(".cstm_right_column").find(".panel-collapse").collapse("show");
 
        
 
@@ -468,8 +471,7 @@ Session.prototype.calculate_significant_points = function () {
         this.mkap.solver(true, strain)
         this.mkap.det_m_kappa()
 
-        if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)
-            && this.mkap.solution) {
+        if (this.mkap.validity()) {
             moment.push(Math.abs(this.mkap.moment))
             kappa.push(Math.abs(this.mkap.kappa))
             this.moment_compression.push(Math.abs(this.mkap.moment))
@@ -485,8 +487,7 @@ Session.prototype.calculate_significant_points = function () {
         this.mkap.solver(false, strain)
         this.mkap.det_m_kappa()
 
-        if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)
-            && this.mkap.solution) {
+        if (this.mkap.validity()) {
             moment.push(Math.abs(this.mkap.moment))
             kappa.push(Math.abs(this.mkap.kappa))
             this.moment_tensile.push(Math.abs(this.mkap.moment))
@@ -512,16 +513,15 @@ Session.prototype.calculate_significant_points = function () {
             // iterate untill the convergence criteria is met
             var count = 0
             while (1) {
-                if (std.convergence_conditions(sign_strain, this.mkap.rebar_strain[i], 1.01, 0.99)) {
+                if (std.convergence_conditions(Math.abs(this.mkap.rebar_strain[i]), sign_strain, 1.01, 0.99)) {
                     if (window.DEBUG) {
                         console.log("rebar convergence after %s iterations".replace("%s", count))
                     }
                     this.mkap.det_m_kappa()
-                    if (std.is_number(this.mkap.moment) && std.is_number(this.mkap.kappa)
-                        && this.mkap.strain_top >= -this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1]) {     
+                    if (this.mkap.validity()) {
+
                         moment.push(Math.abs(this.mkap.moment))
                         kappa.push(Math.abs(this.mkap.kappa))
-
                         this.moment_rebar[i].push(Math.abs(this.mkap.moment))
                         this.kappa_rebar[i].push(Math.abs(this.mkap.kappa))
                         
@@ -529,7 +529,8 @@ Session.prototype.calculate_significant_points = function () {
                     break
                 }
 
-                var factor = std.convergence(this.mkap.rebar_strain[i], sign_strain)
+                var factor = std.convergence(Math.abs(this.mkap.rebar_strain[i]), sign_strain, 5)
+               
                 var top_str = top_str * factor
                 
                 this.mkap.solver(true, top_str, false)

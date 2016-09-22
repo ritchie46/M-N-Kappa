@@ -36,16 +36,29 @@ var mkap = (function () {
         this.strain_top = null
         this.strain_btm = null
         this.zero_line = null  // xu is height - zero line
+        this.xu = null
+
+        // solver settings
+        this.iterations = 120
+        this.div = 4
 
     }
 
     MomentKappa.prototype.det_force_distribution = function (strain_top, strain_btm) {
         this.force_compression = 0 
-        this.force_tensile = 0 - this.normal_force
+        this.force_tensile = 0 
         this.stress = []
         this.rebar_strain = []
         this.strain_top = strain_top
         this.strain_btm = strain_btm
+
+
+        if (this.normal_force < 0) {
+            this.force_tensile += Math.abs(this.normal_force)
+        }
+        else {
+            this.force_compression += Math.abs(this.normal_force)
+        }
 
         // height of the sections
         var dh = this.cross_section.y_val[1];
@@ -98,7 +111,7 @@ var mkap = (function () {
 
                 // reduce rebar area from master element
                 stress_reduct = this.compressive_diagram.det_stress(Math.abs(strain))
-                this.force_compression -= this.rebar_As[i] * stress_reduct
+                //this.force_compression -= this.rebar_As[i] * stress_reduct
 
 
             }
@@ -108,7 +121,7 @@ var mkap = (function () {
 
                 // reduce rebar area from master element
                 stress_reduct = this.tensile_diagram.det_stress(strain)
-                this.force_tensile -= this.rebar_As[i] * stress_reduct
+                //this.force_tensile -= this.rebar_As[i] * stress_reduct
             }
         }
 
@@ -127,6 +140,15 @@ var mkap = (function () {
         var print = (typeof print !== "undefined") ? print : true;
 
         this.solution = false
+
+        if (this.normal_force != 0) {
+            this.div = 10
+            this.iterations = 150
+        }
+        else {
+            this.div = 4
+            this.iterations = 120
+        }
 
         // first iteration
         var btm_str = strain
@@ -168,12 +190,13 @@ var mkap = (function () {
                     var btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
                 }
                 else {
-                    var factor = std.convergence(this.force_tensile, this.force_compression)
+
+                    var factor = std.convergence(this.force_tensile, this.force_compression, this.div)
                     var btm_str = btm_str * factor
                 }
                 
                 this.det_force_distribution(top_str, btm_str)
-                if (count > 100) {
+                if (count > this.iterations) {
                     if (print) {
                         if (window.DEBUG) {
                             console.log("no convergence found after %s iterations".replace("%s", count))
@@ -197,12 +220,12 @@ var mkap = (function () {
                     break
                 }
 
-                var factor = std.convergence(this.force_compression, this.force_tensile)
+                var factor = std.convergence(this.force_compression, this.force_tensile, this.div)
                 var top_str = top_str * factor
      
                 this.det_force_distribution(top_str, btm_str)
 
-                if (count > 100) {
+                if (count > this.iterations) {
                     if (print) {
                         if (window.DEBUG) {
                             console.log("no convergence found after %s iterations".replace("%s", count))
@@ -234,7 +257,7 @@ var mkap = (function () {
         */
 
         // center of gravity offset of a section
-        this.kappa = (Math.abs(this.strain_top) + Math.abs(this.strain_btm)) / (this.cross_section.top - this.cross_section.bottom)  //this.strain_btm / (this.zero_line - this.cross_section.bottom)
+        this.kappa = -this.strain_top + this.strain_btm / (this.cross_section.top - this.cross_section.bottom)  //this.strain_btm / (this.zero_line - this.cross_section.bottom)
         this.moment = 0
         var offset = this.cross_section.y_val[1] * 0.5
 
@@ -249,7 +272,7 @@ var mkap = (function () {
         }
 
         // N normal force share
-        this.moment += this.normal_force * (this.cross_section.top - this.cross_section.bottom) * 0.5
+        this.moment -= this.normal_force * (this.cross_section.top - this.cross_section.bottom) * 0.5
 
         // rebar share
         for (var i = 0; i < this.rebar_As.length; i++) {
@@ -258,17 +281,34 @@ var mkap = (function () {
             // reduction of master cross section at place of rebar
             if (this.rebar_force[i] > 0) {  // tensile stress
                 var stress_reduct = this.tensile_diagram.det_stress(this.rebar_strain[i])
-                this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
+                //this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
             }
             else {  // compression stress
                 var stress_reduct = -this.compressive_diagram.det_stress(Math.abs(this.rebar_strain[i]))
-                this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
+                //this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
             }
         }
 
+        // zero line
+        this.zero_line = std.interpolate(this.strain_btm, this.cross_section.bottom, this.strain_top, this.cross_section.top, 0)
+        this.xu = this.cross_section.top - this.zero_line
+
+
     }
 
-
+    MomentKappa.prototype.validity = function () {
+        if (std.is_number(this.moment)
+            && std.is_number(this.kappa)
+            && this.solution
+            && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
+            && this.strain_top < 0
+            ) {
+            return true
+        }
+        else {
+            return false
+        };
+    };
 
 
 
