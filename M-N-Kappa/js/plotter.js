@@ -5,8 +5,8 @@
 var plt = (function () {
 
     var settings = {
-        width: 350,
-        height: 350,
+        width: 300,
+        height: 300,
         offset_origin_x: 0,
         offset_origin_y: 0,
     }

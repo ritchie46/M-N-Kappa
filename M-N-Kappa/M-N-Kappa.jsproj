@@ -73,6 +73,7 @@
     <Content Include="js\moment_kappa.js" />
     <Content Include="js\plotter.js" />
     <Content Include="js\main.js" />
+    <Content Include="js\session.js" />
     <Content Include="js\std.js" />
     <Content Include="js\vector.js" />
     <None Include="M-N-Kappa_TemporaryKey.pfx" />

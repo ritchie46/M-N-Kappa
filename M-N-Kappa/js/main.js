@@ -49,12 +49,17 @@ $(document).ready(function () {
         trigger_polygon();
     })
 
+    //Call polygon draw function if row is removed
+    $('#pg_body').on("change", "input", function () {
+        trigger_polygon();
+    });
+
 
     // create polygon
     function trigger_polygon() {
         // plotter draws polygon and returns the polygons Points (Point class) in a list.
-        
-        if ($("#cross_section_type").val() == "custom") {
+        var choice = $("#cross_section_type").val()
+        if (choice == "custom") {
             var x = document.getElementsByClassName("xval")
             var y = document.getElementsByClassName("yval")
             var point_list = plt.draw_polygon(x, y);
@@ -63,21 +68,44 @@ $(document).ready(function () {
             //session.mkap.cross_section.return_x_on_axis()
             $("#area").html("Area: " + session.mkap.cross_section.area())
         }
-        else if ($("#cross_section_type").val() == "rectangle") {
+        else if (choice == "rectangle") {
             var width = parseFloat(document.getElementById("width").value);
             var height = parseFloat(document.getElementById("height").value);
             var x = [width, width, 0];
             var y = [0, height, height];
             if (width > 0 && height > 0) {
                 var point_list = plt.draw_polygon(x, y);
-                // add polygon to session
                 session.mkap.cross_section = new crsn.PolyGon(point_list)
-                //session.mkap.cross_section.return_x_on_axis()
                 $("#area").html("Area: " + session.mkap.cross_section.area())
             }
-        };
+        }
+        else if (choice == "T-beam" || choice == "I-beam") {
+            /**
+            w_w = width of the web
+            h_f = height of the flange
+            etc.
+            */
+            var w_w = parseFloat(document.getElementById("T-beam_width_w").value);
+            var w_f = parseFloat(document.getElementById("T-beam_width_f").value);
+            var h_w = parseFloat(document.getElementById("T-beam_height_w").value);
+            var h_f = parseFloat(document.getElementById("T-beam_height_f").value);
 
-        
+            if (choice == "T-beam") {
+                var x = [0.5 * w_w, 0.5 * w_w, 0.5 * w_f, 0.5 * w_f, -0.5 * w_f, -0.5 * w_f, -0.5 * w_w, -0.5 * w_w];
+                var y = [0, h_w, h_w, h_f + h_w, h_f + h_w, h_w, h_w, 0];
+            }
+            else if (choice == "I-beam") {
+                var x = [0.5 * w_f, 0.5 * w_f, 0.5 * w_w, 0.5 * w_w, 0.5 * w_f, 0.5 * w_f, -0.5 * w_f, -0.5 * w_f, -0.5 * w_w, -0.5 * w_w, -0.5 * w_f, -0.5 * w_f];
+                var y = [0, h_f, h_f, h_w + h_f, h_w + h_f, 2 * h_f + h_w, 2 * h_f + h_w, h_w + h_f, h_w + h_f, h_f, h_f, 0];
+            };
+
+            if (w_w > 0 && w_f > 0 && h_w > 0 && h_f > 0) {
+                var point_list = plt.draw_polygon(x, y);
+                session.mkap.cross_section = new crsn.PolyGon(point_list)
+                $("#area").html("Area: " + session.mkap.cross_section.area())
+            }
+        }
+          
     }
 
     
@@ -176,7 +204,6 @@ $(document).ready(function () {
         // reduce with the material factor
         for (var i = 0; i < stress.length; i++) {
             stress[i] /= fact
-            strain[i] /= fact
         }
         var rebar_number = id[id.length - 1]
         session.rebar_diagrams[rebar_number - 1] = new mkap.StressStrain(strain, stress)
@@ -368,6 +395,9 @@ $(document).ready(function () {
     // rebar material
     $(".rebar_material").change(function () {
         if (this.value !== "custom") {
+            var fact = 1.15
+            $(parent).find(".rebar_material_factor").val(fact)
+
             // get the value between after 'B' in for instance 'B500'
             
             var fy = this.value.substring(1, 4)
@@ -385,7 +415,7 @@ $(document).ready(function () {
                 var row = $(parent).children(".custom_row").last();
                 remove_row(row);
             }
-            $(parent).find(".rebar_strain")[1].value = parseFloat(fy) / 200
+            $(parent).find(".rebar_strain")[1].value = Math.round(parseFloat(fy) / 200 / fact * 1000) / 1000
             $(parent).find(".rebar_strain")[2].value = 50
             $(parent).find(".rebar_stress")[1].value = fy
             $(parent).find(".rebar_stress")[2].value = fy
@@ -397,14 +427,18 @@ $(document).ready(function () {
     // cross-section type
     $("#cross_section_type").change(function () {
         if (this.value == "rectangle") {
-            $("#polygon_rows").addClass("hidden")
+            $(".cross_section_type").addClass("hidden")
             $("#rectangle_rows").removeClass("hidden")
         }
-        if (this.value == "custom") {
+        else if (this.value == "custom") {
+            $(".cross_section_type").addClass("hidden")
             $("#polygon_rows").removeClass("hidden")
-            $("#rectangle_rows").addClass("hidden")
         }
-    })
+        else if (this.value == "T-beam" || this.value == "I-beam") {
+            $(".cross_section_type").addClass("hidden")
+            $("#T-beam_rows").removeClass("hidden")
+        }
+    });
 
 
 
@@ -433,175 +467,3 @@ $(document).ready(function () {
 });
 
 
-//class
-function Session() {
-    this.mkap = null
-    // significant points compression diagram
-    this.moment_compression = []
-    this.kappa_compression = []
-    this.moment_tensile = []
-    this.kappa_tensile = []
-    // the diagrams in order
-    this.rebar_diagrams = []
-    this.moment_rebar = []
-    this.kappa_rebar = []
-    
-}
-
-
-Session.prototype.calculate_significant_points = function () {
-
-    /** 
-    determines the moment and kappa points for the given significant strain points in the compression stress strain diagram
-    */
-    var moment = []
-    var kappa = []
-    this.moment_compression = []
-    this.kappa_compression = []
-    this.moment_tensile = []
-    this.kappa_tensile = []
-    // in these are array representing the significant points of different layers of rebar
-    this.moment_rebar = []
-    this.kappa_rebar = []
-    
-    // Solve for significant points in compression diagram
-    for (var i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
-        var strain = this.mkap.compressive_diagram.strain[i]
-
-        this.mkap.solver(true, strain)
-        this.mkap.det_m_kappa()
-
-        if (this.mkap.validity()) {
-            moment.push(Math.abs(this.mkap.moment))
-            kappa.push(Math.abs(this.mkap.kappa))
-            this.moment_compression.push(Math.abs(this.mkap.moment))
-            this.kappa_compression.push(Math.abs(this.mkap.kappa))
-        }
-    }
-    
-    
-    // Solve for significant points in tensile diagram
-    for (var i = 1; i < this.mkap.tensile_diagram.strain.length; i++) {
-        var strain = this.mkap.tensile_diagram.strain[i]
-        
-        this.mkap.solver(false, strain)
-        this.mkap.det_m_kappa()
-
-        if (this.mkap.validity()) {
-            moment.push(Math.abs(this.mkap.moment))
-            kappa.push(Math.abs(this.mkap.kappa))
-            this.moment_tensile.push(Math.abs(this.mkap.moment))
-            this.kappa_tensile.push(Math.abs(this.mkap.kappa))
-        }
-    }
-
-    
-    // Solve for significant in the rebars material diagram. 
-    //Loop for the variable number of rebar inputs
-    for (var i = 0; i < this.mkap.rebar_As.length; i++) {
-        this.moment_rebar[i] = []
-        this.kappa_rebar[i] = []
-
-        // Loop for the siginificant points in the rebars material stress strain diagram.
-        for (var a = 1; a < this.mkap.rebar_diagram[i].strain.length; a++) {
-            var sign_strain = this.mkap.rebar_diagram[i].strain[a] // siginificant point
-
-            top_str = sign_strain * 0.5  // start the iteration at the half of the rebar strain.
-            // looper rebar
-            this.mkap.solver(true, top_str, false)
-
-            // iterate untill the convergence criteria is met
-            var count = 0
-            while (1) {
-                if (std.convergence_conditions(Math.abs(this.mkap.rebar_strain[i]), sign_strain, 1.01, 0.99)) {
-                    if (window.DEBUG) {
-                        console.log("rebar convergence after %s iterations".replace("%s", count))
-                    }
-                    this.mkap.det_m_kappa()
-                    if (this.mkap.validity()) {
-
-                        moment.push(Math.abs(this.mkap.moment))
-                        kappa.push(Math.abs(this.mkap.kappa))
-                        this.moment_rebar[i].push(Math.abs(this.mkap.moment))
-                        this.kappa_rebar[i].push(Math.abs(this.mkap.kappa))
-                        
-                    }
-                    break
-                }
-
-                var factor = std.convergence(Math.abs(this.mkap.rebar_strain[i]), sign_strain, 5)
-               
-                var top_str = top_str * factor
-                
-                this.mkap.solver(true, top_str, false)
-
-                if (count > 50) {
-                    if (window.DEBUG) {
-                        console.log("no rebar convergence found after %s iterations".replace("%s", count))
-                    }
-                    break
-                }
-                count += 1
-            }
-  
-        }
-
-    }
-
-
-    // sort the arrays on inclining kappa.
-    var a = []
-    
-    // first combine them in array a
-    for (var i in kappa) {
-        a.push(
-            { m: moment[i], k: kappa[i] }
-            )
-    };
-
-    // sort them
-    a.sort(function (b, c) {
-        return ((b.k < c.k) ? -1 : ((b.k < c.k) ? 0 : 1));
-    });
-
-    for (var i = 0; i < a.length; i++) {
-        moment[i] = a[i].m
-        kappa[i] = a[i].k
-    }
-
-    if (DEBUG) {
-        console.log(moment)
-        console.log(kappa)
-    }
-  
-    return {
-        moment: moment,
-        kappa: kappa
-    }
-
-
-
-}
-// end class
-
-var session = new Session()
-session.mkap = new mkap.MomentKappa()
-session.mkap.tensile_diagram = new mkap.StressStrain([0], [0])
-
-
-var extract_floats = function (arr) {
-    /// <param name="arr" type="array">DOM input fields array</param>
-    /**
-    Casts the strings to floats and pops invalid data from the array.
-    */
-
-    var data = []
-
-    for (var i = 0; i < arr.length; i++) {
-        if (arr[i].value.length > 0) { // input field is filled
-            var val = parseFloat(arr[i].value)
-            data.push(val)
-        }
-    }
-    return data
-}
