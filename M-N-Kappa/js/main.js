@@ -438,6 +438,7 @@ $(document).ready(function () {
             $(".cross_section_type").addClass("hidden")
             $("#T-beam_rows").removeClass("hidden")
         }
+        trigger_polygon()
     });
 
 
