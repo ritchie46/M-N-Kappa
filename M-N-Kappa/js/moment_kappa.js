@@ -257,7 +257,7 @@ var mkap = (function () {
         */
 
         // center of gravity offset of a section
-        this.kappa = -this.strain_top + this.strain_btm / (this.cross_section.top - this.cross_section.bottom)  //this.strain_btm / (this.zero_line - this.cross_section.bottom)
+        this.kappa = (-this.strain_top + this.strain_btm) / (this.cross_section.top - this.cross_section.bottom)  //this.strain_btm / (this.zero_line - this.cross_section.bottom)
         this.moment = 0
         var offset = this.cross_section.y_val[1] * 0.5
 
@@ -348,23 +348,6 @@ var mkap = (function () {
         };
     }
     //end class
-
-
-    /**
-    var concrete_comp = new StressStrain([0, 1.75 * 0.001, 3.5 * 0.001], [0, 20, 20])
-    var concrete_tensile = new StressStrain([0], [0])  // fictional for testing
-
-    var run = new MomentKappa(crsn.cs, concrete_comp, concrete_tensile)
-    run.rebar_As.push(800)
-    run.rebar_z.push(20)
-    run.rebar_diagram.push(new StressStrain([0, 2.175 * 0.001, 10], [0, 435, 435]))
-
-
-    run.solver(true, 3.5e-3)
-    run.det_m_kappa()
-    console.log(run.moment / 1e6)
-    console.log(run.kappa);
-    */
 
     return {    MomentKappa: MomentKappa,
                 StressStrain: StressStrain
