@@ -54,14 +54,35 @@ $(document).ready(function () {
         trigger_polygon();
     });
 
+    function rotate_pg(rotation, x, y) {
+
+        for (i = 0; i < x.length; i++) {
+            var p = new vector.Point(x[i], y[i])
+            p = p.rotate_origin(rotation / 360 * 2 * Math.PI)
+            x[i] = p.x
+            y[i] = p.y
+        }
+        return {
+            x: x,
+            y: y
+        };
+    };
 
     // create polygon
     function trigger_polygon() {
         // plotter draws polygon and returns the polygons Points (Point class) in a list.
+        var rotation = (isNaN(parseFloat($("#pg_rotation").val()))) ? 0 : parseFloat($("#pg_rotation").val())
         var choice = $("#cross_section_type").val()
         if (choice == "custom") {
             var x = document.getElementsByClassName("xval")
             var y = document.getElementsByClassName("yval")
+            x = plt.input_strings_to_floats(x)
+            y = plt.input_strings_to_floats(y)
+            x.unshift(0)
+            y.unshift(0)
+            var rotation_pg = rotate_pg(rotation, x, y)
+            x = rotation_pg.x
+            y = rotation_pg.y
             var point_list = plt.draw_polygon(x, y);
             // add polygon to session
             session.mkap.cross_section = new crsn.PolyGon(point_list)
@@ -71,8 +92,13 @@ $(document).ready(function () {
         else if (choice == "rectangle") {
             var width = parseFloat(document.getElementById("width").value);
             var height = parseFloat(document.getElementById("height").value);
-            var x = [width, width, 0];
-            var y = [0, height, height];
+            var x = [0, width, width, 0];
+            var y = [0, 0, height, height];
+
+            var rotation_pg = rotate_pg(rotation, x, y)
+            x = rotation_pg.x
+            y = rotation_pg.y
+
             if (width > 0 && height > 0) {
                 var point_list = plt.draw_polygon(x, y);
                 session.mkap.cross_section = new crsn.PolyGon(point_list)
@@ -98,6 +124,10 @@ $(document).ready(function () {
                 var x = [0.5 * w_f, 0.5 * w_f, 0.5 * w_w, 0.5 * w_w, 0.5 * w_f, 0.5 * w_f, -0.5 * w_f, -0.5 * w_f, -0.5 * w_w, -0.5 * w_w, -0.5 * w_f, -0.5 * w_f];
                 var y = [0, h_f, h_f, h_w + h_f, h_w + h_f, 2 * h_f + h_w, 2 * h_f + h_w, h_w + h_f, h_w + h_f, h_f, h_f, 0];
             };
+
+            var rotation_pg = rotate_pg(rotation, x, y)
+            x = rotation_pg.x
+            y = rotation_pg.y
 
             if (w_w > 0 && w_f > 0 && h_w > 0 && h_f > 0) {
                 var point_list = plt.draw_polygon(x, y);

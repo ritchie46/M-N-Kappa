@@ -3,6 +3,8 @@
 // vector namespace
 var vector = (function () {
 
+    var DEBUG = false
+
 //class
 function Point(x, y) {
     this.x = x
@@ -14,8 +16,68 @@ Point.prototype.modulus = function () {
 };
 
 Point.prototype.negative = function () {
-    return new Point(-this.x, -this.y)
+    return new Point(-this.x, -this.y);
+};
+
+Point.prototype.rotate_origin = function (alpha) {
+    var radius = this.modulus()
+    var alpha0 = this.angle_orgin_x_axis()
+    var new_p = new Point(0, 0)
+    new_p.displace_polar(alpha + alpha0, radius)
+    return new_p
 }
+
+Point.prototype.displace_polar = function (alpha, radius) {
+    this.x += Math.cos(alpha) * radius
+    this.y += Math.sin(alpha) * radius
+}
+
+Point.prototype.angle_orgin_x_axis = function () {
+    /**
+    Determine the angle between the origin (x-axis=0, z-axis=0) and the point.
+    */
+
+    if (this.y == 0) {   // horizontal
+        if (this.x > 0) {
+            var alpha = 0
+        }
+        else {
+            var alpha = Math.PI;
+        };
+    }
+    else if (this.x == 0) { // vertical
+        if (this.y > 0) {
+            var alpha = 0.5 * Math.PI
+        }
+        else {
+            var alpha = 1.5 * Math.PI
+        };
+    }
+    else if (this.x > 0 && this.y > 0) {  // quadrant 1
+        var alpha = 0 + Math.atan(Math.abs(this.y / this.x));
+    }
+    else if (this.x < 0 && 0 < this.y) { // quadrant 2
+        var alpha = 0.5 * Math.PI + Math.atan(Math.abs(this.x / this.y));
+    }
+    else if (this.x < 0 && this.y < 0) { // quadrant 3
+        var alpha = Math.PI + Math.atan(Math.abs(this.y / this.x));
+    }
+    else if (this.x > 0 && 0 > this.y) { // quadrant 4
+        var alpha = 1.5 * Math.PI + Math.atan(Math.abs(this.x / this.y));
+    }
+    else {
+        if (DEBUG) {
+            console.log("Can not determine the angle of the point with the axes origin")
+        }
+    };
+
+    return alpha
+}
+
+
+
+
+
 //end class
 
 

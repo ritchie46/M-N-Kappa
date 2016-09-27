@@ -51,6 +51,21 @@ var linefunc = d3.line()
         }
         // else x and y are probably an array with floats.
 
+        // displace values
+        var minx = Math.min.apply(null, x)
+        var miny = Math.min.apply(null, y)
+
+        if (minx < 0) {
+            for (i = 0; i < x.length; i++) {
+                x[i] += Math.abs(minx);
+            };
+        };
+        if (miny < 0) {
+            for (i = 0; i < y.length; i++) {
+                y[i] += Math.abs(miny);
+            };
+        }
+
         // Determine the max and min values for scaling
         var max_val = 0
         var min_val = 0
@@ -58,6 +73,7 @@ var linefunc = d3.line()
         var min_y = 0
         var max_x = 0
         var max_y = 0
+
         for (var i = 0; i < y.length; i++) {
 
             var xval = x[i]
@@ -81,12 +97,14 @@ var linefunc = d3.line()
         // data that will be attached to the svg path
         var data = []
         // set first value to origin.
-        var loc0 = { x: scale(-min_x), y: -scale(-min_y) + settings.height }
+        //var loc0 = { x: scale(-min_x), y: -scale(-min_y) + settings.height }
+        var loc0 = { x: scale(x[0]), y: -scale(y[0]) + settings.height }
         data.push(loc0)
 
         //location for the current sessions polygon
         var loc_list = []
-        var loc_pg0 = new vector.Point(-min_x, -min_y)
+        //var loc_pg0 = new vector.Point(-min_x, -min_y)
+        var loc_pg0 = new vector.Point(x[0], y[0])
         loc_list.push(loc_pg0)
 
         for (var i = 0; i < y.length; i++) {    
@@ -271,7 +289,8 @@ var linefunc = d3.line()
         draw_polygon: draw_polygon,
         draw_lines: draw_lines,
         svg_comp: svg_comp,
-        add_svg: add_svg
+        add_svg: add_svg,
+        input_strings_to_floats: input_strings_to_floats
     }
 
 })();  // plt namespace
