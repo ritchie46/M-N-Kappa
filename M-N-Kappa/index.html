@@ -162,10 +162,10 @@
            
                             <div class="row custom_row">
                                 <div class="col-xs-5">
-                                    <input type="number" min="0.1" class="comp_strain form-control" placeholder="strain" >
+                                    <input type="number" min="1" class="comp_strain form-control" placeholder="strain" >
                                 </div>
                                 <div class="col-xs-5">
-                                    <input type="number" min="0.1" class="comp_stress form-control" placeholder="stress" >
+                                    <input type="number" min="1" class="comp_stress form-control" placeholder="stress" >
                                 </div>
                                 <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                                     <span class="glyphicon glyphicon-remove-circle"></span>
@@ -193,17 +193,45 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             Tensile stress-strain-diagram 
-                            <span class="glyphicon glyphicon-triangle-bottom collapse_glyph"></span>
+                            <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
                         </h3>
                     </div>
                     <div class="panel-collapse collapse">
                         <div id="tens_curve_body" class="panel-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Material factor</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="number" min="1" class="form-control show_tip" id="tens_material_factor" placeholder="material factor" value="1.5" data-toggle="tooltip" data-placement="top" title="Stress reduction factor" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <hr />
+
                             <div class="row custom_row hidden">
                                 <div class="col-xs-5">
-                                    <input type="number" min="0" class="tens_strain form-control" placeholder="strain" onchange="">
+                                    <input type="number" min="0" class="tens_strain form-control" placeholder="strain" >
                                 </div>
                                 <div class="col-xs-5">
-                                    <input type="number" min="0" class="tens_stress form-control" placeholder="stress" onchange="">
+                                    <input type="number" min="0" class="tens_stress form-control" placeholder="stress" >
+                                </div>
+                                <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
+                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                </button>
+                            </div>
+                            <div class="row custom_row">
+                                <div class="col-xs-5">
+                                    <input type="number" min="0" class="tens_strain form-control" placeholder="strain" value="0.3">
+                                </div>
+                                <div class="col-xs-5">
+                                    <input type="number" min="0" class="tens_stress form-control" placeholder="stress" value="2.5">
                                 </div>
                                 <button type="button" class="remove_row btn btn-warning remove show_tip" data-toggle="tooltip" data-placement="top" title="Remove this row">
                                     <span class="glyphicon glyphicon-remove-circle"></span>
@@ -258,7 +286,7 @@
 
                             <div class="row custom_row">
                                 <div class="col-xs-3">
-                                    <input type="number" class="rebar_As form-control" value="4021" placeholder="As" data-toggle="tooltip" data-placement="top" title="Area of the rebar">
+                                    <input type="number" class="rebar_As form-control" value="3000" placeholder="As" data-toggle="tooltip" data-placement="top" title="Area of the rebar">
                                 </div>
                                 <div class="col-xs-3">
                                     <input type="number" class="rebar_d form-control show_tip" value="720" placeholder="d" data-toggle="tooltip" data-placement="top" title="Distance rebar to top cross-section">
@@ -391,7 +419,7 @@
 
             <div class="panel panel-default cstm_block">
                 <div class="panel-body">
-                    <h2><label>Results</label></h2>
+                    <h3><label>Results</label></h3>
                     <ul class="list-group">
                         <li id="area" class="list-group-item">Area:</li>
                         <li id="MRd" class="list-group-item hidden"></li>

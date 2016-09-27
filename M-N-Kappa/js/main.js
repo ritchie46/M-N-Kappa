@@ -196,6 +196,12 @@ $(document).ready(function () {
         stress = extract_floats(stress)
         strain.unshift(0)
         stress.unshift(0)
+
+        // reduce with the material factor
+        for (var i = 0; i < stress.length; i++) {
+            stress[i] /= parseFloat($("#tens_material_factor").val())
+        }
+
         session.mkap.tensile_diagram = new mkap.StressStrain(strain, stress)
     }
 
@@ -480,15 +486,17 @@ $(document).ready(function () {
     $(".rebar_material").trigger("change")
     $("#cross_section_type").val("rectangle")
     $("#cross_section_type").trigger("change")
+    trigger_tens_strain()
+
     $("#width").val(500)
     $("#height").val(800)
     trigger_polygon()
-
-
+    
 
     // Logic for collapsing the input divs
     $("#collapse_polygon").collapse("show");
     $("#comp_curve").find(".panel-collapse").collapse("show");
+    $("#tens_curve").find(".panel-collapse").collapse("show");
     $("#rebar_input").find(".panel-collapse").collapse("show");
     $("#rebar_curve_1").closest(".panel-collapse").collapse("show");
     $(".cstm_right_column").find(".panel-collapse").collapse("show");
