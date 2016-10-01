@@ -253,7 +253,7 @@ $(document).ready(function () {
         $(parent).find(".rebar_material").val("custom")
     })
 
-    $('#rebar_curves').on('click', '.add_row', function () {
+    $('#rebar_curves').on('click', '.add_row_rbr_curves', function () {
         var $row = $(this).closest(".rebar_curve").find(".custom_row").last();
         var $clone = $row.clone()
         $clone.removeClass('hidden')
@@ -297,7 +297,7 @@ $(document).ready(function () {
 
         var As = document.getElementsByClassName("rebar_As")
         var d = document.getElementsByClassName("rebar_d")
-        var rebar_diagram = $("#rebar_material_select")
+        var rebar_diagram = document.getElementsByClassName("rebar_material_select")
         $("#option_rebar_results").empty()
 
         As = extract_floats(As)
@@ -371,9 +371,11 @@ $(document).ready(function () {
         $("#result_table_div_comp").append(table)
 
         for (var i = 0; i < session.moment_compression.length; i++) {
-            $(".results_table_row_comp").last().find(".signifcant_moment").html(Math.round(session.moment_compression[i] / 1e4) / 100)
+            $(".results_table_row_comp").last().find(".significant_moment").html(Math.round(session.moment_compression[i] / 1e4) / 100)
             $(".results_table_row_comp").last().find(".signifcant_row_no").last().html(i + 1)
-            $(".results_table_row_comp").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_compression[i] * 100) / 100)
+            $(".results_table_row_comp").last().find(".significant_kappa").last().html(Math.round(session.kappa_compression[i] * 1000) / 1000)
+            $(".results_table_row_comp").last().find(".significant_stress").last().html(Math.round(session.sign_stress_comp[i] * 100) / 100)
+            $(".results_table_row_comp").last().find(".significant_strain").last().html(Math.round(session.sign_strain_comp[i] * 1000) / 1000)
             $(".results_table_row_comp").first().clone().insertAfter($(".results_table_row_comp").last())
         }
 
@@ -386,9 +388,11 @@ $(document).ready(function () {
         $("#result_table_div_tens").append(table)
 
         for (var i = 0; i < session.moment_tensile.length; i++) {
-            $(".results_table_row_tens").last().find(".signifcant_moment").html(Math.round(session.moment_tensile[i] / 1e4) / 100)
+            $(".results_table_row_tens").last().find(".significant_moment").html(Math.round(session.moment_tensile[i] / 1e4) / 100)
             $(".results_table_row_tens").last().find(".signifcant_row_no").last().html(i + 1)
-            $(".results_table_row_tens").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_tensile[i] * 100) / 100)
+            $(".results_table_row_tens").last().find(".significant_kappa").last().html(Math.round(session.kappa_tensile[i] * 1000) / 1000)
+            $(".results_table_row_tens").last().find(".significant_stress").last().html(Math.round(session.sign_stress_tens[i] * 100) / 100)
+            $(".results_table_row_tens").last().find(".significant_strain").last().html(Math.round(session.sign_strain_tens[i] * 1000) / 1000)
             $(".results_table_row_tens").first().clone().insertAfter($(".results_table_row_tens").last())
         }
 
@@ -412,10 +416,13 @@ $(document).ready(function () {
         $("#result_table_div_rbr").append(table)
 
         for (var i = 0; i < session.moment_rebar[index].length; i++) {
-            $(".results_table_row_rbr").last().find(".signifcant_moment").html(Math.round(session.moment_rebar[index][i] / 1e4) / 100)
+            $(".results_table_row_rbr").last().find(".significant_moment").html(Math.round(session.moment_rebar[index][i] / 1e4) / 100)
             $(".results_table_row_rbr").last().find(".signifcant_row_no").last().html(i + 1)
-            $(".results_table_row_rbr").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_rebar[index][i] * 100) / 100)
+            $(".results_table_row_rbr").last().find(".significant_kappa").last().html(Math.round(session.kappa_rebar[index][i] * 1000) / 1000)
+            $(".results_table_row_rbr").last().find(".significant_stress").last().html(Math.round(session.sign_stress_rbr[index][i] * 100) / 100)
+            $(".results_table_row_rbr").last().find(".significant_strain").last().html(Math.round(session.sign_strain_rbr[index][i] * 1000) / 1000)
             $(".results_table_row_rbr").first().clone().insertAfter($(".results_table_row_rbr").last())
+ 
         };
     };
 
@@ -471,7 +478,7 @@ $(document).ready(function () {
 
 
             for (n; n < 3; n++) {
-                add_row($(parent).find(".add_row"));
+                add_row($(parent).find(".add_row_rbr_curves"));
 
             };
             for (n; n > 3; n--) {
@@ -511,14 +518,12 @@ $(document).ready(function () {
     $("#compression_material").trigger("change")
     $(".rebar_material")[1].value = "B500"
     $(".rebar_material").last().trigger("change")
-    //$(".rebar_material").val("B500")
-    //$(".rebar_material").trigger("change")
     $("#cross_section_type").val("rectangle")
     $("#cross_section_type").trigger("change")
     trigger_tens_strain()
 
-    $("#width").val(500)
-    $("#height").val(800)
+    $("#width").val(400)
+    $("#height").val(500)
     trigger_polygon()
     
 
