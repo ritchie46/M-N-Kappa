@@ -219,6 +219,7 @@ $(document).ready(function () {
     */
 
     var trigger_rebar_strain = function (parent) {
+
         // find the panel that send the request.
         var id = parent.attr('id');
         var strain = $('#' + id).find('.rebar_strain');
@@ -245,19 +246,47 @@ $(document).ready(function () {
         session.rebar_diagrams[rebar_number - 1] = new mkap.StressStrain(strain, stress)
     }
 
-    $('.rebar_curve').on('click', '.remove_row', function () {
+    $('#rebar_curves').on('click', '.remove_row', function () {
         var parent = $(this).closest('.rebar_curve');
         $(this).closest('.custom_row').remove();
         trigger_rebar_strain(parent);
         $(parent).find(".rebar_material").val("custom")
     })
 
-    $('.rebar_curve').on('change', 'input', function () {
+    $('#rebar_curves').on('click', '.add_row', function () {
+        var $row = $(this).closest(".rebar_curve").find(".custom_row").last();
+        var $clone = $row.clone()
+        $clone.removeClass('hidden')
+        $row.after($clone);
+    })
+
+    $('#rebar_curves').on('change', 'input', function () {
         var parent = $(this).closest('.rebar_curve')
         trigger_rebar_strain(parent);
         $(parent).find(".rebar_material").val("custom")
     });
 
+    // add extra rebar curves (stress strain diagrams)
+    var n_rebar_curves = 1
+    $("#add_rbr_diagram").click(function () {
+        n_rebar_curves += 1
+        var clone = $(".rebar_curve").last().clone().removeClass("hidden")
+        clone.attr("id", "rebar_curve_" + n_rebar_curves)
+        var svg = clone.find(".rebar_strain_svg_div")
+        svg.attr("id", "rebar_svg_" + n_rebar_curves)
+        $(".rebar_curve").last().after(clone)
+        $(".diagram_header").last().html("Diagram #" + n_rebar_curves)
+        trigger_rebar_strain(clone)
+
+        // Append the diagram options at the rebar input fields
+        $("#rebar_material_select").append("<option>diagram #%d</option>".replace("%d", n_rebar_curves))
+    });
+
+
+
+    // Watch on #rebar_curves to add rows for every new diagram.
+    // Do not forget to change the numbering of the id's when making a clone.
+ 
 
     // rebar area
     function trigger_rebar_input() {
@@ -268,7 +297,7 @@ $(document).ready(function () {
 
         var As = document.getElementsByClassName("rebar_As")
         var d = document.getElementsByClassName("rebar_d")
-        var rebar_diagram = document.getElementsByClassName("rebar_material_select")
+        var rebar_diagram = $("#rebar_material_select")
         $("#option_rebar_results").empty()
 
         As = extract_floats(As)
@@ -304,34 +333,6 @@ $(document).ready(function () {
     $('.rebar_input').on('click', '.add_row', function () {
         trigger_rebar_input();
     });
-
-
-    //-- Set rebar result table
-
-
-
-    function update_rebar_results(index) {
-
-        // tensile results table
-        if ($(".results_table_rebar_diagram").length > 1) {
-            $(".results_table_rebar_diagram").last().remove()
-        }
-
-        var table = $(".results_table_rebar_diagram").first().clone().removeClass("hidden")
-        $("#result_table_div_rbr").append(table)
-
-        for (var i = 0; i < session.moment_rebar[index].length; i++) {
-            $(".results_table_row_rbr").last().find(".signifcant_moment").html(Math.round(session.moment_rebar[index][i] / 1e4) / 100)
-            $(".results_table_row_rbr").last().find(".signifcant_row_no").last().html(i + 1)
-            $(".results_table_row_rbr").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_rebar[index][i] * 100) / 100)
-            $(".results_table_row_rbr").first().clone().insertAfter($(".results_table_row_rbr").last())
-        }
-    }
-    
-    $("#result_table_div_rbr").on("change", "#option_rebar_results", function () {
-        var index = parseInt($("#option_rebar_results").val().replace("rebar row #", "")) - 1
-        update_rebar_results(index)
-    })
 
 
 
@@ -399,6 +400,30 @@ $(document).ready(function () {
         calculate_mkappa()
     });
 
+    //-- Set rebar result table
+
+    function update_rebar_results(index) {
+
+        if ($(".results_table_rebar_diagram").length > 1) {
+            $(".results_table_rebar_diagram").last().remove()
+        }
+
+        var table = $(".results_table_rebar_diagram").first().clone().removeClass("hidden")
+        $("#result_table_div_rbr").append(table)
+
+        for (var i = 0; i < session.moment_rebar[index].length; i++) {
+            $(".results_table_row_rbr").last().find(".signifcant_moment").html(Math.round(session.moment_rebar[index][i] / 1e4) / 100)
+            $(".results_table_row_rbr").last().find(".signifcant_row_no").last().html(i + 1)
+            $(".results_table_row_rbr").last().find(".signifcant_kappa").last().html(Math.round(session.kappa_rebar[index][i] * 100) / 100)
+            $(".results_table_row_rbr").first().clone().insertAfter($(".results_table_row_rbr").last())
+        };
+    };
+
+    $("#result_table_div_rbr").on("change", "#option_rebar_results", function () {
+        var index = parseInt($("#option_rebar_results").val().replace("rebar row #", "")) - 1
+        update_rebar_results(index)
+    })
+
 
     // Material library
 
@@ -429,20 +454,22 @@ $(document).ready(function () {
     })
    
     // rebar material
-    $(".rebar_material").change(function () {
+
+    //$(".rebar_material").change(function () {
+    $("#rebar_curves").on("change", ".rebar_material", function () {
         if (this.value !== "custom") {
             var fact = 1.15
             $(parent).find(".rebar_material_factor").val(fact)
 
             // get the value between after 'B' in for instance 'B500'
-            
+
             var fy = this.value.substring(1, 4)
 
             // 3 input rows are needed. Two for the material. 1 hidden.
             parent = $(this).closest(".rebar_curve");
             var n = $(parent).find(".rebar_strain").length;
-          
-     
+
+
             for (n; n < 3; n++) {
                 add_row($(parent).find(".add_row"));
 
@@ -456,8 +483,8 @@ $(document).ready(function () {
             $(parent).find(".rebar_stress")[1].value = fy
             $(parent).find(".rebar_stress")[2].value = fy
             trigger_rebar_strain(parent)
-        }
-    })
+        };
+    });
     
 
     // cross-section type
@@ -482,8 +509,10 @@ $(document).ready(function () {
     // setting up the presettings
     $("#compression_material").val("C20/25")
     $("#compression_material").trigger("change")
-    $(".rebar_material").val("B500")
-    $(".rebar_material").trigger("change")
+    $(".rebar_material")[1].value = "B500"
+    $(".rebar_material").last().trigger("change")
+    //$(".rebar_material").val("B500")
+    //$(".rebar_material").trigger("change")
     $("#cross_section_type").val("rectangle")
     $("#cross_section_type").trigger("change")
     trigger_tens_strain()
