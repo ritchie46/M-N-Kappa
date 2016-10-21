@@ -12,7 +12,7 @@ function PolyGon(point_list) {
     this.y_val = this.det_height_array()
     
     // x_val array has arrays in it representing the results per y_values increment on the y-axis. In these inner arrays are the x-values paired, representing the solid boundaries.
-    this.x_val_array = []
+    this.paired_xvals = []
     this.width_array = []
 
     this.return_x_on_axis()
@@ -95,7 +95,7 @@ PolyGon.prototype.return_x_on_axis = function () {
                 paired_x_vals.push([x_vals[x - 1], x_vals[x]])
             }
         }
-        this.x_val_array.push(paired_x_vals)
+        this.paired_xvals.push(paired_x_vals)
         
         // determine the full width on this y-value by summing the dx in the paired lists.
         var width = 0
@@ -105,21 +105,9 @@ PolyGon.prototype.return_x_on_axis = function () {
         }
         this.width_array.push(Math.abs(width));
     }
-    
+
 };
 
-function linspace (a, b, n) {
-    if (typeof n === 'undefined') n = Math.max(Math.round(b - a) + 1, 1)
-    if (n < 2) {
-        return n === 1 ? [a] : []
-    }
-    var i, ret = Array(n)
-    n--
-    for (i = n; i >= 0; i--) {
-        ret[i] = (i * b + (n - i) * a) / n
-    }
-    return ret
-}
 
 PolyGon.prototype.area = function () {
     var dy = this.y_val[1] 
@@ -132,6 +120,28 @@ PolyGon.prototype.area = function () {
 }
 
 // end class
+
+    function linspace (a, b, n) {
+    if (typeof n === 'undefined') n = Math.max(Math.round(b - a) + 1, 1)
+    if (n < 2) {
+        return n === 1 ? [a] : []
+    }
+    var i, ret = Array(n)
+    n--
+    for (i = n; i >= 0; i--) {
+        ret[i] = (i * b + (n - i) * a) / n
+    }
+    return ret
+    }
+  
+    //function Circle() {
+    //    PolyGon.call(this);  // call super constructor
+    //}
+    
+    //Circle.prototype = Object.create(PolyGon.prototype)
+    //Circle.prototype.constructor = Rectangle;
+
+    //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/create
 
 // return from namespace
 return {

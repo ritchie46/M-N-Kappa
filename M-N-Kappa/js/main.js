@@ -56,7 +56,7 @@ $(document).ready(function () {
 
     function rotate_pg(rotation, x, y) {
 
-        for (i = 0; i < x.length; i++) {
+        for (var i = 0; i < x.length; i++) {
             var p = new vector.Point(x[i], y[i])
             p = p.rotate_origin(rotation / 360 * 2 * Math.PI)
             x[i] = p.x
