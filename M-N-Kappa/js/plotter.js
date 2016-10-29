@@ -44,7 +44,20 @@ var linefunc = d3.line()
 
 
     function draw_polygon(x, y) {
+
+        if (x[0] instanceof vector.Point) {
+            var x2 = []
+            y = []
+            for (i in x) {
+                x2.push(x[i].x)
+                y.push(x[i].y)
+            }
+            x = x2
+        }
         
+        console.log(x)
+        console.log(y)
+
         if (typeof x[0] === "object") {  // x and y are probably from input field.
             x = input_strings_to_floats(x)
             y = input_strings_to_floats(y)

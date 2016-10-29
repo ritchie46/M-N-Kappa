@@ -40,6 +40,7 @@
                                             <select class="form-control" id="cross_section_type">
                                                 <option>custom</option>
                                                 <option>rectangle</option>
+                                                <option>circle</option>
                                                 <option>T-beam</option>
                                                 <option>I-beam</option>
                                             </select>
@@ -81,25 +82,38 @@
 
                             <div id="rectangle_rows" class="cross_section_type hidden">
                                 <div class="rectangle_row">
-                                    <input type="number" min="1" id="width" class="form-control show_tip" placeholder="width" data-toggle="tooltip" data-placement="top" title="Width of the cross section">
+                                    <label class="label_input">Width of the cross section</label>
+                                    <input type="number" min="1" id="width" class="form-control" />
                                 </div>
                                 <div class="rectangle_row">
-                                    <input type="number" min="1" id="height" class="form-control show_tip" placeholder="height" data-toggle="tooltip" data-placement="top" title="Height of the cross section">
+                                    <label class="label_input">Height of the cross section</label>
+                                    <input type="number" min="1" id="height" class="form-control" />
                                 </div>
                             </div>  
 
                             <div id="T-beam_rows" class="cross_section_type hidden">
-                                <div class="T-beam_row ">
-                                    <input type="number" min="1" id="T-beam_width_f" class="form-control show_tip" placeholder="width flange" data-toggle="tooltip" data-placement="top" title="Width of the flange">
+                                <div class="T-beam_row">
+                                    <label class="label_input">Width of the flange</label>
+                                    <input type="number" min="1" id="T-beam_width_f" class="form-control " value="500" />
                                 </div>
-                                <div class="T-beam_row "">
-                                    <input type="number" min="1" id="T-beam_height_f" class="form-control show_tip" placeholder="height flange" data-toggle="tooltip" data-placement="top" title="Height of the flange">
+                                <div class="T-beam_row">
+                                    <label class="label_input">Thickness of the flange</label>
+                                    <input type="number" min="1" id="T-beam_height_f" class="form-control" value="200" />
                                 </div>
-                                <div class="T-beam_row ">
-                                    <input type="number" min="1" id="T-beam_width_w" class="form-control show_tip" placeholder="width web" data-toggle="tooltip" data-placement="top" title="Width of the web">
+                                <div class="T-beam_row">
+                                    <label class="label_input">Width of the web</label>
+                                    <input type="number" min="1" id="T-beam_width_w" class="form-control " value="200" />
                                 </div>
-                                <div class="T-beam_row ">
-                                    <input type="number" min="1" id="T-beam_height_w" class="form-control show_tip" placeholder="height web" data-toggle="tooltip" data-placement="top" title="Height of the web">
+                                <div class="T-beam_row">
+                                    <label class="label_input">Height of the web</label>
+                                    <input type="number" min="1" id="T-beam_height_w" class="form-control " value="150" />
+                                </div>
+                            </div>  
+
+                            <div id="circle_rows" class="cross_section_type hidden">
+                                <div class="circle_row">
+                                    <label class="label_input">Radius</label>
+                                    <input type="number" min="1" id="circle_radius" class="form-control" value="100" />
                                 </div>
                             </div>  
 
@@ -147,7 +161,15 @@
                                     </tr>
                                 </tbody>
                             </table>
+
                             <hr />
+                            <div class="col-xs-5">
+                                <label>Strain</label>
+                            </div>
+                            <div class="col-xs-7">
+                                <label>Stress</label>
+                            </div>
+
                             <div class="row custom_row hidden">
                                 <div class="col-xs-5">
                                     <input type="number" min="1" class="comp_strain form-control" placeholder="strain" >
@@ -187,6 +209,7 @@
                     </div>
                 </div>
             </div>
+
             <!--stress strain diagrams Tensile -->
             <div class="row">
                 <div id="tens_curve" class="panel panel-default">
@@ -214,6 +237,13 @@
                                 </tbody>
                             </table>
                             <hr />
+
+                            <div class="col-xs-5">
+                                <label>Strain</label>
+                            </div>
+                            <div class="col-xs-7">
+                                <label>Stress</label>
+                            </div>
 
                             <div class="row custom_row hidden">
                                 <div class="col-xs-5">
@@ -264,17 +294,29 @@
                         </h3>
                     </div>
 
+                    <div class="col-xs-12">
+                        <div class="col-xs-3">
+                            <label>Rebar area</label>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>Distance rebar to top cross-section</label>
+                        </div>
+                        <div class="col-xs-6">
+                            <label>Stress-strain-diagram</label>
+                        </div>
+                    </div>
+
                     <div class="panel-collapse collapse">
                         <div class="panel-body rebar_input">
                             <div class="row custom_row hidden">
                                 <div class="col-xs-3">
-                                    <input type="number" class="rebar_As form-control" placeholder="As" data-toggle="tooltip" data-placement="top" title="Area of the rebar">
+                                    <input type="number" class="rebar_As form-control" placeholder="As" >
                                 </div>
                                 <div class="col-xs-3">
-                                    <input type="number" class="rebar_d form-control show_tip" placeholder="d" data-toggle="tooltip" data-placement="top" title="Distance rebar to top cross-section">
+                                    <input type="number" class="rebar_d form-control show_tip" placeholder="d" >
                                 </div>
                                 <div class="col-xs-4">
-                                    <select class="form-control rebar_material_select" data-toggle="tooltip" data-placement="top" title="Stress-strain-diagram">
+                                    <select class="form-control rebar_material_select" >
                                         <option>diagram #1</option>
                                     </select>
                                 </div>
@@ -286,13 +328,13 @@
 
                             <div class="row custom_row">
                                 <div class="col-xs-3">
-                                    <input type="number" class="rebar_As form-control" value="1005" placeholder="As" data-toggle="tooltip" data-placement="top" title="Area of the rebar">
+                                    <input type="number" class="rebar_As form-control" value="1005" placeholder="As" />
                                 </div>
                                 <div class="col-xs-3">
-                                    <input type="number" class="rebar_d form-control show_tip" value="450" placeholder="d" data-toggle="tooltip" data-placement="top" title="Distance rebar to top cross-section">
+                                    <input type="number" class="rebar_d form-control show_tip" value="450" placeholder="d" />
                                 </div>
                                 <div class="col-xs-4">
-                                    <select class="form-control rebar_material_select"  data-toggle="tooltip" data-placement="top" title="Stress-strain-diagram">
+                                    <select class="form-control rebar_material_select">
                                         <option>diagram #1</option>
                                     </select>
                                 </div>
@@ -353,6 +395,13 @@
                                     </tbody>
                                 </table>
                                 <hr />
+
+                                <div class="col-xs-5">
+                                    <label>Strain</label>
+                                </div>
+                                <div class="col-xs-7">
+                                    <label>Stress</label>
+                                </div>
 
                                 <div class="row custom_row hidden">
                                     <div class="col-xs-5">
@@ -421,6 +470,13 @@
                                     </tbody>
                                 </table>
                                 <hr />
+
+                                <div class="col-xs-5">
+                                    <label>Strain</label>
+                                </div>
+                                <div class="col-xs-7">
+                                    <label>Stress</label>
+                                </div>
 
                                 <div class="row custom_row hidden">
                                     <div class="col-xs-5">

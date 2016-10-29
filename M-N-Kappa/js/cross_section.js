@@ -133,19 +133,34 @@ PolyGon.prototype.area = function () {
     }
     return ret
     }
-  
-    //function Circle() {
-    //    PolyGon.call(this);  // call super constructor
-    //}
     
-    //Circle.prototype = Object.create(PolyGon.prototype)
-    //Circle.prototype.constructor = Rectangle;
+ 
+    function Circle(radius) {
+        var n = 100;
+        var alpha0 = Math.PI * 2 / n;
+        var pl = [];
+        var p0 = new vector.Point(0, -radius);
+        var p_set = new vector.Point(radius, radius);
+        for (var i = 1; i <= n; i++) {
+            var alpha = alpha0 * i
+            
+            var p = p0.rotate_origin(alpha);
+            p = new vector.Point(p.x + p_set.x, p.y + p_set.y)
+          
+            pl.push(p)
+        }
 
-    //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/create
+        PolyGon.call(this, pl);  // call super constructor
+    }
+
+    Circle.prototype = Object.create(PolyGon.prototype)
+    Circle.prototype.constructor = Circle;
+
 
 // return from namespace
 return {
-    PolyGon: PolyGon
+    PolyGon: PolyGon,
+    Circle: Circle
 }
     
 })();  // crsn namespace

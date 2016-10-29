@@ -135,7 +135,15 @@ $(document).ready(function () {
                 $("#area").html("Area: " + session.mkap.cross_section.area())
             }
         }
-          
+        else if (choice == "circle") {
+            var radius = parseFloat(document.getElementById("circle_radius").value);
+            console.log(document.getElementById("circle_radius").value);
+            console.log("radius", radius)
+            session.mkap.cross_section = new crsn.Circle(radius);
+            plt.draw_polygon(session.mkap.cross_section.point_list)
+            console.log(session.mkap.cross_section.point_list)
+            $("#area").html("Area: " + session.mkap.cross_section.area())
+        }
     }
 
     
@@ -507,6 +515,10 @@ $(document).ready(function () {
         else if (this.value == "T-beam" || this.value == "I-beam") {
             $(".cross_section_type").addClass("hidden")
             $("#T-beam_rows").removeClass("hidden")
+        }
+        else if (this.value == "circle") {
+            $(".cross_section_type").addClass("hidden")
+            $("#circle_rows").removeClass("hidden")
         }
         trigger_polygon()
     });
