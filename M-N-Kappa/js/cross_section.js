@@ -86,6 +86,8 @@ PolyGon.prototype.return_x_on_axis = function () {
             };
             
         };
+        // switch the last index to the front
+        x_vals.sort(function (a, b) { return a - b });
 
         // x_vals contains the x-values. x1 and x2 is solid, x2 and x3 is void, x3 and x4 is solid etc.
         // Pair the solid x-values like so: [[x1, x2], [x3, x4]]
@@ -97,16 +99,14 @@ PolyGon.prototype.return_x_on_axis = function () {
             }
         }
         this.paired_xvals.push(paired_x_vals)
-        
+
         // determine the full width on this y-value by summing the dx in the paired lists.
         var width = 0
         for (var a = 0; a < paired_x_vals.length; a++) {
-
             width += paired_x_vals[a][1] - paired_x_vals[a][0]
         }
         this.width_array.push(Math.abs(width));
     }
-
 };
 
 

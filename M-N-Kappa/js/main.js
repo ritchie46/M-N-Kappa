@@ -7,6 +7,7 @@ Note to self:
 var DEBUG = true
 
 $(document).ready(function () {
+
     $('[data-toggle="tooltip"]').tooltip();
 
     // General collapse panel logic
@@ -85,7 +86,7 @@ $(document).ready(function () {
             y = rotation_pg.y
             var point_list = plt.draw_polygon(x, y, session);
             // add polygon to session
-            session.mkap.cross_section = new crsn.PolyGon(point_list)
+            //session.mkap.cross_section = new crsn.PolyGon(point_list)
             //session.mkap.cross_section.return_x_on_axis()
             $("#area").html("Area: " + session.mkap.cross_section.area())
         }
@@ -101,7 +102,7 @@ $(document).ready(function () {
 
             if (width > 0 && height > 0) {
                 var point_list = plt.draw_polygon(x, y, session);
-                session.mkap.cross_section = new crsn.PolyGon(point_list)
+                //session.mkap.cross_section = new crsn.PolyGon(point_list)
                 $("#area").html("Area: " + session.mkap.cross_section.area())
             }
         }
@@ -131,7 +132,7 @@ $(document).ready(function () {
 
             if (w_w > 0 && w_f > 0 && h_w > 0 && h_f > 0) {
                 var point_list = plt.draw_polygon(x, y, session);
-                session.mkap.cross_section = new crsn.PolyGon(point_list)
+                //session.mkap.cross_section = new crsn.PolyGon(point_list)
                 $("#area").html("Area: " + session.mkap.cross_section.area())
             }
         }
@@ -292,7 +293,6 @@ $(document).ready(function () {
     // Watch on #rebar_curves to add rows for every new diagram.
     // Do not forget to change the numbering of the id's when making a clone.
  
-
     // rebar area
     function trigger_rebar_input() {
         // reset
@@ -324,6 +324,7 @@ $(document).ready(function () {
             // set the rebar options in the results table
             $("#option_rebar_results").append("<option>rebar row #%s</option>".replace("%s", i + 1))
         }
+        trigger_polygon();
     }
     
     $('.rebar_input').on('click', '.remove_row', function () {
@@ -355,7 +356,7 @@ $(document).ready(function () {
         var sol = session.calculate_significant_points()
         var moment = sol.moment
         var kappa = sol.kappa
-
+        
         moment.unshift(0)
         kappa.unshift(0)
 
@@ -364,7 +365,7 @@ $(document).ready(function () {
         var html_moment = Math.round(Math.max.apply(null, moment) / Math.pow(10, 6) * 100) / 100
         $("#MRd").removeClass("hidden")
         $("#MRd").html("Maximum moment: %s * 10<sup>6</sup>".replace("%s", html_moment))
-
+        console.log(sol.moment, "html", html_moment)
         //-- display results in result tables --//
 
         // compression results table
@@ -529,13 +530,14 @@ $(document).ready(function () {
     $(".rebar_material").last().trigger("change")
     $("#cross_section_type").val("rectangle")
     $("#cross_section_type").trigger("change")
+    
     trigger_tens_strain()
 
     $("#width").val(400)
     $("#height").val(500)
     trigger_polygon()
-    
-
+    $(".rebar_As").trigger("change")
+   
     // Logic for collapsing the input divs
     $("#collapse_polygon").collapse("show");
     $("#comp_curve").find(".panel-collapse").collapse("show");

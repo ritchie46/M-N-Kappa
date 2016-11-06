@@ -61,7 +61,7 @@ var linefunc = d3.line()
         /// <param name="session" type="object"> From the session class.
 
         // default parameter
-        var add_to_mkap = (typeof floats !== "undefined") ? floats : true;
+        var add_to_mkap = (typeof add_to_mkap !== "undefined") ? add_to_mkap : true;
 
         if (x[0] instanceof vector.Point) {
             var x2 = []
@@ -160,8 +160,14 @@ var linefunc = d3.line()
         };
         // rebar plots
         // reset the plots
+        data = []
+        var arr = [0, 0, 0]
+        for (var i = 0; i < 50; i++) {
+            data.push(arr)
+        }
+
         svg_cross_section.selectAll("circle")
-        .data([0, 0, 0])
+        .data(data)
         .attr("cx", function (d) {
             return d[0]
         })
@@ -176,7 +182,7 @@ var linefunc = d3.line()
         for (var i = 0; i < session.mkap.rebar_As.length; i++) {
             // Determine the height and the boundary location of the rebar. The edges of the cross-section are boundaries.
             var z = session.mkap.rebar_z[i];
-            if (session.mkap.cross_section.top - z < session.mkap.cross_section.top) {
+            if (z < session.mkap.cross_section.top && z > session.mkap.cross_section.bottom) {
 
                 var n = 3;
                 var ndx = std.nearest_index(session.mkap.cross_section.y_val, z);

@@ -71,14 +71,13 @@ var std = (function () {
 
 
 
-
     // return from namespace
     return {
         interpolate: interpolate,
         convergence: convergence,
         convergence_conditions: convergence_conditions,
         is_number: is_number,
-        nearest_index: nearest_index
+        nearest_index: nearest_index,
     }
     
 })();  // std namespace
