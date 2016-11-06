@@ -55,6 +55,19 @@ var std = (function () {
         }
     }
 
+    function nearest_index(arr, x) {
+        /* 
+        Return the nearest indexes of an array.
+        */
+        var lower = [];
+        var higher = [];
+
+        arr.forEach(function (val) {
+            ((val < x) && lower.push(val) || (val > x) && higher.push(val))
+        });
+        return {"low": arr.indexOf(Math.max.apply(null, lower)), "high": arr.indexOf(Math.min.apply(null, higher))}
+    }
+
 
 
 
@@ -64,7 +77,8 @@ var std = (function () {
         interpolate: interpolate,
         convergence: convergence,
         convergence_conditions: convergence_conditions,
-        is_number: is_number
+        is_number: is_number,
+        nearest_index: nearest_index
     }
     
 })();  // std namespace

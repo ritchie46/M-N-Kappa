@@ -9,6 +9,7 @@ function PolyGon(point_list) {
     this.n_value = 1000
     this.top = this.heighest_point('y').y
     this.bottom = this.lowest_point('y').y
+    // all the values on the y-axis
     this.y_val = this.det_height_array()
     
     // x_val array has arrays in it representing the results per y_values increment on the y-axis. In these inner arrays are the x-values paired, representing the solid boundaries.

@@ -83,7 +83,7 @@ $(document).ready(function () {
             var rotation_pg = rotate_pg(rotation, x, y)
             x = rotation_pg.x
             y = rotation_pg.y
-            var point_list = plt.draw_polygon(x, y);
+            var point_list = plt.draw_polygon(x, y, session);
             // add polygon to session
             session.mkap.cross_section = new crsn.PolyGon(point_list)
             //session.mkap.cross_section.return_x_on_axis()
@@ -100,7 +100,7 @@ $(document).ready(function () {
             y = rotation_pg.y
 
             if (width > 0 && height > 0) {
-                var point_list = plt.draw_polygon(x, y);
+                var point_list = plt.draw_polygon(x, y, session);
                 session.mkap.cross_section = new crsn.PolyGon(point_list)
                 $("#area").html("Area: " + session.mkap.cross_section.area())
             }
@@ -130,18 +130,15 @@ $(document).ready(function () {
             y = rotation_pg.y
 
             if (w_w > 0 && w_f > 0 && h_w > 0 && h_f > 0) {
-                var point_list = plt.draw_polygon(x, y);
+                var point_list = plt.draw_polygon(x, y, session);
                 session.mkap.cross_section = new crsn.PolyGon(point_list)
                 $("#area").html("Area: " + session.mkap.cross_section.area())
             }
         }
         else if (choice == "circle") {
             var radius = parseFloat(document.getElementById("circle_radius").value);
-            console.log(document.getElementById("circle_radius").value);
-            console.log("radius", radius)
             session.mkap.cross_section = new crsn.Circle(radius);
-            plt.draw_polygon(session.mkap.cross_section.point_list)
-            console.log(session.mkap.cross_section.point_list)
+            plt.draw_polygon(session.mkap.cross_section.point_list, "notused", session, false)
             $("#area").html("Area: " + session.mkap.cross_section.area())
         }
     }

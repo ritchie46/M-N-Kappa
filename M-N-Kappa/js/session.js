@@ -19,6 +19,10 @@ function Session() {
     this.sign_stress_rbr = []
     this.sign_strain_rbr = []
 
+    // scale parameters of the cross section svg
+    this.bound_max = null
+    this.range_scale = null
+
 }
 
 
@@ -140,9 +144,7 @@ Session.prototype.calculate_significant_points = function () {
                 }
                 count += 1
             }
-
         }
-
     }
 
 
