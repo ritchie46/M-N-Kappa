@@ -293,7 +293,7 @@
                             <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
                         </h3>
                     </div>
-
+                    <div class="panel-collapse collapse">
                     <div class="col-xs-12">
                         <div class="col-xs-3">
                             <label>Rebar area</label>
@@ -306,7 +306,7 @@
                         </div>
                     </div>
 
-                    <div class="panel-collapse collapse">
+
                         <div class="panel-body rebar_input">
                             <div class="row custom_row hidden">
                                 <div class="col-xs-3">
@@ -592,6 +592,7 @@
                                                 <th>stress</th>
                                                 <th>moment</th>
                                                 <th>kappa</th>
+                                                <th>show</th>
                                             </tr>
                                             <tr>
                                                 <th>#</th>
@@ -608,6 +609,11 @@
                                                 <td class="significant_stress"></td>
                                                 <td class="significant_moment"></td>
                                                 <td class="significant_kappa"></td>
+                                                <td>
+                                                    <button type="button" class="btn btn-default show_tip show_section_btn hidden" data-toggle="tooltip" data-placement="top" title="show section">
+                                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                                    </button>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -637,6 +643,7 @@
                                                 <th>stress</th>
                                                 <th>moment</th>
                                                 <th>kappa</th>
+                                                <th>show</th>
                                             </tr>
                                             <tr>
                                                 <th>#</th>
@@ -653,6 +660,11 @@
                                                 <td class="significant_stress"></td>
                                                 <td class="significant_moment"></td>
                                                 <td class="significant_kappa"></td>
+                                                <td>
+                                                    <button type="button" class="btn btn-default show_tip show_section_btn hidden" data-toggle="tooltip" data-placement="top" title="show section">
+                                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                                    </button>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -685,6 +697,7 @@
                                                 <th>stress</th>
                                                 <th>moment</th>
                                                 <th>kappa</th>
+                                                <th>show</th>
                                             </tr>
                                             <tr>
                                                 <th>#</th>
@@ -701,6 +714,11 @@
                                                 <td class="significant_stress"></td>
                                                 <td class="significant_moment"></td>
                                                 <td class="significant_kappa"></td>
+                                                <td>
+                                                    <button type="button" class="btn btn-default show_tip show_section_btn hidden" data-toggle="tooltip" data-placement="top" title="show section">
+                                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                                    </button>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -715,12 +733,38 @@
 
 
   </div>
+
+    <div class="container">
+        <h2>Activate Modal with JavaScript</h2>
+        <!-- Trigger the modal with a button -->
+        <button type="button" class="btn btn-info btn-lg" id="myBtn">Open Modal</button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">cross section</h4>
+                    </div>
+                    <div class="modal-body" id="modal-svg">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
             <!--ROW 1 END -->
     <!-- %s2 -->
 <!-- split stop -->
-
-
-
 
 
 

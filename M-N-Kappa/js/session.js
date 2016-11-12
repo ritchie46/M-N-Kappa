@@ -1,4 +1,4 @@
-﻿"use strict"
+﻿"use strict";
 //class
 function Session() {
     this.mkap = null;
@@ -20,11 +20,51 @@ function Session() {
     this.sign_stress_rbr = [];
     this.sign_strain_rbr = [];
 
-    // scale parameters of the cross section svg
-    this.bound_max = null;
-    this.range_scale = null;
+    // session objects
+    this.sign_tensile_mkap = [];
+    this.sign_compression_mkap = [];
+    this.sign_rebar_mkap = [];
+
 
 }
+
+Session.prototype.compute_moment = function (moment) {
+    var top_str = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - i] * 0.5;
+    this.mkap.solver(true, top_str);
+    var count = 0;
+    var factor;
+    while (1) {
+        if (std.convergence_conditions(Math.abs(this.mkap.moment), moment, 1.001, 0.999)) {
+            if (window.DEBUG) {
+                console.log("convergence after %s iterations".replace("%s", count))
+            }
+            this.mkap.det_m_kappa();
+            if (this.mkap.validity()) {
+                moment.push(Math.abs(this.mkap.moment));
+                kappa.push(Math.abs(this.mkap.kappa));
+                this.moment_rebar[i].push(Math.abs(this.mkap.moment));
+                this.kappa_rebar[i].push(Math.abs(this.mkap.kappa));
+
+                this.sign_stress_rbr[i].push(this.mkap.rebar_force[i] / this.mkap.rebar_As[i]);
+                this.sign_strain_rbr[i].push(this.mkap.rebar_strain[i])
+
+            }
+            break
+        }
+        factor = std.convergence(Math.abs(this.mkap.moment), moment, 5);
+        top_str *= factor;
+
+        this.mkap.solver(true, top_str, false);
+
+        if (count > 50) {
+            if (window.DEBUG) {
+                console.log("no rebar convergence found after %s iterations".replace("%s", count))
+            }
+            break
+        }
+        count += 1;
+    }
+};
 
 
 Session.prototype.calculate_significant_points = function () {
@@ -49,6 +89,9 @@ Session.prototype.calculate_significant_points = function () {
     this.sign_strain_tens = [];
     this.sign_stress_rbr = [];
     this.sign_strain_rbr = [];
+    this.sign_tensile_mkap = [];
+    this.sign_compression_mkap = [];
+    this.sign_rebar_mkap = [];
 
     // Solve for significant points in compression diagram
     for (var i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
@@ -61,14 +104,17 @@ Session.prototype.calculate_significant_points = function () {
             moment.push(Math.abs(this.mkap.moment));
             kappa.push(Math.abs(this.mkap.kappa));
             this.moment_compression.push(Math.abs(this.mkap.moment));
-            this.kappa_compression.push(Math.abs(this.mkap.kappa))
-            this.sign_strain_comp.push(this.mkap.strain_top)
+            this.kappa_compression.push(Math.abs(this.mkap.kappa));
+            this.sign_strain_comp.push(this.mkap.strain_top);
+
+            // make sure you get -3.5 promille instead of a value of zero
             if (this.mkap.stress[this.mkap.stress.length - 1] < 0) {
                 this.sign_stress_comp.push(this.mkap.stress[this.mkap.stress.length - 1])
             }
             else {
                 this.sign_stress_comp.push(this.mkap.stress[this.mkap.stress.length - 2])
             }
+            this.sign_compression_mkap.push(JSON.parse(JSON.stringify(this.mkap)));
         }
     }
 
@@ -86,11 +132,11 @@ Session.prototype.calculate_significant_points = function () {
             this.moment_tensile.push(Math.abs(this.mkap.moment));
             this.kappa_tensile.push(Math.abs(this.mkap.kappa));
             this.sign_stress_tens.push(this.mkap.stress[0]);
-            this.sign_strain_tens.push(this.mkap.strain_btm)
+            this.sign_strain_tens.push(this.mkap.strain_btm);
+            this.sign_tensile_mkap.push(JSON.parse(JSON.stringify(this.mkap))); // Copies the object
 
         }
     }
-
 
     // Solve for significant in the rebars material diagram. 
     //Loop for the variable number of rebar inputs
@@ -99,6 +145,7 @@ Session.prototype.calculate_significant_points = function () {
         this.kappa_rebar[i] = [];
         this.sign_stress_rbr[i] = [];
         this.sign_strain_rbr[i] = [];
+        this.sign_rebar_mkap[i] = [];
 
         // Loop for the significant points in the rebars material stress strain diagram.
         for (var a = 1; a < this.mkap.rebar_diagram[i].strain.length; a++) {
@@ -106,7 +153,7 @@ Session.prototype.calculate_significant_points = function () {
 
             top_str = sign_strain * 0.5;  // start the iteration at the half of the rebar strain.
             // looper rebar
-            this.mkap.solver(true, top_str, false)
+            this.mkap.solver(true, top_str, false);
 
             // iterate until the convergence criteria is met
             var count = 0;
@@ -122,9 +169,9 @@ Session.prototype.calculate_significant_points = function () {
                         kappa.push(Math.abs(this.mkap.kappa));
                         this.moment_rebar[i].push(Math.abs(this.mkap.moment));
                         this.kappa_rebar[i].push(Math.abs(this.mkap.kappa));
-  
                         this.sign_stress_rbr[i].push(this.mkap.rebar_force[i] / this.mkap.rebar_As[i]);
-                        this.sign_strain_rbr[i].push(this.mkap.rebar_strain[i])
+                        this.sign_strain_rbr[i].push(this.mkap.rebar_strain[i]);
+                        this.sign_rebar_mkap[i].push(JSON.parse(JSON.stringify(this.mkap)));
 
                     }
                     break
@@ -146,7 +193,6 @@ Session.prototype.calculate_significant_points = function () {
             }
         }
     }
-
 
     // sort the arrays on inclining kappa.
     a = [];
@@ -178,14 +224,12 @@ Session.prototype.calculate_significant_points = function () {
         kappa: kappa
     }
 
-
-
-}
+};
 // end class
 
-var session = new Session()
-session.mkap = new mkap.MomentKappa()
-session.mkap.tensile_diagram = new mkap.StressStrain([0], [0])
+var session = new Session();
+session.mkap = new mkap.MomentKappa();
+session.mkap.tensile_diagram = new mkap.StressStrain([0], [0]);
 
 
 var extract_floats = function (arr) {
@@ -194,13 +238,13 @@ var extract_floats = function (arr) {
     Casts the strings to floats and pops invalid data from the array.
     */
 
-    var data = []
+    var data = [];
 
     for (var i = 0; i < arr.length; i++) {
         if (arr[i].value.length > 0) { // input field is filled
-            var val = parseFloat(arr[i].value)
+            var val = parseFloat(arr[i].value);
             data.push(val)
         }
     }
     return data
-}
+};

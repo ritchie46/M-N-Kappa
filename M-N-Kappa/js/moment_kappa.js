@@ -199,10 +199,10 @@ var mkap = (function () {
                 else {
 
                     var factor = std.convergence(this.force_tensile, this.force_compression, this.div);
-                    btm_str = btm_str * factor
+                    btm_str = btm_str * factor;
                 }
                 
-                this.det_force_distribution(top_str, btm_str)
+                this.det_force_distribution(top_str, btm_str);
                 if (count > this.iterations) {
                     if (print) {
                         if (window.DEBUG) {
@@ -228,9 +228,9 @@ var mkap = (function () {
                 }
 
                 var factor = std.convergence(this.force_compression, this.force_tensile, this.div);
-                top_str = top_str * factor
+                top_str = top_str * factor;
      
-                this.det_force_distribution(top_str, btm_str)
+                this.det_force_distribution(top_str, btm_str);
 
                 if (count > this.iterations) {
                     if (print) {

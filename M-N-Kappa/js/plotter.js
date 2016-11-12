@@ -11,38 +11,17 @@ var plt = (function () {
         offset_origin_y: 0
     };
 
-    var svg_cross_section = d3.select("#pg_svg").append("svg")
-    .attr("width", settings.width)
-    .attr("height", settings.height)
-    .append('g'); // groups svg shapes
+    var linefunc = d3.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; });
 
-
-var linefunc = d3.line()
-        .x(function(d) { return d.x; })
-        .y(function(d) { return d.y; });
-  
-    svg_cross_section.selectAll("path")
-    .data([{ x: 0, y: 0 }])
-    .enter()
-    .append("path")
-    .attr("d", linefunc(0))
-    .attr("stroke", "black")
-    .attr("stroke-width", 2)
-    .attr("fill", "#BDBDBD");
-
-    svg_cross_section.selectAll("circle")
-   .data(Array.apply(null, Array(500)).map(Number.prototype.valueOf, 0))
-   .enter()
-   .append("circle")
-   .attr("cx", function (d) {
-       return d[0]
-   })
-   .attr("cy", function (d) {
-       return d[1]
-   })
-    .attr("r", function (d) {
-        return d[2]
-    });
+    var line_append = function(svg, data, color, stroke_width){
+        svg.append("svg:path")
+            .attr("d", linefunc(data))
+            .attr("stroke", color)
+            .attr("stroke-width", stroke_width)
+            .attr("fill", "none");
+    };
 
 
     function input_strings_to_floats(arr) {
@@ -53,9 +32,33 @@ var linefunc = d3.line()
         }
         return new_arr
 }
+    var svg_cross_section = d3.select("#pg_svg").append("svg")
+        .attr("width", settings.width)
+        .attr("height", settings.height)
+        .append('g'); // groups svg shapes
 
-    
+    svg_cross_section.selectAll("path")
+        .data([{ x: 0, y: 0 }])
+        .enter()
+        .append("path")
+        .attr("d", linefunc(0))
+        .attr("stroke", "black")
+        .attr("stroke-width", 2)
+        .attr("fill", "#BDBDBD");
 
+    svg_cross_section.selectAll("circle")
+        .data(Array.apply(null, Array(500)).map(Number.prototype.valueOf, 0))
+        .enter()
+        .append("circle")
+        .attr("cx", function (d) {
+            return d[0]
+        })
+        .attr("cy", function (d) {
+            return d[1]
+        })
+        .attr("r", function (d) {
+            return d[2]
+        });
 
     function draw_polygon(x, y, session, add_to_mkap) {
         /// <param name="session" type="object"> From the session class.
@@ -390,12 +393,69 @@ var linefunc = d3.line()
             .call(yaxis);
     }
 
+    var cross_section_view = function(selector, mkap) {
+        var svg = d3.select(selector).append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append('g');
+
+        var min_x = mkap.strain_top;
+        var max_x = mkap.strain_btm;
+        var min_y = mkap.cross_section.bottom;
+        var max_y = mkap.cross_section.top;
+        var origin_x = 0 - min_x;
+        max_y -= min_y;
+        max_x -= min_x; min_x -= min_x;
+
+        var scale_x = d3.scaleLinear().domain([0, max_x]).range([0, width]);
+        var scale_y = d3.scaleLinear().domain([0, max_y]).range([0, height]);
+
+        var z_top = 0; var z_btm = mkap.cross_section.top;
+
+        var data = [
+            {x:origin_x, y: z_top},
+            {x: min_x, y: z_top},
+            {x: max_x, y: z_btm},
+            {x: origin_x, y: z_btm},
+            {x: origin_x, y: z_top}
+        ];
+
+        var count = 0;
+        data.forEach(function (i) {
+            data[count] = {x: scale_x(i.x), y: scale_y(i.y)};
+            count++;
+        });
+
+        svg.append("svg:path")
+            .attr("d", linefunc(data))
+            .attr("stroke", "black")
+            .attr("stroke-width", 1)
+            .attr("fill", "none");
+
+        var y;
+        var x;
+        min_x = mkap.strain_top;
+        for (var i = 0; i < mkap.rebar_z.length; i++){
+            y = mkap.cross_section.top - mkap.rebar_z[i];
+            x = mkap.rebar_strain[i] - min_x;
+            console.log(mkap.rebar_strain[i], min_x);
+            line_append(svg, [
+                {x: scale_x(origin_x), y: scale_y(y)},
+                {x: scale_x(x), y: scale_y(y)}
+            ], "blue", 2);
+        }
+        console.log(mkap)
+
+
+    };
+
 
     return {
         draw_polygon: draw_polygon,
         draw_lines: draw_lines,
         add_svg: add_svg,
-        input_strings_to_floats: input_strings_to_floats
+        input_strings_to_floats: input_strings_to_floats,
+        cross_section_view: cross_section_view
     }
 
 })();  // plt namespace

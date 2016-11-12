@@ -28,7 +28,6 @@ $(document).ready(function () {
         add_row($(this))
     });
 
-
     // General remove panel row logic
     function remove_row(self) {
         self.closest('.custom_row').remove()
@@ -37,6 +36,8 @@ $(document).ready(function () {
     $(".panel").on("click", ".remove_row", function () {
         remove_row($(this))
     });
+
+
 
     var $slct = $('#pg_body');
     //Call polygon draw function if row is removed
@@ -74,7 +75,7 @@ $(document).ready(function () {
         // plotter draws polygon and returns the polygons Points (Point class) in a list.
         var $slct = $("#pg_rotation");
         var rotation = (isNaN(parseFloat($slct.val()))) ? 0 : parseFloat($slct.val());
-        var choice = $("#cross_section_type").val()
+        var choice = $("#cross_section_type").val();
         if (choice == "custom") {
             x = document.getElementsByClassName("xval");
             y = document.getElementsByClassName("yval");
@@ -123,11 +124,11 @@ $(document).ready(function () {
             else if (choice == "I-beam") {
                 var x = [0.5 * w_f, 0.5 * w_f, 0.5 * w_w, 0.5 * w_w, 0.5 * w_f, 0.5 * w_f, -0.5 * w_f, -0.5 * w_f, -0.5 * w_w, -0.5 * w_w, -0.5 * w_f, -0.5 * w_f];
                 var y = [0, h_f, h_f, h_w + h_f, h_w + h_f, 2 * h_f + h_w, 2 * h_f + h_w, h_w + h_f, h_w + h_f, h_f, h_f, 0];
-            };
+            }
 
-            rotation_pg = rotate_pg(rotation, x, y)
-            x = rotation_pg.x
-            y = rotation_pg.y
+            rotation_pg = rotate_pg(rotation, x, y);
+            x = rotation_pg.x;
+            y = rotation_pg.y;
 
             if (w_w > 0 && w_f > 0 && h_w > 0 && h_f > 0) {
                 var point_list = plt.draw_polygon(x, y, session);
@@ -138,7 +139,7 @@ $(document).ready(function () {
         else if (choice == "circle") {
             var radius = parseFloat(document.getElementById("circle_radius").value);
             session.mkap.cross_section = new crsn.Circle(radius);
-            plt.draw_polygon(session.mkap.cross_section.point_list, "notused", session, false)
+            plt.draw_polygon(session.mkap.cross_section.point_list, "notused", session, false);
             $("#area").html("Area: " + session.mkap.cross_section.area())
         }
     }
@@ -162,11 +163,11 @@ $(document).ready(function () {
         for (var i = 0; i < stress.length; i++) {
             stress[i] /= parseFloat($("#comp_material_factor").val())
         }
-        session.mkap.compressive_diagram = new mkap.StressStrain(strain, stress)
-    }
+        session.mkap.compressive_diagram = new mkap.StressStrain(strain, stress);
+    };
 
     function trigger_normal_force() {
-        var N = parseFloat($("#normal_force").val()) * 1e3
+        var N = parseFloat($("#normal_force").val()) * 1e3;
         if (isNaN(N)) {
             N = 0
         }
@@ -218,7 +219,7 @@ $(document).ready(function () {
     });
 
     $('#tens_curve_body').on('click', '.remove_row', function () {
-        $(this).closest('.custom_row').remove()
+        $(this).closest('.custom_row').remove();
         trigger_tens_strain();
     });
 
@@ -280,16 +281,17 @@ $(document).ready(function () {
     var n_rebar_curves = 1;
     $("#add_rbr_diagram").click(function () {
         n_rebar_curves += 1;
-        var clone = $(".rebar_curve").last().clone().removeClass("hidden");
+        $slct = $(".rebar_curve")
+        var clone = $slct.last().clone().removeClass("hidden");
         clone.attr("id", "rebar_curve_" + n_rebar_curves);
         var svg = clone.find(".rebar_strain_svg_div");
         svg.attr("id", "rebar_svg_" + n_rebar_curves);
-        $(".rebar_curve").last().after(clone);
+        $slct.last().after(clone);
         $(".diagram_header").last().html("Diagram #" + n_rebar_curves);
         trigger_rebar_strain(clone);
 
         // Append the diagram options at the rebar input fields
-        $("#rebar_material_select").append("<option>diagram #%d</option>".replace("%d", n_rebar_curves))
+        $(".rebar_material_select").append("<option>diagram #%d</option>".replace("%d", n_rebar_curves));
     });
 
 
@@ -307,7 +309,8 @@ $(document).ready(function () {
         var As = document.getElementsByClassName("rebar_As");
         var d = document.getElementsByClassName("rebar_d");
         var rebar_diagram = document.getElementsByClassName("rebar_material_select");
-        $("#option_rebar_results").empty();
+        $slct = $("#option_rebar_results");
+        $slct.empty();
 
         As = extract_floats(As);
         d = extract_floats(d);
@@ -326,7 +329,7 @@ $(document).ready(function () {
             session.mkap.rebar_diagram[i] = session.rebar_diagrams[no_of_diagram - 1];
 
             // set the rebar options in the results table
-            $("#option_rebar_results").append("<option>rebar row #%s</option>".replace("%s", i + 1))
+            $slct.append("<option>rebar row #%s</option>".replace("%s", i + 1))
         }
         trigger_polygon();
     }
@@ -374,42 +377,48 @@ $(document).ready(function () {
         //-- display results in result tables --//
 
         // compression results table
-        if ($(".results_table_compression_diagram").length > 1) {
-            $(".results_table_compression_diagram").last().remove()
+        $slct = $(".results_table_compression_diagram");
+        if ($slct.length > 1) {
+            $slct.last().remove()
         }
 
-        table = $(".results_table_compression_diagram").first().clone().removeClass("hidden")
-        $("#result_table_div_comp").append(table)
+        table = $slct.first().clone().removeClass("hidden");
+        $("#result_table_div_comp").append(table);
 
         for (i = 0; i < session.moment_compression.length; i++) {
-            $(".results_table_row_comp").last().find(".significant_moment").html(Math.round(session.moment_compression[i] / 1e4) / 100)
-            $(".results_table_row_comp").last().find(".signifcant_row_no").last().html(i + 1)
-            $(".results_table_row_comp").last().find(".significant_kappa").last().html(Math.round(session.kappa_compression[i] * 1000) / 1000)
-            $(".results_table_row_comp").last().find(".significant_stress").last().html(Math.round(session.sign_stress_comp[i] * 100) / 100)
-            $(".results_table_row_comp").last().find(".significant_strain").last().html(Math.round(session.sign_strain_comp[i] * 1000) / 1000)
-            $(".results_table_row_comp").first().clone().insertAfter($(".results_table_row_comp").last())
+            $slct = $(".results_table_row_comp");
+            $slct.last().find(".show_section_btn").removeClass("hidden");
+            $slct .last().find(".significant_moment").html(Math.round(session.moment_compression[i] / 1e4) / 100);
+            $slct .last().find(".signifcant_row_no").last().html(i + 1);
+            $slct .last().find(".significant_kappa").last().html(Math.round(session.kappa_compression[i] * 1000) / 1000);
+            $slct .last().find(".significant_stress").last().html(Math.round(session.sign_stress_comp[i] * 100) / 100);
+            $slct.last().find(".significant_strain").last().html(Math.round(session.sign_strain_comp[i] * 1000) / 1000);
+            $slct.first().clone().insertAfter($slct.last());
         }
 
         // tensile results table
-        if ($(".results_table_tensile_diagram").length > 1) {
-            $(".results_table_tensile_diagram").last().remove()
+        $slct = $(".results_table_tensile_diagram");
+        if ($slct.length > 1) {
+            $slct.last().remove()
         }
 
-        var table = $(".results_table_tensile_diagram").first().clone().removeClass("hidden")
-        $("#result_table_div_tens").append(table)
+        var table = $slct.first().clone().removeClass("hidden");
+        $("#result_table_div_tens").append(table);
 
         for (var i = 0; i < session.moment_tensile.length; i++) {
-            $(".results_table_row_tens").last().find(".significant_moment").html(Math.round(session.moment_tensile[i] / 1e4) / 100)
-            $(".results_table_row_tens").last().find(".signifcant_row_no").last().html(i + 1)
-            $(".results_table_row_tens").last().find(".significant_kappa").last().html(Math.round(session.kappa_tensile[i] * 1000) / 1000)
-            $(".results_table_row_tens").last().find(".significant_stress").last().html(Math.round(session.sign_stress_tens[i] * 100) / 100)
-            $(".results_table_row_tens").last().find(".significant_strain").last().html(Math.round(session.sign_strain_tens[i] * 1000) / 1000)
-            $(".results_table_row_tens").first().clone().insertAfter($(".results_table_row_tens").last())
+            $slct = $(".results_table_row_tens");
+            $slct.last().find(".show_section_btn").removeClass("hidden");
+            $slct.last().find(".significant_moment").html(Math.round(session.moment_tensile[i] / 1e4) / 100);
+            $slct.last().find(".signifcant_row_no").last().html(i + 1);
+            $slct.last().find(".significant_kappa").last().html(Math.round(session.kappa_tensile[i] * 1000) / 1000);
+            $slct.last().find(".significant_stress").last().html(Math.round(session.sign_stress_tens[i] * 100) / 100);
+            $slct.last().find(".significant_strain").last().html(Math.round(session.sign_strain_tens[i] * 1000) / 1000);
+            $slct.first().clone().insertAfter($slct.last())
         }
 
         // rebar results table
         update_rebar_results(0)
-    }
+    };
 
     $('#calculate').click(function () {
         calculate_mkappa()
@@ -418,30 +427,58 @@ $(document).ready(function () {
     //-- Set rebar result table
 
     function update_rebar_results(index) {
-
-        if ($(".results_table_rebar_diagram").length > 1) {
-            $(".results_table_rebar_diagram").last().remove()
+        $slct = $(".results_table_rebar_diagram")
+        if ($slct.length > 1) {
+            $slct.last().remove()
         }
 
-        var table = $(".results_table_rebar_diagram").first().clone().removeClass("hidden")
-        $("#result_table_div_rbr").append(table)
+        var table = $slct.first().clone().removeClass("hidden");
+        $("#result_table_div_rbr").append(table);
 
         for (var i = 0; i < session.moment_rebar[index].length; i++) {
-            $(".results_table_row_rbr").last().find(".significant_moment").html(Math.round(session.moment_rebar[index][i] / 1e4) / 100)
-            $(".results_table_row_rbr").last().find(".signifcant_row_no").last().html(i + 1)
-            $(".results_table_row_rbr").last().find(".significant_kappa").last().html(Math.round(session.kappa_rebar[index][i] * 1000) / 1000)
-            $(".results_table_row_rbr").last().find(".significant_stress").last().html(Math.round(session.sign_stress_rbr[index][i] * 100) / 100)
-            $(".results_table_row_rbr").last().find(".significant_strain").last().html(Math.round(session.sign_strain_rbr[index][i] * 1000) / 1000)
-            $(".results_table_row_rbr").first().clone().insertAfter($(".results_table_row_rbr").last())
- 
-        };
-    };
+            $slct = $(".results_table_row_rbr");
+            $slct.last().find(".show_section_btn").removeClass("hidden");
+            $slct.last().find(".significant_moment").html(Math.round(session.moment_rebar[index][i] / 1e4) / 100);
+            $slct.last().find(".signifcant_row_no").last().html(i + 1);
+            $slct.last().find(".significant_kappa").last().html(Math.round(session.kappa_rebar[index][i] * 1000) / 1000);
+            $slct.last().find(".significant_stress").last().html(Math.round(session.sign_stress_rbr[index][i] * 100) / 100);
+            $slct.last().find(".significant_strain").last().html(Math.round(session.sign_strain_rbr[index][i] * 1000) / 1000);
+            $slct.first().clone().insertAfter($slct.last())
+        }
+    }
 
     $("#result_table_div_rbr").on("change", "#option_rebar_results", function () {
-        var index = parseInt($("#option_rebar_results").val().replace("rebar row #", "")) - 1
+        var index = parseInt($("#option_rebar_results").val().replace("rebar row #", "")) - 1;
         update_rebar_results(index)
-    })
+    });
 
+    $("#result_table_div_rbr, #result_table_div_tens, #result_table_div_comp").on("click", ".show_section_btn", function () {
+        var $tbl_body = $(this).parent().parent().parent();
+
+        var $rows = $tbl_body.children();
+
+        for (var i = 0; i < $rows.length; i++) {
+            if ($rows[i].isEqualNode($(this).parent().parent()[0])) {
+                var index = i;
+                break
+            }
+        }
+        var class_name = $($rows[index])[0].className;
+        if (class_name == "results_table_row_comp"){
+            mkap = session.sign_compression_mkap[index]
+        }
+        else if (class_name == "results_table_body_rbr") {
+            mkap = session.sign_rebar_mkap[index]
+        }
+        else if (class_name == "results_table_body_tens") {
+            mkap = session.sign_tensile_mkap[index]
+        }
+
+        $("#myModal").modal();
+        $("#modal-svg").find("svg").remove();
+        plt.cross_section_view("#modal-svg", mkap)
+
+    });
 
     // Material library
 
@@ -449,8 +486,8 @@ $(document).ready(function () {
     $("#compression_material").on("change", function () {
         if (this.value !== "custom") {
             // get the value between 'C' and '/' in for instance C20/25
-            var end_index = this.value.indexOf('/')
-            var fc = this.value.substring(1, end_index)
+            var end_index = this.value.indexOf('/');
+            var fc = this.value.substring(1, end_index);
 
             // 3 input rows are needed. Two for the material. 1 hidden.
             var n = document.getElementsByClassName("comp_strain").length;
@@ -458,7 +495,7 @@ $(document).ready(function () {
             for (n; n < 3; n++) {
                 add_row($("#compression_add_row"));
 
-            };
+            }
             for (n; n > 3; n--) {
                 var row = $("#comp_curve_body").children(".custom_row").last();
                 remove_row(row);
@@ -472,7 +509,6 @@ $(document).ready(function () {
     })
    
     // rebar material
-
     //$(".rebar_material").change(function () {
     $("#rebar_curves").on("change", ".rebar_material", function () {
         if (this.value !== "custom") {
@@ -481,7 +517,7 @@ $(document).ready(function () {
 
             // get the value between after 'B' in for instance 'B500'
 
-            var fy = this.value.substring(1, 4)
+            var fy = this.value.substring(1, 4);
 
             // 3 input rows are needed. Two for the material. 1 hidden.
             var parent = $(this).closest(".rebar_curve");
@@ -496,12 +532,12 @@ $(document).ready(function () {
                 var row = $(parent).children(".custom_row").last();
                 remove_row(row);
             }
-            $(parent).find(".rebar_strain")[1].value = Math.round(parseFloat(fy) / 200 / fact * 1000) / 1000
-            $(parent).find(".rebar_strain")[2].value = 50
-            $(parent).find(".rebar_stress")[1].value = fy
-            $(parent).find(".rebar_stress")[2].value = fy
+            $(parent).find(".rebar_strain")[1].value = Math.round(parseFloat(fy) / 200 / fact * 1000) / 1000;
+            $(parent).find(".rebar_strain")[2].value = 50;
+            $(parent).find(".rebar_stress")[1].value = fy;
+            $(parent).find(".rebar_stress")[2].value = fy;
             trigger_rebar_strain(parent)
-        };
+        }
     });
     
 
