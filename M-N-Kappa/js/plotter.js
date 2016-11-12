@@ -438,15 +438,11 @@ var plt = (function () {
         for (var i = 0; i < mkap.rebar_z.length; i++){
             y = mkap.cross_section.top - mkap.rebar_z[i];
             x = mkap.rebar_strain[i] - min_x;
-            console.log(mkap.rebar_strain[i], min_x);
             line_append(svg, [
                 {x: scale_x(origin_x), y: scale_y(y)},
                 {x: scale_x(x), y: scale_y(y)}
             ], "blue", 2);
         }
-        console.log(mkap)
-
-
     };
 
 

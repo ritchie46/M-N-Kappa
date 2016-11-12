@@ -463,20 +463,21 @@ $(document).ready(function () {
                 break
             }
         }
+        var mkappa;
         var class_name = $($rows[index])[0].className;
         if (class_name == "results_table_row_comp"){
-            mkap = session.sign_compression_mkap[index]
+            mkappa = session.sign_compression_mkap[index]
         }
-        else if (class_name == "results_table_body_rbr") {
-            mkap = session.sign_rebar_mkap[index]
+        else if (class_name == "results_table_row_rbr") {
+            mkappa = session.sign_rebar_mkap[0][index]
         }
-        else if (class_name == "results_table_body_tens") {
-            mkap = session.sign_tensile_mkap[index]
+        else if (class_name == "results_table_row_tens") {
+            mkappa = session.sign_tensile_mkap[index]
         }
 
         $("#myModal").modal();
         $("#modal-svg").find("svg").remove();
-        plt.cross_section_view("#modal-svg", mkap)
+        plt.cross_section_view("#modal-svg", mkappa)
 
     });
 
