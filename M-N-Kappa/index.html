@@ -542,6 +542,9 @@
 
             <div class="panel panel-default cstm_block">
                 <div class="panel-body">
+                <div class="col-xs-12">
+                        <label style="float: left; overflow: auto">Normal force</label>
+                </div>
                     <div class="input-group col-xs-4">
                         <input type="number" class="form-control" placeholder="normal force" id="normal_force">
                         <span class="input-group-addon">* 10<sup>3</sup></span>
@@ -550,19 +553,16 @@
                 </div>
             </div>
 
-            <div class="panel panel-default cstm_block">
-                <div class="panel-body">
-                    <h3><label>Results</label></h3>
-                    <ul class="list-group">
-                        <li id="area" class="list-group-item">Area:</li>
-                        <li id="MRd" class="list-group-item hidden"></li>
-                    </ul>
-                </div>
-            </div>
-
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <div class="row mkappa_svg"></div>
+                    <label>MOMENT CURVATURE DIAGRAM</label>
+                    <div class="mkappa_svg col-xs-9"></div>
+                    <div class="col-xs-3">
+                        <ul class="list-group">
+                        <li id="area" class="list-group-item">Area:</li>
+                        <li id="MRd" class="list-group-item hidden"></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 

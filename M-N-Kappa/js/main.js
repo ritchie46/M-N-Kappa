@@ -3,8 +3,8 @@ Note to self:
     The plotter also adds the objects uses for calculations to the sessions
 */
 
-"use strict"
-var DEBUG = true
+"use strict";
+var DEBUG = true;
 
 $(document).ready(function () {
 
@@ -12,21 +12,21 @@ $(document).ready(function () {
 
     // General collapse panel logic
     $(".collapse_glyph").click(function () {
-        $(this).closest(".panel").children(".collapse").toggle()
+        $(this).closest(".panel").children(".collapse").toggle();
         $(this).toggleClass('glyphicon-triangle-top glyphicon-triangle-bottom')
     });
 
     // General add row logic
     function add_row(self) {
         var $row = self.closest(".panel-body").find(".custom_row").last();
-        var $clone = $row.clone()
-        $clone.removeClass('hidden')
+        var $clone = $row.clone();
+        $clone.removeClass('hidden');
         $row.after($clone);
     }
         
     $(".add_row").click(function () {
         add_row($(this))
-    })
+    });
 
 
     // General remove panel row logic
@@ -36,72 +36,71 @@ $(document).ready(function () {
 
     $(".panel").on("click", ".remove_row", function () {
         remove_row($(this))
-    })
+    });
 
-
+    var $slct = $('#pg_body');
     //Call polygon draw function if row is removed
-    $('#pg_body').on("click", ".remove_row", function () {
+    $slct.on("click", ".remove_row", function () {
         $(this).closest('.custom_row').remove()
         trigger_polygon();
-    })
+    });
 
     //Call polygon draw function if row is removed
-    $('#pg_body').on("change", "input", function () {
+    $slct.on("change", "input", function () {
         trigger_polygon();
-    })
+    });
 
     //Call polygon draw function if row is removed
-    $('#pg_body').on("change", "input", function () {
+    $slct.on("change", "input", function () {
         trigger_polygon();
     });
 
     function rotate_pg(rotation, x, y) {
 
         for (var i = 0; i < x.length; i++) {
-            var p = new vector.Point(x[i], y[i])
-            p = p.rotate_origin(rotation / 360 * 2 * Math.PI)
-            x[i] = p.x
-            y[i] = p.y
+            var p = new vector.Point(x[i], y[i]);
+            p = p.rotate_origin(rotation / 360 * 2 * Math.PI);
+            x[i] = p.x;
+            y[i] = p.y;
         }
         return {
             x: x,
             y: y
-        };
-    };
+        }
+    }
 
     // create polygon
     function trigger_polygon() {
         // plotter draws polygon and returns the polygons Points (Point class) in a list.
-        var rotation = (isNaN(parseFloat($("#pg_rotation").val()))) ? 0 : parseFloat($("#pg_rotation").val())
+        var $slct = $("#pg_rotation");
+        var rotation = (isNaN(parseFloat($slct.val()))) ? 0 : parseFloat($slct.val());
         var choice = $("#cross_section_type").val()
         if (choice == "custom") {
-            var x = document.getElementsByClassName("xval")
-            var y = document.getElementsByClassName("yval")
-            x = plt.input_strings_to_floats(x)
-            y = plt.input_strings_to_floats(y)
-            x.unshift(0)
-            y.unshift(0)
-            var rotation_pg = rotate_pg(rotation, x, y)
-            x = rotation_pg.x
-            y = rotation_pg.y
-            var point_list = plt.draw_polygon(x, y, session);
+            x = document.getElementsByClassName("xval");
+            y = document.getElementsByClassName("yval");
+            x = plt.input_strings_to_floats(x);
+            y = plt.input_strings_to_floats(y);
+            x.unshift(0);
+            y.unshift(0);
+            var rotation_pg = rotate_pg(rotation, x, y);
+            x = rotation_pg.x;
+            y = rotation_pg.y;
+            point_list = plt.draw_polygon(x, y, session);
             // add polygon to session
-            //session.mkap.cross_section = new crsn.PolyGon(point_list)
-            //session.mkap.cross_section.return_x_on_axis()
-            $("#area").html("Area: " + session.mkap.cross_section.area())
+            $("#area").html("area: " + session.mkap.cross_section.area())
         }
         else if (choice == "rectangle") {
             var width = parseFloat(document.getElementById("width").value);
             var height = parseFloat(document.getElementById("height").value);
-            var x = [0, width, width, 0];
-            var y = [0, 0, height, height];
+            x = [0, width, width, 0];
+            y = [0, 0, height, height];
 
-            var rotation_pg = rotate_pg(rotation, x, y)
-            x = rotation_pg.x
-            y = rotation_pg.y
+            rotation_pg = rotate_pg(rotation, x, y);
+            x = rotation_pg.x;
+            y = rotation_pg.y;
 
             if (width > 0 && height > 0) {
-                var point_list = plt.draw_polygon(x, y, session);
+                point_list = plt.draw_polygon(x, y, session);
                 //session.mkap.cross_section = new crsn.PolyGon(point_list)
                 $("#area").html("Area: " + session.mkap.cross_section.area())
             }
@@ -126,7 +125,7 @@ $(document).ready(function () {
                 var y = [0, h_f, h_f, h_w + h_f, h_w + h_f, 2 * h_f + h_w, 2 * h_f + h_w, h_w + h_f, h_w + h_f, h_f, h_f, 0];
             };
 
-            var rotation_pg = rotate_pg(rotation, x, y)
+            rotation_pg = rotate_pg(rotation, x, y)
             x = rotation_pg.x
             y = rotation_pg.y
 
@@ -147,14 +146,17 @@ $(document).ready(function () {
     
     // compression stress strain
     var trigger_comp_strain = function () {
-        var strain = document.getElementsByClassName("comp_strain")
-        var stress = document.getElementsByClassName("comp_stress")
-        plt.draw_lines(plt.svg_comp, strain, stress)
+        var strain = document.getElementsByClassName("comp_strain");
+        var stress = document.getElementsByClassName("comp_stress");
+        // remove old svg
+        $("#comp_strain_svg_div").find('svg').remove();
+        var svg = plt.add_svg("#comp_strain_svg_div", "strain", "stress");
+        plt.draw_lines(svg, strain, stress);
 
-        strain = extract_floats(strain)
-        stress = extract_floats(stress)
-        strain.unshift(0)
-        stress.unshift(0)
+        strain = extract_floats(strain);
+        stress = extract_floats(stress);
+        strain.unshift(0);
+        stress.unshift(0);
     
         // reduce with the material factor
         for (var i = 0; i < stress.length; i++) {
@@ -173,35 +175,35 @@ $(document).ready(function () {
 
     $("#normal_force").change(function () {
         trigger_normal_force()
-    })
-
-    $('#comp_curve_body').on('change', 'input', function () {
-        $("#compression_material").val('custom')
+    });
+    $slct = $('#comp_curve_body');
+    $slct.on('change', 'input', function () {
+        $("#compression_material").val('custom');
         trigger_comp_strain();
     });
 
-    $('#comp_curve_body').on('click', '.remove_row', function () {
-        $("#compression_material").val('custom')
-        $(this).closest('.custom_row').remove()
+    $slct.on('click', '.remove_row', function () {
+        $("#compression_material").val('custom');
+        $(this).closest('.custom_row').remove();
         trigger_comp_strain();
     });
 
 
     // tensile stress strain
     var trigger_tens_strain = function () {
-        var strain = document.getElementsByClassName("tens_strain")
-        var stress = document.getElementsByClassName("tens_stress")
+        var strain = document.getElementsByClassName("tens_strain");
+        var stress = document.getElementsByClassName("tens_stress");
 
         // remove old svg
-        $('#tens_strain_svg_div').find('svg').remove()
+        $('#tens_strain_svg_div').find('svg').remove();
 
-        var svg = plt.add_svg("#tens_strain_svg_div")
-        plt.draw_lines(svg, strain, stress)
+        var svg = plt.add_svg("#tens_strain_svg_div", "strain", "stress");
+        plt.draw_lines(svg, strain, stress);
 
-        strain = extract_floats(strain)
-        stress = extract_floats(stress)
-        strain.unshift(0)
-        stress.unshift(0)
+        strain = extract_floats(strain);
+        stress = extract_floats(stress);
+        strain.unshift(0);
+        stress.unshift(0);
 
         // reduce with the material factor
         for (var i = 0; i < stress.length; i++) {
@@ -228,61 +230,63 @@ $(document).ready(function () {
 
         // find the panel that send the request.
         var id = parent.attr('id');
-        var strain = $('#' + id).find('.rebar_strain');
-        var stress = $('#' + id).find('.rebar_stress');
+        $slct = $('#' + id);
+        var strain = $slct.find('.rebar_strain');
+        var stress = $slct.find('.rebar_stress');
         
         // remove old svg
-        $('#' + id).find('svg').remove()
+        $slct.find('svg').remove();
         // add new svg
         
-        var svg = plt.add_svg('#rebar_svg_' + id[id.length - 1])
-        plt.draw_lines(svg, strain, stress)
+        var svg = plt.add_svg('#rebar_svg_' + id[id.length - 1], "strain", "stress");
+        plt.draw_lines(svg, strain, stress);
 
-        strain = extract_floats(strain)
-        stress = extract_floats(stress)
-        strain.unshift(0)
-        stress.unshift(0)
+        strain = extract_floats(strain);
+        stress = extract_floats(stress);
+        strain.unshift(0);
+        stress.unshift(0);
 
-        var fact = parseFloat($(parent).find(".rebar_material_factor").val())
+        var fact = parseFloat($(parent).find(".rebar_material_factor").val());
         // reduce with the material factor
         for (var i = 0; i < stress.length; i++) {
             stress[i] /= fact
         }
-        var rebar_number = id[id.length - 1]
+        var rebar_number = id[id.length - 1];
         session.rebar_diagrams[rebar_number - 1] = new mkap.StressStrain(strain, stress)
-    }
+    };
 
-    $('#rebar_curves').on('click', '.remove_row', function () {
+    $slct = $('#rebar_curves')
+    $slct.on('click', '.remove_row', function () {
         var parent = $(this).closest('.rebar_curve');
         $(this).closest('.custom_row').remove();
         trigger_rebar_strain(parent);
         $(parent).find(".rebar_material").val("custom")
-    })
+    });
 
-    $('#rebar_curves').on('click', '.add_row_rbr_curves', function () {
+    $slct.on('click', '.add_row_rbr_curves', function () {
         var $row = $(this).closest(".rebar_curve").find(".custom_row").last();
-        var $clone = $row.clone()
-        $clone.removeClass('hidden')
+        var $clone = $row.clone();
+        $clone.removeClass('hidden');
         $row.after($clone);
-    })
+    });
 
-    $('#rebar_curves').on('change', 'input', function () {
-        var parent = $(this).closest('.rebar_curve')
+    $slct.on('change', 'input', function () {
+        var parent = $(this).closest('.rebar_curve');
         trigger_rebar_strain(parent);
         $(parent).find(".rebar_material").val("custom")
     });
 
     // add extra rebar curves (stress strain diagrams)
-    var n_rebar_curves = 1
+    var n_rebar_curves = 1;
     $("#add_rbr_diagram").click(function () {
-        n_rebar_curves += 1
-        var clone = $(".rebar_curve").last().clone().removeClass("hidden")
-        clone.attr("id", "rebar_curve_" + n_rebar_curves)
-        var svg = clone.find(".rebar_strain_svg_div")
-        svg.attr("id", "rebar_svg_" + n_rebar_curves)
-        $(".rebar_curve").last().after(clone)
-        $(".diagram_header").last().html("Diagram #" + n_rebar_curves)
-        trigger_rebar_strain(clone)
+        n_rebar_curves += 1;
+        var clone = $(".rebar_curve").last().clone().removeClass("hidden");
+        clone.attr("id", "rebar_curve_" + n_rebar_curves);
+        var svg = clone.find(".rebar_strain_svg_div");
+        svg.attr("id", "rebar_svg_" + n_rebar_curves);
+        $(".rebar_curve").last().after(clone);
+        $(".diagram_header").last().html("Diagram #" + n_rebar_curves);
+        trigger_rebar_strain(clone);
 
         // Append the diagram options at the rebar input fields
         $("#rebar_material_select").append("<option>diagram #%d</option>".replace("%d", n_rebar_curves))
@@ -296,76 +300,77 @@ $(document).ready(function () {
     // rebar area
     function trigger_rebar_input() {
         // reset
-        session.mkap.rebar_As = []
-        session.mkap.rebar_z = []
-        session.mkap.rebar_diagram = []
+        session.mkap.rebar_As = [];
+        session.mkap.rebar_z = [];
+        session.mkap.rebar_diagram = [];
 
-        var As = document.getElementsByClassName("rebar_As")
-        var d = document.getElementsByClassName("rebar_d")
-        var rebar_diagram = document.getElementsByClassName("rebar_material_select")
-        $("#option_rebar_results").empty()
+        var As = document.getElementsByClassName("rebar_As");
+        var d = document.getElementsByClassName("rebar_d");
+        var rebar_diagram = document.getElementsByClassName("rebar_material_select");
+        $("#option_rebar_results").empty();
 
-        As = extract_floats(As)
-        d = extract_floats(d)
+        As = extract_floats(As);
+        d = extract_floats(d);
         
-        var height = session.mkap.cross_section.top
+        var height = session.mkap.cross_section.top;
         
         for (var i = 0; i < As.length; i++) {
-            var z = height - d[i]
+            var z = height - d[i];
             
             // The corresponding rebar material
-            var no_of_diagram = rebar_diagram[i].value[rebar_diagram[i].value.length - 1]
+            var no_of_diagram = rebar_diagram[i].value[rebar_diagram[i].value.length - 1];
 
             // add the rebar in the correct order to the mkap
-            session.mkap.rebar_As[i] = As[i]
-            session.mkap.rebar_z[i] = z
-            session.mkap.rebar_diagram[i] = session.rebar_diagrams[no_of_diagram - 1]
+            session.mkap.rebar_As[i] = As[i];
+            session.mkap.rebar_z[i] = z;
+            session.mkap.rebar_diagram[i] = session.rebar_diagrams[no_of_diagram - 1];
 
             // set the rebar options in the results table
             $("#option_rebar_results").append("<option>rebar row #%s</option>".replace("%s", i + 1))
         }
         trigger_polygon();
     }
-    
-    $('.rebar_input').on('click', '.remove_row', function () {
+    $slct = $('.rebar_input');
+    $slct.on('click', '.remove_row', function () {
         $(this).closest('.custom_row').remove();
-        trigger_rebar_input();
-    })
-
-    $('.rebar_input').on('change', 'input', function () {
         trigger_rebar_input();
     });
 
-    $('.rebar_input').on('click', '.add_row', function () {
+    $slct.on('change', 'input', function () {
+        trigger_rebar_input();
+    });
+
+    $slct.on('click', '.add_row', function () {
         trigger_rebar_input();
     });
 
 
 
     var calculate_mkappa = function () {
-        trigger_rebar_input()
-        trigger_comp_strain()
-        trigger_comp_strain()
+        trigger_rebar_input();
+        trigger_comp_strain();
 
         // remove old svg
-        $('.mkappa_svg').find('svg').remove()
+        $('.mkappa_svg').find('svg').remove();
         // add new svg
-        var svg = plt.add_svg('.mkappa_svg')
+        var svg = plt.add_svg('.mkappa_svg', "curvature", "bending moment  [*10^6]");
 
 
-        var sol = session.calculate_significant_points()
-        var moment = sol.moment
-        var kappa = sol.kappa
+        var sol = session.calculate_significant_points();
+        var moment = sol.moment;
+        var kappa = sol.kappa;
         
-        moment.unshift(0)
-        kappa.unshift(0)
+        moment.unshift(0);
+        kappa.unshift(0);
 
-        plt.draw_lines(svg, kappa, moment, true)
+        plt.draw_lines(svg, kappa, moment.map(function (i) {
+            return i / 1e6
+        }), true);
 
-        var html_moment = Math.round(Math.max.apply(null, moment) / Math.pow(10, 6) * 100) / 100
-        $("#MRd").removeClass("hidden")
-        $("#MRd").html("Maximum moment: %s * 10<sup>6</sup>".replace("%s", html_moment))
-        console.log(sol.moment, "html", html_moment)
+        var html_moment = Math.round(Math.max.apply(null, moment) / Math.pow(10, 6) * 100) / 100;
+        var $MRD = $("#MRd");
+        $MRD.removeClass("hidden");
+        $MRD.html("maximum moment: %s * 10<sup>6</sup>".replace("%s", html_moment));
         //-- display results in result tables --//
 
         // compression results table
@@ -373,10 +378,10 @@ $(document).ready(function () {
             $(".results_table_compression_diagram").last().remove()
         }
 
-        var table = $(".results_table_compression_diagram").first().clone().removeClass("hidden")
+        table = $(".results_table_compression_diagram").first().clone().removeClass("hidden")
         $("#result_table_div_comp").append(table)
 
-        for (var i = 0; i < session.moment_compression.length; i++) {
+        for (i = 0; i < session.moment_compression.length; i++) {
             $(".results_table_row_comp").last().find(".significant_moment").html(Math.round(session.moment_compression[i] / 1e4) / 100)
             $(".results_table_row_comp").last().find(".signifcant_row_no").last().html(i + 1)
             $(".results_table_row_comp").last().find(".significant_kappa").last().html(Math.round(session.kappa_compression[i] * 1000) / 1000)
@@ -471,15 +476,15 @@ $(document).ready(function () {
     //$(".rebar_material").change(function () {
     $("#rebar_curves").on("change", ".rebar_material", function () {
         if (this.value !== "custom") {
-            var fact = 1.15
-            $(parent).find(".rebar_material_factor").val(fact)
+            var fact = 1.15;
+            $(parent).find(".rebar_material_factor").val(fact);
 
             // get the value between after 'B' in for instance 'B500'
 
             var fy = this.value.substring(1, 4)
 
             // 3 input rows are needed. Two for the material. 1 hidden.
-            parent = $(this).closest(".rebar_curve");
+            var parent = $(this).closest(".rebar_curve");
             var n = $(parent).find(".rebar_strain").length;
 
 

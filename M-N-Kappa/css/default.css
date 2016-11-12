@@ -1,5 +1,5 @@
 ﻿
-.pg_row, .add_row, .custom_row, .rectangle_row, .T-beam_row, I-beam_row {
+.pg_row, .add_row, .custom_row, .rectangle_row, .T-beam_row {
     padding-bottom: 4px;
     padding-top: 4px
 }
@@ -13,13 +13,10 @@
 }
 
 .strain_svg, .rebar_strain_svg_div {
-    padding-top: 80px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 20px;
+    padding: 80px 20px 20px 20px;
 }
 
-.cstm_left_column, cstm_right_column {
+.cstm_left_column {
     padding-left: 10px;
     padding-right: 5px;
 }

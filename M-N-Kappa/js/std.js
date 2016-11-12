@@ -13,13 +13,13 @@ var std = (function () {
         */
 
         // Differencte between end point and start point
-        var dx = end_x - start_x
-        var dy = end_y - start_y
+        var dx = end_x - start_x;
+        var dy = end_y - start_y;
 
         // difference between requested points value and start points value
-        var delta_x = req_x - start_x
-        var factor = delta_x / dx
-        var delta_y = factor * dy
+        var delta_x = req_x - start_x;
+        var factor = delta_x / dx;
+        var delta_y = factor * dy;
 
         return start_y + delta_y
     }
@@ -35,18 +35,18 @@ var std = (function () {
         /// <returns type="flt" />
         */
         // default parameter
-        var div = (typeof div !== "undefined") ? div: 4;
+        div = (typeof div !== "undefined") ? div: 6;
 
-        var ratio = Math.abs(rhs) / Math.abs(lhs)
+        var ratio = Math.abs(rhs) / Math.abs(lhs);
         return (ratio - 1) / div + 1
     }
 
     function convergence_conditions(lhs, rhs, limit_up, limit_lower) {
         // default parameter
-        var limit_up = (typeof limit_up !== "undefined") ? limit_up : 1.001;
-        var limit_lower = (typeof limit_lower !== "undefined") ? limit_lower : 0.999;
+        limit_up = (typeof limit_up !== "undefined") ? limit_up : 1.001;
+        limit_lower = (typeof limit_lower !== "undefined") ? limit_lower : 0.999;
 
-        var ratio = Math.abs(rhs) / Math.abs(lhs)
+        var ratio = Math.abs(rhs) / Math.abs(lhs);
         if (limit_lower <= ratio && ratio <= limit_up) {
             return true
         }
@@ -77,7 +77,7 @@ var std = (function () {
         convergence: convergence,
         convergence_conditions: convergence_conditions,
         is_number: is_number,
-        nearest_index: nearest_index,
+        nearest_index: nearest_index
     }
     
 })();  // std namespace

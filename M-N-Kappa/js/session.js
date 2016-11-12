@@ -1,27 +1,28 @@
-﻿//class
+﻿"use strict"
+//class
 function Session() {
-    this.mkap = null
+    this.mkap = null;
     // significant points compression diagram
-    this.moment_compression = []
-    this.kappa_compression = []
-    this.sign_stress_comp = []
-    this.sign_strain_comp = []
+    this.moment_compression = [];
+    this.kappa_compression = [];
+    this.sign_stress_comp = [];
+    this.sign_strain_comp = [];
 
-    this.moment_tensile = []
-    this.kappa_tensile = []
-    this.sign_stress_tens = []
-    this.sign_strain_tens = []
+    this.moment_tensile = [];
+    this.kappa_tensile = [];
+    this.sign_stress_tens = [];
+    this.sign_strain_tens = [];
 
     // the diagrams in order
-    this.rebar_diagrams = []
-    this.moment_rebar = []
-    this.kappa_rebar = []
-    this.sign_stress_rbr = []
-    this.sign_strain_rbr = []
+    this.rebar_diagrams = [];
+    this.moment_rebar = [];
+    this.kappa_rebar = [];
+    this.sign_stress_rbr = [];
+    this.sign_strain_rbr = [];
 
     // scale parameters of the cross section svg
-    this.bound_max = null
-    this.range_scale = null
+    this.bound_max = null;
+    this.range_scale = null;
 
 }
 
@@ -31,35 +32,35 @@ Session.prototype.calculate_significant_points = function () {
     /** 
     determines the moment and kappa points for the given significant strain points in the compression stress strain diagram
     */
-    var moment = []
-    var kappa = []
-    this.moment_compression = []
-    this.kappa_compression = []
-    this.moment_tensile = []
-    this.kappa_tensile = []
+    var moment = [];
+    var kappa = [];
+    this.moment_compression = [];
+    this.kappa_compression = [];
+    this.moment_tensile = [];
+    this.kappa_tensile = [];
     // in these are array representing the significant points of different layers of rebar
-    this.moment_rebar = []
-    this.kappa_rebar = []
+    this.moment_rebar = [];
+    this.kappa_rebar = [];
 
     // the values of calculated at the significant points. Should match the diagrams by a few promille
-    this.sign_stress_comp = []
-    this.sign_strain_comp = []
-    this.sign_stress_tens = []
-    this.sign_strain_tens = []
-    this.sign_stress_rbr = []
-    this.sign_strain_rbr = []
+    this.sign_stress_comp = [];
+    this.sign_strain_comp = [];
+    this.sign_stress_tens = [];
+    this.sign_strain_tens = [];
+    this.sign_stress_rbr = [];
+    this.sign_strain_rbr = [];
 
     // Solve for significant points in compression diagram
     for (var i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
-        var strain = this.mkap.compressive_diagram.strain[i]
+        strain = this.mkap.compressive_diagram.strain[i];
 
-        this.mkap.solver(true, strain)
-        this.mkap.det_m_kappa()
+        this.mkap.solver(true, strain);
+        this.mkap.det_m_kappa();
 
         if (this.mkap.validity()) {
-            moment.push(Math.abs(this.mkap.moment))
-            kappa.push(Math.abs(this.mkap.kappa))
-            this.moment_compression.push(Math.abs(this.mkap.moment))
+            moment.push(Math.abs(this.mkap.moment));
+            kappa.push(Math.abs(this.mkap.kappa));
+            this.moment_compression.push(Math.abs(this.mkap.moment));
             this.kappa_compression.push(Math.abs(this.mkap.kappa))
             this.sign_strain_comp.push(this.mkap.strain_top)
             if (this.mkap.stress[this.mkap.stress.length - 1] < 0) {
@@ -73,19 +74,18 @@ Session.prototype.calculate_significant_points = function () {
 
 
     // Solve for significant points in tensile diagram
-    for (var i = 1; i < this.mkap.tensile_diagram.strain.length; i++) {
-        var strain = this.mkap.tensile_diagram.strain[i]
+    for (i = 1; i < this.mkap.tensile_diagram.strain.length; i++) {
+        var strain = this.mkap.tensile_diagram.strain[i];
 
-        this.mkap.solver(false, strain)
-        this.mkap.det_m_kappa()
+        this.mkap.solver(false, strain);
+        this.mkap.det_m_kappa();
 
         if (this.mkap.validity()) {
-            moment.push(Math.abs(this.mkap.moment))
-            kappa.push(Math.abs(this.mkap.kappa))
-            this.moment_tensile.push(Math.abs(this.mkap.moment))
-            this.kappa_tensile.push(Math.abs(this.mkap.kappa))
-
-            this.sign_stress_tens.push(this.mkap.stress[0])
+            moment.push(Math.abs(this.mkap.moment));
+            kappa.push(Math.abs(this.mkap.kappa));
+            this.moment_tensile.push(Math.abs(this.mkap.moment));
+            this.kappa_tensile.push(Math.abs(this.mkap.kappa));
+            this.sign_stress_tens.push(this.mkap.stress[0]);
             this.sign_strain_tens.push(this.mkap.strain_btm)
 
         }
@@ -94,47 +94,47 @@ Session.prototype.calculate_significant_points = function () {
 
     // Solve for significant in the rebars material diagram. 
     //Loop for the variable number of rebar inputs
-    for (var i = 0; i < this.mkap.rebar_As.length; i++) {
-        this.moment_rebar[i] = []
-        this.kappa_rebar[i] = []
-        this.sign_stress_rbr[i] = []
-        this.sign_strain_rbr[i] = []
+    for (i = 0; i < this.mkap.rebar_As.length; i++) {
+        this.moment_rebar[i] = [];
+        this.kappa_rebar[i] = [];
+        this.sign_stress_rbr[i] = [];
+        this.sign_strain_rbr[i] = [];
 
-        // Loop for the siginificant points in the rebars material stress strain diagram.
+        // Loop for the significant points in the rebars material stress strain diagram.
         for (var a = 1; a < this.mkap.rebar_diagram[i].strain.length; a++) {
-            var sign_strain = this.mkap.rebar_diagram[i].strain[a] // siginificant point
+            var sign_strain = this.mkap.rebar_diagram[i].strain[a]; // siginificant point
 
-            top_str = sign_strain * 0.5  // start the iteration at the half of the rebar strain.
+            top_str = sign_strain * 0.5;  // start the iteration at the half of the rebar strain.
             // looper rebar
             this.mkap.solver(true, top_str, false)
 
-            // iterate untill the convergence criteria is met
-            var count = 0
+            // iterate until the convergence criteria is met
+            var count = 0;
             while (1) {
                 if (std.convergence_conditions(Math.abs(this.mkap.rebar_strain[i]), sign_strain, 1.001, 0.999)) {
                     if (window.DEBUG) {
                         console.log("rebar convergence after %s iterations".replace("%s", count))
                     }
-                    this.mkap.det_m_kappa()
+                    this.mkap.det_m_kappa();
                     if (this.mkap.validity()) {
 
-                        moment.push(Math.abs(this.mkap.moment))
-                        kappa.push(Math.abs(this.mkap.kappa))
-                        this.moment_rebar[i].push(Math.abs(this.mkap.moment))
-                        this.kappa_rebar[i].push(Math.abs(this.mkap.kappa))
+                        moment.push(Math.abs(this.mkap.moment));
+                        kappa.push(Math.abs(this.mkap.kappa));
+                        this.moment_rebar[i].push(Math.abs(this.mkap.moment));
+                        this.kappa_rebar[i].push(Math.abs(this.mkap.kappa));
   
-                        this.sign_stress_rbr[i].push(this.mkap.rebar_force[i] / this.mkap.rebar_As[i])
+                        this.sign_stress_rbr[i].push(this.mkap.rebar_force[i] / this.mkap.rebar_As[i]);
                         this.sign_strain_rbr[i].push(this.mkap.rebar_strain[i])
 
                     }
                     break
                 }
 
-                var factor = std.convergence(Math.abs(this.mkap.rebar_strain[i]), sign_strain, 5)
+                var factor = std.convergence(Math.abs(this.mkap.rebar_strain[i]), sign_strain, 5);
 
-                var top_str = top_str * factor
+                var top_str = top_str * factor;
 
-                this.mkap.solver(true, top_str, false)
+                this.mkap.solver(true, top_str, false);
 
                 if (count > 50) {
                     if (window.DEBUG) {
@@ -149,28 +149,28 @@ Session.prototype.calculate_significant_points = function () {
 
 
     // sort the arrays on inclining kappa.
-    var a = []
+    a = [];
 
     // first combine them in array a
-    for (var i in kappa) {
+    for (i in kappa) {
         a.push(
             { m: moment[i], k: kappa[i] }
             )
-    };
+    }
 
     // sort them
     a.sort(function (b, c) {
         return ((b.k < c.k) ? -1 : ((b.k < c.k) ? 0 : 1));
     });
 
-    for (var i = 0; i < a.length; i++) {
-        moment[i] = a[i].m
-        kappa[i] = a[i].k
+    for (i = 0; i < a.length; i++) {
+        moment[i] = a[i].m;
+        kappa[i] = a[i].k;
     }
 
     if (DEBUG) {
-        console.log(moment)
-        console.log(kappa)
+        console.log(moment);
+        console.log(kappa);
     }
 
     return {
