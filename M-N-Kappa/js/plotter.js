@@ -229,12 +229,13 @@ var plt = (function () {
     /**
     stress strain diagrams
     */
-
-
     var width= $('#comp_curve').width() * 0.9;
     var height = 300;
 
     function add_svg(selector, name_x, name_y) {
+        if (selector == ".mkappa_svg") {
+            width = $('#pg_svg').width() * 0.75
+        }
         // default parameter
         name_x = (typeof name_x !== "undefined") ? name_x : false;
         name_y = (typeof name_x !== "undefined") ? name_y : false;
@@ -320,7 +321,6 @@ var plt = (function () {
         /** 
         Draws lines on a given svg canvast. Input is standard form listst, thus contains strings.
         */
-
         // default parameter
         floats = (typeof floats !== "undefined") ? floats : false;
         /**
@@ -394,6 +394,9 @@ var plt = (function () {
     }
 
     var cross_section_view = function(selector, mkap) {
+
+        width = $('#pg_svg').width() * 0.5;
+
         var svg = d3.select(selector).append("svg")
             .attr("width", width)
             .attr("height", height)

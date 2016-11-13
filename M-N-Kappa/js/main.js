@@ -37,6 +37,20 @@ $(document).ready(function () {
         remove_row($(this))
     });
 
+    $("#material_nav").click(function () {
+        $(".cstm_left_column").removeClass("hidden");
+        $("#material_nav").addClass("active");
+        $("#results_nav").removeClass("active");
+        $(".cstm_right_column").addClass("hidden")
+    });
+
+    $("#results_nav").click(function () {
+        $(".cstm_left_column").addClass("hidden");
+        $("#material_nav").removeClass("active");
+        $("#results_nav").addClass("active");
+        $(".cstm_right_column").removeClass("hidden")
+    });
+
 
 
     var $slct = $('#pg_body');
@@ -486,7 +500,8 @@ $(document).ready(function () {
     // Material library
 
     // compression material
-    $("#compression_material").on("change", function () {
+    var $compression_material = $("#compression_material")
+    $compression_material.on("change", function () {
         if (this.value !== "custom") {
             // get the value between 'C' and '/' in for instance C20/25
             var end_index = this.value.indexOf('/');
@@ -569,8 +584,8 @@ $(document).ready(function () {
 
 
     // setting up the presettings
-    $("#compression_material").val("C20/25")
-    $("#compression_material").trigger("change")
+    $compression_material.val("C20/25")
+    $compression_material.trigger("change")
     $(".rebar_material")[1].value = "B500"
     $(".rebar_material").last().trigger("change")
     $("#cross_section_type").val("rectangle")
