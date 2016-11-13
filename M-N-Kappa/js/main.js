@@ -56,7 +56,7 @@ $(document).ready(function () {
     var $slct = $('#pg_body');
     //Call polygon draw function if row is removed
     $slct.on("click", ".remove_row", function () {
-        $(this).closest('.custom_row').remove()
+        $(this).closest('.custom_row').remove();
         trigger_polygon();
     });
 
@@ -330,7 +330,7 @@ $(document).ready(function () {
         As = extract_floats(As);
         d = extract_floats(d);
         m0 = extract_floats(m0);
-        rebar_diagram = rebar_diagram.slice(1)
+        rebar_diagram = rebar_diagram.slice(1);
         var height = session.mkap.cross_section.top;
         
         for (var i = 0; i < As.length; i++) {
@@ -441,7 +441,7 @@ $(document).ready(function () {
     //-- Set rebar result table
 
     function update_rebar_results(index) {
-        $slct = $(".results_table_rebar_diagram")
+        $slct = $(".results_table_rebar_diagram");
         if ($slct.length > 1) {
             $slct.last().remove()
         }
@@ -483,7 +483,8 @@ $(document).ready(function () {
             mkappa = session.sign_compression_mkap[index]
         }
         else if (class_name == "results_table_row_rbr") {
-            mkappa = session.sign_rebar_mkap[0][index]
+            var j = $("#option_rebar_results")[0].value.slice(-1) - 1;
+            mkappa = session.sign_rebar_mkap[k][index]
         }
         else if (class_name == "results_table_row_tens") {
             mkappa = session.sign_tensile_mkap[index]

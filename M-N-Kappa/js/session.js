@@ -88,17 +88,16 @@ Session.prototype.calculate_significant_points = function () {
     this.mkap.rebar_strain0 = Array.apply(null, Array(25)).map(Number.prototype.valueOf, 0)
 
     // check for phased analysis
-    var diagram_copy;
+    var original_diagram;
     for (var i = 0; i < this.mkap.m0.length; i++) {
         if (this.mkap.m0[i] > 0) {
+            original_diagram = this.mkap.rebar_diagram[i];
+            this.mkap.rebar_diagram[i] = new mkap.StressStrain([0, 0], [0, 0]);
             this.compute_moment(-this.mkap.m0[i]);
             this.mkap.rebar_strain0[i] = this.mkap.rebar_strain[i];
-
-            diagram_copy = jQuery.extend(true, {}, this.mkap.rebar_diagram[i]);
-            this.mkap.rebar_diagram[i] = diagram_copy;
+            this.mkap.rebar_diagram[i] = jQuery.extend(true, {}, original_diagram); // deep copy
             this.mkap.rebar_diagram[i].strain.splice(1, 0, this.mkap.rebar_strain0[i]);  // js version of insert
             this.mkap.rebar_diagram[i].stress.splice(1, 0, 0);
-            console.log(this.mkap.rebar_diagram)
         }
     }
 
