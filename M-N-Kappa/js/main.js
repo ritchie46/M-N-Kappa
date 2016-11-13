@@ -319,31 +319,32 @@ $(document).ready(function () {
         session.mkap.rebar_As = [];
         session.mkap.rebar_z = [];
         session.mkap.rebar_diagram = [];
+        session.mkap.m0 = [];
 
         var As = document.getElementsByClassName("rebar_As");
         var d = document.getElementsByClassName("rebar_d");
-        var rebar_diagram = document.getElementsByClassName("rebar_material_select");
+        var rebar_diagram = $(".rebar_material_select");
+        var m0 = document.getElementsByClassName("rebar_M0");
         $slct = $("#option_rebar_results");
         $slct.empty();
-
         As = extract_floats(As);
         d = extract_floats(d);
-        
+        m0 = extract_floats(m0);
+        rebar_diagram = rebar_diagram.slice(1)
         var height = session.mkap.cross_section.top;
         
         for (var i = 0; i < As.length; i++) {
-            var z = height - d[i];
-            
             // The corresponding rebar material
-            var no_of_diagram = rebar_diagram[i].value[rebar_diagram[i].value.length - 1];
+            var no_of_diagram = rebar_diagram[i].value[rebar_diagram[i].value.length - 1]; //
 
             // add the rebar in the correct order to the mkap
             session.mkap.rebar_As[i] = As[i];
-            session.mkap.rebar_z[i] = z;
+            session.mkap.rebar_z[i] = height - d[i];
             session.mkap.rebar_diagram[i] = session.rebar_diagrams[no_of_diagram - 1];
+            session.mkap.m0[i] = m0[i] * Math.pow(10, 6);
 
             // set the rebar options in the results table
-            $slct.append("<option>rebar row #%s</option>".replace("%s", i + 1))
+            $slct.append("<option>rebar row #%s</option>".replace("%s", (i + 1).toString()));
         }
         trigger_polygon();
     }
@@ -371,7 +372,6 @@ $(document).ready(function () {
         $('.mkappa_svg').find('svg').remove();
         // add new svg
         var svg = plt.add_svg('.mkappa_svg', "curvature", "bending moment  [*10^6]");
-
 
         var sol = session.calculate_significant_points();
         var moment = sol.moment;
@@ -514,18 +514,19 @@ $(document).ready(function () {
                 add_row($("#compression_add_row"));
 
             }
+            $slct = $("#comp_curve_body");
             for (n; n > 3; n--) {
-                var row = $("#comp_curve_body").children(".custom_row").last();
+                var row = $slct.children(".custom_row").last();
                 remove_row(row);
             }
-            $slct = $("#comp_curve_body");
-            $slct.find(".comp_strain")[1].value = 1.75
-            $slct.find(".comp_strain")[2].value = 3.5
-            $slct.find(".comp_stress")[1].value = fc
-            $slct.find(".comp_stress")[2].value = fc
+
+            $slct.find(".comp_strain")[1].value = 1.75;
+            $slct.find(".comp_strain")[2].value = 3.5;
+            $slct.find(".comp_stress")[1].value = fc;
+            $slct.find(".comp_stress")[2].value = fc;
             trigger_comp_strain()
         }
-    })
+    });
    
     // rebar material
     //$(".rebar_material").change(function () {
@@ -563,19 +564,19 @@ $(document).ready(function () {
     // cross-section type
     $("#cross_section_type").change(function () {
         if (this.value == "rectangle") {
-            $(".cross_section_type").addClass("hidden")
+            $(".cross_section_type").addClass("hidden");
             $("#rectangle_rows").removeClass("hidden")
         }
         else if (this.value == "custom") {
-            $(".cross_section_type").addClass("hidden")
+            $(".cross_section_type").addClass("hidden");
             $("#polygon_rows").removeClass("hidden")
         }
         else if (this.value == "T-beam" || this.value == "I-beam") {
-            $(".cross_section_type").addClass("hidden")
+            $(".cross_section_type").addClass("hidden");
             $("#T-beam_rows").removeClass("hidden")
         }
         else if (this.value == "circle") {
-            $(".cross_section_type").addClass("hidden")
+            $(".cross_section_type").addClass("hidden");
             $("#circle_rows").removeClass("hidden")
         }
         trigger_polygon()
@@ -584,19 +585,21 @@ $(document).ready(function () {
 
 
     // setting up the presettings
-    $compression_material.val("C20/25")
-    $compression_material.trigger("change")
-    $(".rebar_material")[1].value = "B500"
-    $(".rebar_material").last().trigger("change")
-    $("#cross_section_type").val("rectangle")
-    $("#cross_section_type").trigger("change")
+    $compression_material.val("C20/25");
+    $compression_material.trigger("change");
+    $slct = $(".rebar_material");
+    $slct[1].value = "B500";
+    $slct.last().trigger("change");
+    $slct = $("#cross_section_type");
+    $slct.val("rectangle");
+    $slct.trigger("change");
     
-    trigger_tens_strain()
+    trigger_tens_strain();
 
-    $("#width").val(400)
-    $("#height").val(500)
-    trigger_polygon()
-    $(".rebar_As").trigger("change")
+    $("#width").val(400);
+    $("#height").val(500);
+    trigger_polygon();
+    $(".rebar_As").trigger("change");
    
     // Logic for collapsing the input divs
     $("#collapse_polygon").collapse("show");

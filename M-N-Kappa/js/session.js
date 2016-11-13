@@ -29,36 +29,30 @@ function Session() {
 }
 
 Session.prototype.compute_moment = function (moment) {
-    var top_str = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - i] * 0.5;
+    var top_str = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1] * 0.5;
     this.mkap.solver(true, top_str);
+    this.mkap.det_m_kappa();
     var count = 0;
     var factor;
     while (1) {
         if (std.convergence_conditions(Math.abs(this.mkap.moment), moment, 1.001, 0.999)) {
             if (window.DEBUG) {
-                console.log("convergence after %s iterations".replace("%s", count))
+                console.log("moment convergence after %s iterations".replace("%s", count))
             }
-            this.mkap.det_m_kappa();
             if (this.mkap.validity()) {
-                moment.push(Math.abs(this.mkap.moment));
-                kappa.push(Math.abs(this.mkap.kappa));
-                this.moment_rebar[i].push(Math.abs(this.mkap.moment));
-                this.kappa_rebar[i].push(Math.abs(this.mkap.kappa));
-
-                this.sign_stress_rbr[i].push(this.mkap.rebar_force[i] / this.mkap.rebar_As[i]);
-                this.sign_strain_rbr[i].push(this.mkap.rebar_strain[i])
-
+                return this.mkap.moment;
             }
             break
         }
+        this.mkap.det_m_kappa();
         factor = std.convergence(Math.abs(this.mkap.moment), moment, 5);
         top_str *= factor;
 
         this.mkap.solver(true, top_str, false);
 
-        if (count > 50) {
+        if (count > 80) {
             if (window.DEBUG) {
-                console.log("no rebar convergence found after %s iterations".replace("%s", count))
+                console.log("no moment convergence found after %s iterations".replace("%s", count))
             }
             break
         }
@@ -68,7 +62,6 @@ Session.prototype.compute_moment = function (moment) {
 
 
 Session.prototype.calculate_significant_points = function () {
-
     /** 
     determines the moment and kappa points for the given significant strain points in the compression stress strain diagram
     */
@@ -92,9 +85,25 @@ Session.prototype.calculate_significant_points = function () {
     this.sign_tensile_mkap = [];
     this.sign_compression_mkap = [];
     this.sign_rebar_mkap = [];
+    this.mkap.rebar_strain0 = Array.apply(null, Array(25)).map(Number.prototype.valueOf, 0)
+
+    // check for phased analysis
+    var diagram_copy;
+    for (var i = 0; i < this.mkap.m0.length; i++) {
+        if (this.mkap.m0[i] > 0) {
+            this.compute_moment(-this.mkap.m0[i]);
+            this.mkap.rebar_strain0[i] = this.mkap.rebar_strain[i];
+
+            diagram_copy = jQuery.extend(true, {}, this.mkap.rebar_diagram[i]);
+            this.mkap.rebar_diagram[i] = diagram_copy;
+            this.mkap.rebar_diagram[i].strain.splice(1, 0, this.mkap.rebar_strain0[i]);  // js version of insert
+            this.mkap.rebar_diagram[i].stress.splice(1, 0, 0);
+            console.log(this.mkap.rebar_diagram)
+        }
+    }
 
     // Solve for significant points in compression diagram
-    for (var i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
+    for (i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
         strain = this.mkap.compressive_diagram.strain[i];
 
         this.mkap.solver(true, strain);

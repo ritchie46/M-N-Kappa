@@ -23,6 +23,9 @@ var mkap = (function () {
         this.rebar_z = [];
         // objects from the StressStrain class
         this.rebar_diagram = [];
+        // phased rebar
+        this.m0 = [];
+        this.rebar_strain0 = [];
     
         /**
         results
@@ -36,7 +39,6 @@ var mkap = (function () {
         this.strain_top = null;
         this.strain_btm = null;
         this.zero_line = null ; // xu is height - zero line
-        this.xu = null;
 
         // solver settings
         this.iterations = 120;
