@@ -477,6 +477,8 @@ $(document).ready(function () {
 
         $("#myModal").modal();
         $("#modal-svg").find("svg").remove();
+        $("#strain_diagram_moment").html("<strong>bending moment $ *10<sup>6</sup></strong>".replace("$",
+        -Math.round(mkappa.moment / Math.pow(10, 4)) / 100));
         plt.cross_section_view("#modal-svg", mkappa)
 
     });
@@ -501,10 +503,11 @@ $(document).ready(function () {
                 var row = $("#comp_curve_body").children(".custom_row").last();
                 remove_row(row);
             }
-            $("#comp_curve_body").find(".comp_strain")[1].value = 1.75
-            $("#comp_curve_body").find(".comp_strain")[2].value = 3.5
-            $("#comp_curve_body").find(".comp_stress")[1].value = fc
-            $("#comp_curve_body").find(".comp_stress")[2].value = fc
+            $slct = $("#comp_curve_body");
+            $slct.find(".comp_strain")[1].value = 1.75
+            $slct.find(".comp_strain")[2].value = 3.5
+            $slct.find(".comp_stress")[1].value = fc
+            $slct.find(".comp_stress")[2].value = fc
             trigger_comp_strain()
         }
     })

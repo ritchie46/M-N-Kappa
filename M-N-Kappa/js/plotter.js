@@ -407,22 +407,24 @@ var plt = (function () {
         max_y -= min_y;
         max_x -= min_x; min_x -= min_x;
 
-        var scale_x = d3.scaleLinear().domain([0, max_x]).range([0, width]);
-        var scale_y = d3.scaleLinear().domain([0, max_y]).range([0, height]);
+        var padding = 20;
+        var padding_x = 45;
+        var scale_x = d3.scaleLinear().domain([0, max_x]).range([padding_x, width - padding_x]);
+        var scale_y = d3.scaleLinear().domain([0, max_y]).range([padding, height - padding]);
 
         var z_top = 0; var z_btm = mkap.cross_section.top;
 
         var data = [
-            {x:origin_x, y: z_top},
-            {x: min_x, y: z_top},
-            {x: max_x, y: z_btm},
-            {x: origin_x, y: z_btm},
-            {x: origin_x, y: z_top}
+            {x:origin_x, y: z_top, val: ""},
+            {x: min_x, y: z_top, val: mkap.strain_top},
+            {x: max_x, y: z_btm, val: mkap.strain_btm},
+            {x: origin_x, y: z_btm, val: ""},
+            {x: origin_x, y: z_top, val: ""}
         ];
 
         var count = 0;
         data.forEach(function (i) {
-            data[count] = {x: scale_x(i.x), y: scale_y(i.y)};
+            data[count] = {x: scale_x(i.x), y: scale_y(i.y), val: i.val};
             count++;
         });
 
@@ -432,18 +434,33 @@ var plt = (function () {
             .attr("stroke-width", 1)
             .attr("fill", "none");
 
+
         var y;
         var x;
+        var a; var b;
         min_x = mkap.strain_top;
         for (var i = 0; i < mkap.rebar_z.length; i++){
             y = mkap.cross_section.top - mkap.rebar_z[i];
             x = mkap.rebar_strain[i] - min_x;
-            line_append(svg, [
-                {x: scale_x(origin_x), y: scale_y(y)},
-                {x: scale_x(x), y: scale_y(y)}
-            ], "blue", 2);
+            a = {x: scale_x(origin_x), y: scale_y(y), val:""};
+            b = {x: scale_x(x), y: scale_y(y), val: mkap.rebar_strain[i]};
+            line_append(svg, [a, b], "blue", 2);
+            data.push(b)
         }
-    };
+
+        svg.selectAll("text")
+                .data(data)
+                .enter()
+                 .append("text")
+            .attr('x', function(d){ return d.x})
+            .attr('y', function(d){ return d.y})
+            .text( function (d) {
+                if (typeof  d.val == 'number') {
+                    return "" + (Math.round(d.val * 100) / 100) + ""
+                }
+            })};
+
+
 
 
     return {
