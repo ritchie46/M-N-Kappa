@@ -1,5 +1,5 @@
 ﻿
-.pg_row, .add_row, .custom_row, .rectangle_row, .T-beam_row {
+.pg_row, .add_row, .custom_row, .rectangle_row, .T-beam_row .rebar_row {
     padding-bottom: 4px;
     padding-top: 4px
 }
@@ -38,3 +38,4 @@
 .strain_diagram {
     padding-left: 45px;
 }
+

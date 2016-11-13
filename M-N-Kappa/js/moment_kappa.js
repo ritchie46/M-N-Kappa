@@ -143,8 +143,8 @@ var mkap = (function () {
         over. If false vice versa for strain_bottom.
         */
         // default parameter
-        var strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
-        var print = (typeof print !== "undefined") ? print : true;
+        strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
+        print = (typeof print !== "undefined") ? print : true;
 
         this.solution = false;
 
@@ -163,7 +163,7 @@ var mkap = (function () {
 
         this.det_force_distribution(top_str, btm_str);
         var count = 0;
-
+        var factor;
         if (strain_top) {  // top strain remains constant
             // iterate untill the convergence criteria is met
             while (1) {
@@ -198,7 +198,7 @@ var mkap = (function () {
                 }
                 else {
 
-                    var factor = std.convergence(this.force_tensile, this.force_compression, this.div);
+                    factor = std.convergence(this.force_tensile, this.force_compression, this.div);
                     btm_str = btm_str * factor;
                 }
                 
@@ -227,7 +227,7 @@ var mkap = (function () {
                     break
                 }
 
-                var factor = std.convergence(this.force_compression, this.force_tensile, this.div);
+                factor = std.convergence(this.force_compression, this.force_tensile, this.div);
                 top_str = top_str * factor;
      
                 this.det_force_distribution(top_str, btm_str);
@@ -282,7 +282,7 @@ var mkap = (function () {
         this.moment -= this.normal_force * (this.cross_section.top - this.cross_section.bottom) * 0.5;
 
         // rebar share
-        for (var i = 0; i < this.rebar_As.length; i++) {
+        for (i = 0; i < this.rebar_As.length; i++) {
             this.moment += this.rebar_force[i] * this.rebar_z[i];
 
             // reduction of master cross section at place of rebar
@@ -330,7 +330,7 @@ var mkap = (function () {
         /// <param name="strain" type="array">Contains strain values corresponding with this.stress</param>
         /// <param name="stress" type="array">Contains stress values corresponding with this.strain</param>
 
-        this.strain = strain
+        this.strain = strain;
         this.stress = stress
     }
 
@@ -350,10 +350,9 @@ var mkap = (function () {
             else if (this.strain[i] > strain) {
                 return std.interpolate(this.strain[i - 1], this.stress[i - 1],
                     this.strain[i], this.stress[i], strain);
-            };
-
-        };
-    }
+            }
+        }
+    };
     //end class
 
     return {    MomentKappa: MomentKappa,

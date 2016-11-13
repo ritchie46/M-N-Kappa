@@ -1,10 +1,11 @@
-﻿"use strict"
-
+﻿"use strict";
 
 // plt namespace
 var plt = (function () {
 
     var settings = {
+        padding: 20,
+        width_svg: $("#pg_svg").width(),
         width: 300,
         height: 300,
         offset_origin_x: 0,
@@ -33,9 +34,11 @@ var plt = (function () {
         return new_arr
 }
     var svg_cross_section = d3.select("#pg_svg").append("svg")
-        .attr("width", settings.width)
-        .attr("height", settings.height)
-        .append('g'); // groups svg shapes
+        .attr("width", settings.width_svg)
+        .attr("height", settings.height + settings.padding)
+        .append('g') // groups svg shapes
+        .attr("transform", "translate(" + ((settings.width_svg - settings.width) * 0.5 ) + ", " + (settings.padding) + " )");
+
 
     svg_cross_section.selectAll("path")
         .data([{ x: 0, y: 0 }])
@@ -234,7 +237,7 @@ var plt = (function () {
 
     function add_svg(selector, name_x, name_y) {
         if (selector == ".mkappa_svg") {
-            width = $('#pg_svg').width() * 0.75
+            width = $('#pg_svg').width() * 0.7
         }
         // default parameter
         name_x = (typeof name_x !== "undefined") ? name_x : false;
