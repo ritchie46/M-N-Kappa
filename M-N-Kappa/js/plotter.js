@@ -315,66 +315,71 @@ var plt = (function () {
 
 
     
-    function draw_lines(svg, xstr, ystr, floats) {
+    function draw_lines(svg, xstr, ystr, floats, circle, session) {
         /// <param name="svg" type="object">d3 svg object</param>
         /// <param name="xstr" type="array of strings">array from html input</param>
         /// <param name="ystr" type="array of strings">array from html input</param>
         /// <param name="floats" type="boolean">If true the x and y arrays may contain floats</param>
-   
-        /** 
-        Draws lines on a given svg canvast. Input is standard form listst, thus contains strings.
-        */
+        /// <param name="circle" type="boolean"> if true, circles added to data points</param>
+
+        /**
+         Draws lines on a given svg canvast. Input is standard form listst, thus contains strings.
+         */
         // default parameter
         floats = (typeof floats !== "undefined") ? floats : false;
+        circle = (typeof circle !== "undefined") ? circle : false;
         /**
-        Math.max.apply(null, xstr) determines the max value of a string. .apply() is a method for applying arrays on the object.
-        */
-
+         Math.max.apply(null, xstr) determines the max value of a string. .apply() is a method for applying arrays on the object.
+         */
+        var x_bound;
+        var y_bound;
         if (floats) {
-            var x_bound = {
+            x_bound = {
                 max: Math.max(Math.max.apply(null, xstr), 1e-9),
                 min: Math.min(Math.min.apply(null, xstr), 0)
             };
 
-            var y_bound = {
+            y_bound = {
                 max: Math.max(Math.max.apply(null, ystr), 1e-9),
                 min: Math.min(Math.min.apply(null, ystr), 0)
             }
         }
 
         else {
-            
-            var x_bound = det_min_max_str(xstr);
-            var y_bound = det_min_max_str(ystr);
+
+            x_bound = det_min_max_str(xstr);
+            y_bound = det_min_max_str(ystr);
         }
 
         var scale_x = d3.scaleLinear()
-                .domain([0, x_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
-                .range(svg.range_x);
+            .domain([0, x_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
+            .range(svg.range_x);
 
         var scale_y = d3.scaleLinear()
-        .domain([0, y_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
-        .range(svg.range_y);
+            .domain([0, y_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
+            .range(svg.range_y);
 
 
         var data = [
-            { x: 0 + svg.padding, y: height - svg.padding}
+            {x: 0 + svg.padding, y: height - svg.padding, y_original: 0}
         ];
-
+        var loc;
         for (var i = 0; i < xstr.length; i++) {
             if (floats) {
-                var loc = {
+                loc = {
                     x: scale_x(xstr[i] - x_bound.min),
-                    y: -scale_y(ystr[i] - y_bound.min) + height
+                    y: -scale_y(ystr[i] - y_bound.min) + height,
+                    y_original: ystr[i]
                 };
 
                 data.push(loc);
             }
             else {
                 if (xstr[i].value.length > 0 && ystr[i].value.length > 0) {
-                    var loc = {
+                    loc = {
                         x: scale_x(parseFloat(xstr[i].value) - x_bound.min) + svg.padding,
-                        y: -scale_y(parseFloat(ystr[i].value) - y_bound.min) + height - svg.padding
+                        y: -scale_y(parseFloat(ystr[i].value) - y_bound.min) + height - svg.padding,
+                        y_original: parseFloat(ystr[i].value)
                     };
                     data.push(loc)
                 }
@@ -382,19 +387,61 @@ var plt = (function () {
         }
 
         svg.select("path").attr("d", linefunc(data));
-        
+
         // update the axes
         var xaxis = d3.axisTop()
-                     .scale(d3.scaleLinear().domain([0, x_bound.max * 1.05]).range([0, width]));
+            .scale(d3.scaleLinear().domain([0, x_bound.max * 1.05]).range([0, width]));
         var yaxis = d3.axisRight()
-                        .scale(d3.scaleLinear().domain([0, y_bound.max * 1.05]).range([height, 0]));
-
+            .scale(d3.scaleLinear().domain([0, y_bound.max * 1.05]).range([height, 0]));
 
         svg.selectAll("g.xaxis")
             .call(xaxis);
         svg.selectAll("g.yaxis")
             .call(yaxis);
+
+        var is_equal = function (moment, y_value) {
+            if (std.is_close(moment, y_value, 1e-3, 1e-3)) {
+                // call the strain diagram plot from here.
+
+            }
+        };
+
+        var moment; var j;
+        if (circle) {
+            svg.selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("cx", function (d) {
+                    return d.x
+                })
+                .attr("cy", function (d) {
+                    return d.y
+                })
+                .attr("r", 5)
+                .on("click", function (d) {
+                    for (i = 0; i < session.all_computed_mkap.length; i++) {
+                        if (session.all_computed_mkap[i].length >= 1) {// the rebar solution has got multiple mkappa's in an array.
+                            for (j = 0; j < session.all_computed_mkap[i].length; j++ ) {
+                                moment = session.all_computed_mkap[i][j].moment;
+                                is_equal(-moment / Math.pow(10, 6), d.y_original)
+                            }
+                        }
+                        else {
+                            moment = session.all_computed_mkap[i].moment;
+                            is_equal(-moment / Math.pow(10, 6), d.y_original)
+                        }
+                    }
+                })
+                .on("mouseover", function() {
+                    d3.select(this).style("cursor", "pointer")
+                })
+                .on("mouseout", function() {
+                    d3.select(this).style("cursor", "default")
+            });
+        }
     }
+
 
     var cross_section_view = function(selector, mkap) {
 

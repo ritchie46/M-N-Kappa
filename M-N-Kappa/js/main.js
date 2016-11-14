@@ -227,13 +227,13 @@ $(document).ready(function () {
         }
 
         session.mkap.tensile_diagram = new mkap.StressStrain(strain, stress)
-    }
-
-    $('#tens_curve_body').on('change', 'input', function () {
+    };
+    $slct = $('#tens_curve_body');
+    $slct.on('change', 'input', function () {
         trigger_tens_strain();
     });
 
-    $('#tens_curve_body').on('click', '.remove_row', function () {
+    $slct.on('click', '.remove_row', function () {
         $(this).closest('.custom_row').remove();
         trigger_tens_strain();
     });
@@ -383,7 +383,7 @@ $(document).ready(function () {
 
         plt.draw_lines(svg, kappa, moment.map(function (i) {
             return i / 1e6
-        }), true);
+        }), true, true, session);
 
         var html_moment = Math.round(Math.max.apply(null, moment) / Math.pow(10, 6) * 100) / 100;
         var $MRD = $("#MRd");

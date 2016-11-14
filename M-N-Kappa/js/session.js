@@ -24,6 +24,7 @@ function Session() {
     this.sign_tensile_mkap = [];
     this.sign_compression_mkap = [];
     this.sign_rebar_mkap = [];
+    this.all_computed_mkap = [];
 
 
 }
@@ -226,6 +227,8 @@ Session.prototype.calculate_significant_points = function () {
         console.log(moment);
         console.log(kappa);
     }
+
+    this.all_computed_mkap = this.sign_compression_mkap.concat(this.sign_rebar_mkap, this.sign_tensile_mkap);
 
     return {
         moment: moment,

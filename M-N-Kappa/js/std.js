@@ -2,6 +2,21 @@
 // std namespace
 var std = (function () {
 
+    function is_close(a, b, rel_tol, abs_tol) {
+
+        var diff = Math.abs(a - b);
+        if (diff <= abs_tol) {
+            return true
+        }
+        if (Math.abs(a) < Math.abs(b)) {
+            return diff <= Math.abs(b) * rel_tol
+        }
+        else {
+            return diff <= Math.abs(a) * rel_tol
+        }
+    }
+
+
     function is_number(obj) {
         return !isNaN(parseFloat(obj))
     }
@@ -77,7 +92,8 @@ var std = (function () {
         convergence: convergence,
         convergence_conditions: convergence_conditions,
         is_number: is_number,
-        nearest_index: nearest_index
+        nearest_index: nearest_index,
+        is_close: is_close
     }
     
 })();  // std namespace
