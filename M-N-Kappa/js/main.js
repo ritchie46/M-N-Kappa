@@ -37,20 +37,21 @@ $(document).ready(function () {
         remove_row($(this))
     });
 
-    $("#material_nav").click(function () {
-        $(".cstm_left_column").removeClass("hidden");
-        $("#material_nav").addClass("active");
-        $("#results_nav").removeClass("active");
-        $(".cstm_right_column").addClass("hidden")
-    });
+    $(".main_navbar").click(function () {
+        $(".main_navbar").removeClass("active");
+        $(this).addClass("active");
+        $(".main_columns").addClass("hidden");
 
-    $("#results_nav").click(function () {
-        $(".cstm_left_column").addClass("hidden");
-        $("#material_nav").removeClass("active");
-        $("#results_nav").addClass("active");
-        $(".cstm_right_column").removeClass("hidden")
+        if (this.id == "rebar_nav"){
+            $("#rebar_column").removeClass("hidden")
+        }
+        else if (this.id == "results_nav"){
+            $("#results_column").removeClass("hidden")
+        }
+        else if (this.id == "geometry_nav"){
+            $("#geometry_column").removeClass("hidden")
+        }
     });
-
 
 
     var $slct = $('#pg_body');
@@ -608,7 +609,7 @@ $(document).ready(function () {
     $("#tens_curve").find(".panel-collapse").collapse("show");
     $("#rebar_input").find(".panel-collapse").collapse("show");
     $("#rebar_curve_1").closest(".panel-collapse").collapse("show");
-    $(".cstm_right_column").find(".panel-collapse").collapse("show");
+    $(".rebar_column").find(".panel-collapse").collapse("show");
 
        
 

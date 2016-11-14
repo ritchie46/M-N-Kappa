@@ -14,8 +14,9 @@
     <!--ROW 1 -->
     <div class="col-xs-8">
         <ul class="nav nav-tabs">
-            <li role="presentation" class="active" id="material_nav"><a href="#">Material</a></li>
-            <li role="presentation"><a href="#" id="results_nav">Results</a></li>
+            <li role="presentation" class="active main_navbar" id="geometry_nav"><a>Geometry</a></li>
+            <li role="presentation" class="main_navbar" id="rebar_nav"><a>Rebar</a></li>
+            <li role="presentation" class="main_navbar" id="results_nav"><a>Results</a></li>
         </ul>
 
 
@@ -29,7 +30,7 @@
 
         <!--ROW 1.column 1 -->
         <!--Input polygon and stress strain diagrams -->
-        <div class="col-xs-12 cstm_left_column">
+        <div class="col-xs-12 main_columns" id="geometry_column">
             <div class="row">
                 <div id="polygon_input" class="panel panel-default">
                     <div class="panel-heading">
@@ -296,8 +297,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+
 
             <!--Rebar input -->
+        <div id="rebar_column" class="main_columns hidden">
             <div class="row">
                 <div class="panel panel-default" id="rebar_input">
                     <div class="panel-heading">
@@ -560,17 +564,14 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
-
-
         </div>
+
 
         <!--ROW 1.column 2 -->
 
 
-        <div class="col-xs-12 text-center cstm_right_column hidden">
+        <div class="col-xs-12 text-center hidden main_columns" id="results_column">
 
             <div class="panel panel-default cstm_block">
                 <div class="panel-body">
