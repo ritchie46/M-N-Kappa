@@ -484,7 +484,7 @@ $(document).ready(function () {
         }
         else if (class_name == "results_table_row_rbr") {
             var j = $("#option_rebar_results")[0].value.slice(-1) - 1;
-            mkappa = session.sign_rebar_mkap[k][index]
+            mkappa = session.sign_rebar_mkap[j][index]
         }
         else if (class_name == "results_table_row_tens") {
             mkappa = session.sign_tensile_mkap[index]

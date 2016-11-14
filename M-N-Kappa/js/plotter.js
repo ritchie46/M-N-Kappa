@@ -448,9 +448,10 @@ var plt = (function () {
         min_x = mkap.strain_top;
         for (var i = 0; i < mkap.rebar_z.length; i++){
             y = mkap.cross_section.top - mkap.rebar_z[i];
-            x = mkap.rebar_strain[i] - min_x;
-            x0 = mkap.rebar_strain0[i] - min_x;
-            if (x0 < x) {
+            x = mkap.rebar_strain[i];
+            x0 = mkap.rebar_strain0[i];
+            if (Math.abs(x0) < Math.abs(x)) {
+                x0 -= min_x; x -= min_x;
                 a = {x: scale_x(x0), y: scale_y(y), val: x0};
                 b = {x: scale_x(x), y: scale_y(y), val: mkap.rebar_strain[i]};
                 line_append(svg, [a, b], "blue", 2);
