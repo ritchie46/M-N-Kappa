@@ -26,7 +26,6 @@ function Session() {
     this.sign_rebar_mkap = [];
     this.all_computed_mkap = [];
 
-
 }
 
 Session.prototype.compute_moment = function (moment) {

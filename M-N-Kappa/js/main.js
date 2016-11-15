@@ -53,6 +53,10 @@ $(document).ready(function () {
         }
     });
 
+    $("#calculation_type").on("change", function () {
+        $("#calculation_type_moment").toggleClass("hidden")
+    });
+
 
     var $slct = $('#pg_body');
     //Call polygon draw function if row is removed
@@ -101,9 +105,7 @@ $(document).ready(function () {
             var rotation_pg = rotate_pg(rotation, x, y);
             x = rotation_pg.x;
             y = rotation_pg.y;
-            point_list = plt.draw_polygon(x, y, session);
-            // add polygon to session
-            $("#area").html("area: " + session.mkap.cross_section.area())
+            plt.draw_polygon(x, y, session);
         }
         else if (choice == "rectangle") {
             var width = parseFloat(document.getElementById("width").value);
@@ -116,9 +118,7 @@ $(document).ready(function () {
             y = rotation_pg.y;
 
             if (width > 0 && height > 0) {
-                point_list = plt.draw_polygon(x, y, session);
-                //session.mkap.cross_section = new crsn.PolyGon(point_list)
-                $("#area").html("Area: " + session.mkap.cross_section.area())
+                plt.draw_polygon(x, y, session);
             }
         }
         else if (choice == "T-beam" || choice == "I-beam") {
@@ -146,16 +146,13 @@ $(document).ready(function () {
             y = rotation_pg.y;
 
             if (w_w > 0 && w_f > 0 && h_w > 0 && h_f > 0) {
-                var point_list = plt.draw_polygon(x, y, session);
-                //session.mkap.cross_section = new crsn.PolyGon(point_list)
-                $("#area").html("Area: " + session.mkap.cross_section.area())
+                plt.draw_polygon(x, y, session);
             }
         }
         else if (choice == "circle") {
             var radius = parseFloat(document.getElementById("circle_radius").value);
             session.mkap.cross_section = new crsn.Circle(radius);
             plt.draw_polygon(session.mkap.cross_section.point_list, "notused", session, false);
-            $("#area").html("Area: " + session.mkap.cross_section.area())
         }
     }
 
@@ -374,65 +371,73 @@ $(document).ready(function () {
         // add new svg
         var svg = plt.add_svg('.mkappa_svg', "curvature", "bending moment  [*10^6]");
 
-        var sol = session.calculate_significant_points();
-        var moment = sol.moment;
-        var kappa = sol.kappa;
-        
-        moment.unshift(0);
-        kappa.unshift(0);
+        $(".result_output").addClass("hidden");
+        var option = $("#calculation_type").val();
 
-        plt.moment_kappa(svg, kappa, moment.map(function (i) {
-            return i / 1e6
-        }), session);
-
-        var html_moment = Math.round(Math.max.apply(null, moment) / Math.pow(10, 6) * 100) / 100;
-        var $MRD = $("#MRd");
-        $MRD.removeClass("hidden");
-        $MRD.html("maximum moment: %s * 10<sup>6</sup>".replace("%s", html_moment));
-        //-- display results in result tables --//
-
-        // compression results table
-        $slct = $(".results_table_compression_diagram");
-        if ($slct.length > 1) {
-            $slct.last().remove()
+        if (option == "search moment") {
+            moment = -parseFloat($("#moment_input").val()) * Math.pow(10, 6);
+            session.compute_moment(moment);
+            plt.cross_section_view("#modal-svg", session.mkap)
         }
+        else {
+            $("#moment_kappa_diagram_output").removeClass("hidden");
+            $("#significant_results_output").removeClass("hidden");
+            var sol = session.calculate_significant_points();
+            var moment = sol.moment;
+            var kappa = sol.kappa;
 
-        table = $slct.first().clone().removeClass("hidden");
-        $("#result_table_div_comp").append(table);
+            moment.unshift(0);
+            kappa.unshift(0);
 
-        for (i = 0; i < session.moment_compression.length; i++) {
-            $slct = $(".results_table_row_comp");
-            $slct.last().find(".show_section_btn").removeClass("hidden");
-            $slct .last().find(".significant_moment").html(Math.round(session.moment_compression[i] / 1e4) / 100);
-            $slct .last().find(".signifcant_row_no").last().html(i + 1);
-            $slct .last().find(".significant_kappa").last().html(Math.round(session.kappa_compression[i] * 1000) / 1000);
-            $slct .last().find(".significant_stress").last().html(Math.round(session.sign_stress_comp[i] * 100) / 100);
-            $slct.last().find(".significant_strain").last().html(Math.round(session.sign_strain_comp[i] * 1000) / 1000);
-            $slct.first().clone().insertAfter($slct.last());
+            plt.moment_kappa(svg, kappa, moment.map(function (i) {
+                return i / 1e6
+            }), session);
+
+            //-- display results in result tables --//
+
+            // compression results table
+            $slct = $(".results_table_compression_diagram");
+            if ($slct.length > 1) {
+                $slct.last().remove()
+            }
+
+            table = $slct.first().clone().removeClass("hidden");
+            $("#result_table_div_comp").append(table);
+
+            for (i = 0; i < session.moment_compression.length; i++) {
+                $slct = $(".results_table_row_comp");
+                $slct.last().find(".show_section_btn").removeClass("hidden");
+                $slct.last().find(".significant_moment").html(Math.round(session.moment_compression[i] / 1e4) / 100);
+                $slct.last().find(".signifcant_row_no").last().html(i + 1);
+                $slct.last().find(".significant_kappa").last().html(Math.round(session.kappa_compression[i] * 1000) / 1000);
+                $slct.last().find(".significant_stress").last().html(Math.round(session.sign_stress_comp[i] * 100) / 100);
+                $slct.last().find(".significant_strain").last().html(Math.round(session.sign_strain_comp[i] * 1000) / 1000);
+                $slct.first().clone().insertAfter($slct.last());
+            }
+
+            // tensile results table
+            $slct = $(".results_table_tensile_diagram");
+            if ($slct.length > 1) {
+                $slct.last().remove()
+            }
+
+            var table = $slct.first().clone().removeClass("hidden");
+            $("#result_table_div_tens").append(table);
+
+            for (var i = 0; i < session.moment_tensile.length; i++) {
+                $slct = $(".results_table_row_tens");
+                $slct.last().find(".show_section_btn").removeClass("hidden");
+                $slct.last().find(".significant_moment").html(Math.round(session.moment_tensile[i] / 1e4) / 100);
+                $slct.last().find(".signifcant_row_no").last().html(i + 1);
+                $slct.last().find(".significant_kappa").last().html(Math.round(session.kappa_tensile[i] * 1000) / 1000);
+                $slct.last().find(".significant_stress").last().html(Math.round(session.sign_stress_tens[i] * 100) / 100);
+                $slct.last().find(".significant_strain").last().html(Math.round(session.sign_strain_tens[i] * 1000) / 1000);
+                $slct.first().clone().insertAfter($slct.last())
+            }
+
+            // rebar results table
+            update_rebar_results(0)
         }
-
-        // tensile results table
-        $slct = $(".results_table_tensile_diagram");
-        if ($slct.length > 1) {
-            $slct.last().remove()
-        }
-
-        var table = $slct.first().clone().removeClass("hidden");
-        $("#result_table_div_tens").append(table);
-
-        for (var i = 0; i < session.moment_tensile.length; i++) {
-            $slct = $(".results_table_row_tens");
-            $slct.last().find(".show_section_btn").removeClass("hidden");
-            $slct.last().find(".significant_moment").html(Math.round(session.moment_tensile[i] / 1e4) / 100);
-            $slct.last().find(".signifcant_row_no").last().html(i + 1);
-            $slct.last().find(".significant_kappa").last().html(Math.round(session.kappa_tensile[i] * 1000) / 1000);
-            $slct.last().find(".significant_stress").last().html(Math.round(session.sign_stress_tens[i] * 100) / 100);
-            $slct.last().find(".significant_strain").last().html(Math.round(session.sign_strain_tens[i] * 1000) / 1000);
-            $slct.first().clone().insertAfter($slct.last())
-        }
-
-        // rebar results table
-        update_rebar_results(0)
     };
 
     $('#calculate').click(function () {
@@ -490,7 +495,6 @@ $(document).ready(function () {
         else if (class_name == "results_table_row_tens") {
             mkappa = session.sign_tensile_mkap[index]
         }
-
         plt.cross_section_view("#modal-svg", mkappa)
 
     });
