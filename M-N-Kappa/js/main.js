@@ -381,9 +381,9 @@ $(document).ready(function () {
         moment.unshift(0);
         kappa.unshift(0);
 
-        plt.draw_lines(svg, kappa, moment.map(function (i) {
+        plt.moment_kappa(svg, kappa, moment.map(function (i) {
             return i / 1e6
-        }), true, true, session);
+        }), session);
 
         var html_moment = Math.round(Math.max.apply(null, moment) / Math.pow(10, 6) * 100) / 100;
         var $MRD = $("#MRd");
@@ -491,10 +491,6 @@ $(document).ready(function () {
             mkappa = session.sign_tensile_mkap[index]
         }
 
-        $("#myModal").modal();
-        $("#modal-svg").find("svg").remove();
-        $("#strain_diagram_moment").html("<strong>bending moment $ *10<sup>6</sup></strong>".replace("$",
-        -Math.round(mkappa.moment / Math.pow(10, 4)) / 100));
         plt.cross_section_view("#modal-svg", mkappa)
 
     });
