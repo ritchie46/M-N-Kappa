@@ -376,6 +376,7 @@ $(document).ready(function () {
 
         if (option == "search moment") {
             moment = -parseFloat($("#moment_input").val()) * Math.pow(10, 6);
+            session.apply_m0();
             session.compute_moment(moment);
             plt.cross_section_view("#modal-svg", session.mkap)
         }

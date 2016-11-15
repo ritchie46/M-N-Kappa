@@ -1,4 +1,6 @@
 ﻿"use strict";
+
+
 //class
 function Session() {
     this.mkap = null;
@@ -25,10 +27,27 @@ function Session() {
     this.sign_compression_mkap = [];
     this.sign_rebar_mkap = [];
     this.all_computed_mkap = [];
-
 }
 
+Session.prototype.apply_m0 = function () {
+        this.mkap.rebar_strain0 = Array.apply(null, Array(25)).map(Number.prototype.valueOf, 0);
+
+        var original_diagram;
+        for (var i = 0; i < this.mkap.m0.length; i++) {
+            if (this.mkap.m0[i] > 0) {
+                original_diagram = this.mkap.rebar_diagram[i];
+                this.mkap.rebar_diagram[i] = new mkap.StressStrain([0, 0], [0, 0]);
+                this.compute_moment(-this.mkap.m0[i]);
+                this.mkap.rebar_strain0[i] = this.mkap.rebar_strain[i];
+                this.mkap.rebar_diagram[i] = jQuery.extend(true, {}, original_diagram); // deep copy
+                this.mkap.rebar_diagram[i].strain.splice(1, 0, this.mkap.rebar_strain0[i]);  // js version of insert
+                this.mkap.rebar_diagram[i].stress.splice(1, 0, 0);
+            }
+        }
+};
+
 Session.prototype.compute_moment = function (moment) {
+
     var top_str = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1] * 0.5;
     this.mkap.solver(true, top_str);
     this.mkap.det_m_kappa();
@@ -85,24 +104,12 @@ Session.prototype.calculate_significant_points = function () {
     this.sign_tensile_mkap = [];
     this.sign_compression_mkap = [];
     this.sign_rebar_mkap = [];
-    this.mkap.rebar_strain0 = Array.apply(null, Array(25)).map(Number.prototype.valueOf, 0)
 
     // check for phased analysis
-    var original_diagram;
-    for (var i = 0; i < this.mkap.m0.length; i++) {
-        if (this.mkap.m0[i] > 0) {
-            original_diagram = this.mkap.rebar_diagram[i];
-            this.mkap.rebar_diagram[i] = new mkap.StressStrain([0, 0], [0, 0]);
-            this.compute_moment(-this.mkap.m0[i]);
-            this.mkap.rebar_strain0[i] = this.mkap.rebar_strain[i];
-            this.mkap.rebar_diagram[i] = jQuery.extend(true, {}, original_diagram); // deep copy
-            this.mkap.rebar_diagram[i].strain.splice(1, 0, this.mkap.rebar_strain0[i]);  // js version of insert
-            this.mkap.rebar_diagram[i].stress.splice(1, 0, 0);
-        }
-    }
+    this.apply_m0();
 
     // Solve for significant points in compression diagram
-    for (i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
+    for (var i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
         strain = this.mkap.compressive_diagram.strain[i];
 
         this.mkap.solver(true, strain);
