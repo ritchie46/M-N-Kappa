@@ -189,22 +189,23 @@ var plt = (function () {
             // Determine the height and the boundary location of the rebar. The edges of the cross-section are boundaries.
             var z = session.mkap.rebar_z[i];
             if (z < session.mkap.cross_section.top && z > session.mkap.cross_section.bottom) {
-
-                var n = 3;
                 var ndx = std.nearest_index(session.mkap.cross_section.y_val, z);
                 var d1 = z - session.mkap.cross_section.y_val[ndx.low]; var d2 = session.mkap.cross_section.y_val[ndx.high] - z;
                 ndx = d1 < d2 ? ndx.low : ndx.high;
+
                 var bound = session.mkap.cross_section.paired_xvals[ndx];
+                var n_per_bndry = Math.round(session.mkap.rebar_n[i] / bound.length);
+
                 var As = session.mkap.rebar_As[i];
-                var radius = scale(Math.sqrt(4 * As / Math.PI) / (n * bound.length));
+                var radius = scale(Math.sqrt(4 * As / Math.PI) / (n_per_bndry * bound.length));
 
 
                 // draw the rebar between the edges
                 for (var j = 0; j < bound.length; j++) {
                     var width = bound[j][0] - bound[j][1];
-                    var dx = width / (n + 1);
+                    var dx = width / (n_per_bndry + 1);
                     x = bound[j][1];
-                    for (var count = 0; count < n; count++) {
+                    for (var count = 0; count < n_per_bndry; count++) {
                         x += dx;
                         loc.push([scale(x - min_x), -scale(z - min_y) + settings.height, radius])
                     }

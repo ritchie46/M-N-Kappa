@@ -10,6 +10,10 @@ $(document).ready(function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
+    $(".clickable").hover(function() {
+        $(this).css('cursor','pointer');
+    });
+
     // General collapse panel logic
     $(".collapse_glyph").click(function () {
         $(this).closest(".panel").children(".collapse").toggle();
@@ -95,6 +99,7 @@ $(document).ready(function () {
         var $slct = $("#pg_rotation");
         var rotation = (isNaN(parseFloat($slct.val()))) ? 0 : parseFloat($slct.val());
         var choice = $("#cross_section_type").val();
+        var x; var y;
         if (choice == "custom") {
             x = document.getElementsByClassName("xval");
             y = document.getElementsByClassName("yval");
@@ -133,12 +138,12 @@ $(document).ready(function () {
             var h_f = parseFloat(document.getElementById("T-beam_height_f").value);
 
             if (choice == "T-beam") {
-                var x = [0.5 * w_w, 0.5 * w_w, 0.5 * w_f, 0.5 * w_f, -0.5 * w_f, -0.5 * w_f, -0.5 * w_w, -0.5 * w_w];
-                var y = [0, h_w, h_w, h_f + h_w, h_f + h_w, h_w, h_w, 0];
+                x = [0.5 * w_w, 0.5 * w_w, 0.5 * w_f, 0.5 * w_f, -0.5 * w_f, -0.5 * w_f, -0.5 * w_w, -0.5 * w_w];
+                y = [0, h_w, h_w, h_f + h_w, h_f + h_w, h_w, h_w, 0];
             }
             else if (choice == "I-beam") {
-                var x = [0.5 * w_f, 0.5 * w_f, 0.5 * w_w, 0.5 * w_w, 0.5 * w_f, 0.5 * w_f, -0.5 * w_f, -0.5 * w_f, -0.5 * w_w, -0.5 * w_w, -0.5 * w_f, -0.5 * w_f];
-                var y = [0, h_f, h_f, h_w + h_f, h_w + h_f, 2 * h_f + h_w, 2 * h_f + h_w, h_w + h_f, h_w + h_f, h_f, h_f, 0];
+                x = [0.5 * w_f, 0.5 * w_f, 0.5 * w_w, 0.5 * w_w, 0.5 * w_f, 0.5 * w_f, -0.5 * w_f, -0.5 * w_f, -0.5 * w_w, -0.5 * w_w, -0.5 * w_f, -0.5 * w_f];
+                y = [0, h_f, h_f, h_w + h_f, h_w + h_f, 2 * h_f + h_w, 2 * h_f + h_w, h_w + h_f, h_w + h_f, h_f, h_f, 0];
             }
 
             rotation_pg = rotate_pg(rotation, x, y);
@@ -318,17 +323,24 @@ $(document).ready(function () {
         session.mkap.rebar_z = [];
         session.mkap.rebar_diagram = [];
         session.mkap.m0 = [];
-
-        var As = document.getElementsByClassName("rebar_As");
+        session.mkap.rebar_n = [];
+        var n = document.getElementsByClassName("rebar_n");
+        var diam = document.getElementsByClassName("rebar_Ø");
         var d = document.getElementsByClassName("rebar_d");
         var rebar_diagram = $(".rebar_material_select");
         var m0 = document.getElementsByClassName("rebar_M0");
         $slct = $("#option_rebar_results");
         $slct.empty();
-        As = extract_floats(As);
+        n = extract_floats(n);
+        diam = extract_floats(diam);
+        var As = [];
+
+        for (i in n) {
+            As.push(0.25 * Math.PI * Math.pow(diam[i], 2) * n[i])
+        }
         d = extract_floats(d);
         m0 = extract_floats(m0);
-        rebar_diagram = rebar_diagram.slice(1);
+        rebar_diagram = rebar_diagram.slice(1);  // the first is the hidden reserve
         var height = session.mkap.cross_section.top;
         
         for (var i = 0; i < As.length; i++) {
@@ -336,6 +348,7 @@ $(document).ready(function () {
             var no_of_diagram = rebar_diagram[i].value[rebar_diagram[i].value.length - 1]; //
 
             // add the rebar in the correct order to the mkap
+            session.mkap.rebar_n[i] = n[i]
             session.mkap.rebar_As[i] = As[i];
             session.mkap.rebar_z[i] = height - d[i];
             session.mkap.rebar_diagram[i] = session.rebar_diagrams[no_of_diagram - 1];
@@ -503,7 +516,7 @@ $(document).ready(function () {
     // Material library
 
     // compression material
-    var $compression_material = $("#compression_material")
+    var $compression_material = $("#compression_material");
     $compression_material.on("change", function () {
         if (this.value !== "custom") {
             // get the value between 'C' and '/' in for instance C20/25
@@ -550,7 +563,7 @@ $(document).ready(function () {
             for (n; n < 3; n++) {
                 add_row($(parent).find(".add_row_rbr_curves"));
 
-            };
+            }
             for (n; n > 3; n--) {
                 var row = $(parent).children(".custom_row").last();
                 remove_row(row);
@@ -602,8 +615,8 @@ $(document).ready(function () {
     $("#width").val(400);
     $("#height").val(500);
     trigger_polygon();
-    $(".rebar_As").trigger("change");
-   
+    $(".rebar_d").trigger("change");
+
     // Logic for collapsing the input divs
     $("#collapse_polygon").collapse("show");
     $("#comp_curve").find(".panel-collapse").collapse("show");
