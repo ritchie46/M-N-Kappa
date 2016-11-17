@@ -46,6 +46,28 @@ Session.prototype.apply_m0 = function () {
         }
 };
 
+Session.prototype.calc_hookup = function (reduction) {
+    /**
+     * Reduction factor (float)
+     *
+     * Starts the calculation with the latest point of the compression material and reduces it until a solution is found.
+     * Returns the strain that resulted in a valid solution.
+    */
+
+    var strain = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1];
+    while (!this.mkap.validity()) {
+        this.mkap.solver(true, strain);
+        this.mkap.det_m_kappa();
+        strain *= (1 - reduction)
+    }
+    return strain
+};
+
+Session.compute_n_points = function (n) {
+    var strain0 = this.calc_hookup(0.05);
+    console.log(strain0)
+};
+
 Session.prototype.compute_moment = function (moment) {
 
     var top_str = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1] * 0.5;
