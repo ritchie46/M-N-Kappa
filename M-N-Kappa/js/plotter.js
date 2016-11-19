@@ -174,7 +174,8 @@ var plt = (function () {
         if (add_to_mkap) {
             session.mkap.cross_section = new crsn.PolyGon(loc_list);
         }
-
+        // reset
+        svg_cross_section.select("#subtract").attr("d", linefunc(0));
         // draw subtracter
         if (subtract) {
             data = [];
@@ -194,6 +195,7 @@ var plt = (function () {
             data.push(arr)
         }
 
+        // reset
         svg_cross_section.selectAll("circle")
         .data(data)
         .attr("cx", function (d) {

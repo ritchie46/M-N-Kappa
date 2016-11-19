@@ -1,5 +1,51 @@
 "use strict";
 
+// rebar area
+function trigger_rebar_input() {
+    // reset
+    session.mkap.rebar_As = [];
+    session.mkap.rebar_z = [];
+    session.mkap.rebar_diagram = [];
+    session.mkap.m0 = [];
+    session.mkap.rebar_n = [];
+    session.mkap.rebar_diam = [];
+    var n = document.getElementsByClassName("rebar_n");
+    var diam = document.getElementsByClassName("rebar_Ø");
+    var d = document.getElementsByClassName("rebar_d");
+    var rebar_diagram = $(".rebar_material_select");
+    var m0 = document.getElementsByClassName("rebar_M0");
+    $slct = $("#option_rebar_results");
+    $slct.empty();
+    n = extract_floats(n);
+    diam = extract_floats(diam);
+    var As = [];
+
+    for (i in n) {
+        As.push(0.25 * Math.PI * Math.pow(diam[i], 2) * n[i])
+    }
+    d = extract_floats(d);
+    m0 = extract_floats(m0);
+    rebar_diagram = rebar_diagram.slice(1);  // the first is the hidden reserve
+    var height = session.mkap.cross_section.top;
+
+    for (var i = 0; i < As.length; i++) {
+        // The corresponding rebar material
+        var no_of_diagram = rebar_diagram[i].value[rebar_diagram[i].value.length - 1]; //
+
+        // add the rebar in the correct order to the mkap
+        session.mkap.rebar_n[i] = n[i];
+        session.mkap.rebar_As[i] = As[i];
+        session.mkap.rebar_z[i] = height - d[i];
+        session.mkap.rebar_diam[i] = diam[i];
+        session.mkap.rebar_diagram[i] = session.rebar_diagrams[no_of_diagram - 1];
+        session.mkap.m0[i] = m0[i] * Math.pow(10, 6);
+
+        // set the rebar options in the results table
+        $slct.append("<option>rebar row #%s</option>".replace("%s", (i + 1).toString()));
+    }
+    trigger_polygon();
+}
+
 function rotate_pg(rotation, x, y) {
     for (var i = 0; i < x.length; i++) {
         var p = new vector.Point(x[i], y[i]);
@@ -110,6 +156,7 @@ $("#cross_section_type").change(function () {
         $("#tube_rows").removeClass("hidden")
     }
     trigger_polygon()
+    trigger_rebar_input()
 });
 
 var $slct = $('#pg_body');
