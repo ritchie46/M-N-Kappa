@@ -77,13 +77,13 @@ function trigger_polygon() {
     else if (choice == "circle") {
         var radius = parseFloat(document.getElementById("circle_radius").value);
         session.mkap.cross_section = new crsn.Circle(radius);
-        plt.draw_polygon(session.mkap.cross_section.point_list, "notused", session, false);
+        plt.draw_polygon(session.mkap.cross_section.point_list, "skip_this_param", session, false);
     }
     else if (choice == "tube") {
         var radius = parseFloat(document.getElementById("tube_radius").value);
         var thickness = parseFloat(document.getElementById("tube_thickness").value);
         session.mkap.cross_section = new crsn.Tube(radius, radius - thickness);
-        plt.draw_polygon(session.mkap.cross_section.point_list, "not_used", session, false)
+        plt.draw_polygon(session.mkap.cross_section.point_list, "skip_this_param", session, false, true)
     }
 }
 

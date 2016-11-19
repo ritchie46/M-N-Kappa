@@ -63,7 +63,15 @@ var plt = (function () {
             return d[2]
         });
 
-    function draw_polygon(x, y, session, add_to_mkap) {
+    svg_cross_section.append("svg:path")
+        .attr("id", "subtract")
+        .attr("d", linefunc(0))
+        .attr("stroke", "black")
+        .attr("stroke-width", 2)
+        .attr("fill", "white");
+
+
+    function draw_polygon(x, y, session, add_to_mkap, subtract) {
         /**
          * @param session (object) From the session class.
          * @param add_to_mkap (boolean) If true the x and y coordinates will be added to the mkappa object as a new
@@ -72,6 +80,7 @@ var plt = (function () {
 
         // default parameter
         add_to_mkap = (typeof add_to_mkap !== "undefined") ? add_to_mkap : true;
+        subtract = (typeof subtract !== "undefined") ? subtract : false;
 
         if (x[0] instanceof vector.Point) {
             var x2 = [];
@@ -153,12 +162,9 @@ var plt = (function () {
                 y: -scale(y[i] - min_y) + settings.height
             };
             data.push(loc);
-
             //location for the current sessions polygon
             var loc_pg = new vector.Point(x[i] - min_x, y[i] - min_y);
-             
-            loc_list.push(loc_pg)                
-
+            loc_list.push(loc_pg)
         }
         // set last value to origin
         data.push(loc0);
@@ -168,6 +174,18 @@ var plt = (function () {
         if (add_to_mkap) {
             session.mkap.cross_section = new crsn.PolyGon(loc_list);
         }
+
+        // draw subtracter
+        if (subtract) {
+            data = [];
+            var pl = session.mkap.cross_section.subtractor.point_list;
+            for (i in pl) {
+                data.push({x: scale(pl[i].x), y: scale(pl[i].y)}
+                )
+            }
+            svg_cross_section.select("#subtract").attr("d", linefunc(data));
+        }
+
         // rebar plots
         // reset the plots
         data = [];
@@ -199,10 +217,7 @@ var plt = (function () {
 
                 var bound = session.mkap.cross_section.paired_xvals[ndx];
                 var n_per_bndry = Math.round(session.mkap.rebar_n[i] / bound.length);
-
-                var As = session.mkap.rebar_As[i];
                 var radius = scale(session.mkap.rebar_diam[i] / 2);
-
 
                 // draw the rebar between the edges
                 for (var j = 0; j < bound.length; j++) {
@@ -227,14 +242,9 @@ var plt = (function () {
                 return d[2]
             })
         }
-
         return loc_list
     }
 
-    function hollow_polygon(x, y, session, add_to_mkap) {
-        draw_polygon(x, y, session, add_to_mkap)
-
-    }
     
 
 
