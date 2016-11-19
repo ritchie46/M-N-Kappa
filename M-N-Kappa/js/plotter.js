@@ -64,7 +64,11 @@ var plt = (function () {
         });
 
     function draw_polygon(x, y, session, add_to_mkap) {
-        /// <param name="session" type="object"> From the session class.
+        /**
+         * @param session (object) From the session class.
+         * @param add_to_mkap (boolean) If true the x and y coordinates will be added to the mkappa object as a new
+         *                              cross section.
+         */
 
         // default parameter
         add_to_mkap = (typeof add_to_mkap !== "undefined") ? add_to_mkap : true;
@@ -197,7 +201,7 @@ var plt = (function () {
                 var n_per_bndry = Math.round(session.mkap.rebar_n[i] / bound.length);
 
                 var As = session.mkap.rebar_As[i];
-                var radius = scale(Math.sqrt(4 * As / Math.PI) / (n_per_bndry * bound.length));
+                var radius = scale(session.mkap.rebar_diam[i] / 2);
 
 
                 // draw the rebar between the edges
@@ -225,6 +229,10 @@ var plt = (function () {
         }
 
         return loc_list
+    }
+
+    function hollow_polygon(x, y, session, add_to_mkap) {
+        draw_polygon(x, y, session, add_to_mkap)
 
     }
     

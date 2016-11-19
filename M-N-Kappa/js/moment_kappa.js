@@ -26,6 +26,7 @@ var mkap = (function () {
         // phased rebar
         this.m0 = [];
         this.rebar_strain0 = [];
+        this.rebar_diam = null;  // for the plotter
     
         /**
         results

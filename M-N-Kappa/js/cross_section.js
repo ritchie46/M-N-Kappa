@@ -175,8 +175,33 @@ PolyGon.prototype.area = function () {
          */
 
         for (var i in parent.width_array) {
-            //console.log(this.width_array[i])
-            parent.width_array[i] -= this.width_array[i]
+            parent.width_array[i] -= this.width_array[i];
+
+            // merge the paired x_vals (for the plotter)
+            var x_vals = [];
+            if (this.width_array[i] > 0) {
+
+                //unpack parents paired x_vals
+                for (var j in parent.paired_xvals[i]) {
+                    x_vals.push(parent.paired_xvals[i][j][0]);
+                    x_vals.push(parent.paired_xvals[i][j][1])
+                }
+                // unpack subtractors paired x_vals
+                for (j in this.paired_xvals[i]) {
+                    x_vals.push(this.paired_xvals[i][j][0]);
+                    x_vals.push(this.paired_xvals[i][j][1])
+                }
+
+                x_vals.sort(function (a, b) { return a - b });
+                // repack them
+                var paired_x_vals = [];
+                for (var x = 0; x < x_vals.length; x++) {
+                    if ((x + 1) % 2 == 0) {
+                        paired_x_vals.push([x_vals[x - 1], x_vals[x]])
+                    }
+                }
+                parent.paired_xvals[i] = paired_x_vals
+            }
         }
     };
 
@@ -217,14 +242,13 @@ PolyGon.prototype.area = function () {
     Tube.prototype.constructor = Tube;
 
 
-    var a = new Tube(90, 80);
-
 
 
 // return from namespace
 return {
     PolyGon: PolyGon,
-    Circle: Circle
+    Circle: Circle,
+    Tube: Tube
 }
     
 })();  // crsn namespace

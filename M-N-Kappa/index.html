@@ -55,6 +55,7 @@
                                                 <option>custom</option>
                                                 <option>rectangle</option>
                                                 <option>circle</option>
+                                                <option>tube</option>
                                                 <option>T-beam</option>
                                                 <option>I-beam</option>
                                             </select>
@@ -129,7 +130,18 @@
                                     <label class="label_input">Radius</label>
                                     <input type="number" min="1" id="circle_radius" class="form-control" value="500" />
                                 </div>
-                            </div>  
+                            </div>
+
+                            <div id="tube_rows" class="cross_section_type hidden">
+                                <div class="tube_row">
+                                    <label class="label_input">Outer radius</label>
+                                    <input type="number" min="1" id="tube_radius" class="form-control" value="500" />
+                                </div>
+                                <div class="tube_row">
+                                    <label class="label_input">Thickness</label>
+                                    <input type="number" min="1" id="tube_thickness" class="form-control" value="25" />
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -823,6 +835,7 @@
             <script src="js/moment_kappa.js"></script>
             <script src="js/plotter.js"></script>
             <script src="js/session.js"></script>
+            <script src="js/ui_geometry.js"></script>
             <script src="js/main.js"></script>
             <script src="js/tests.js"></script>
 
