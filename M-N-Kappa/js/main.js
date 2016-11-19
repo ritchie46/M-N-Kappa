@@ -617,16 +617,9 @@ $(document).ready(function () {
     trigger_polygon();
     $(".rebar_d").trigger("change");
 
-    // Logic for collapsing the input divs
-    $("#collapse_polygon").collapse("show");
-    $("#comp_curve").find(".panel-collapse").collapse("show");
-    $("#tens_curve").find(".panel-collapse").collapse("show");
-    $("#rebar_input").find(".panel-collapse").collapse("show");
-    $("#rebar_curve_1").closest(".panel-collapse").collapse("show");
-    $(".rebar_column").find(".panel-collapse").collapse("show");
 
        
-
+console.log("version_17-11")
 });
 
 

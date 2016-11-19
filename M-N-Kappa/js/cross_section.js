@@ -1,4 +1,4 @@
-﻿'use strict'
+﻿'use strict';
 
 // crsn namespace
 var crsn = (function () {
@@ -7,7 +7,7 @@ function PolyGon(point_list) {
     /// <param name="point_list" type="array">Array with objects from the Point class representing the polygons coordinates</param>
     this.point_list = point_list;
     this.n_value = 1000;
-    this.top = this.heighest_point('y').y;
+    this.top = this.highest_point('y').y;
     this.bottom = this.lowest_point('y').y;
     // all the values on the y-axis
     this.y_val = this.det_height_array();
@@ -15,8 +15,8 @@ function PolyGon(point_list) {
     // x_val array has arrays in it representing the results per y_values increment on the y-axis. In these inner arrays are the x-values paired, representing the solid boundaries.
     this.paired_xvals = [];
     this.width_array = [];
-
-    this.return_x_on_axis()
+    this.return_x_on_axis();
+    this.subtractor = null
 }
 
 PolyGon.prototype.det_height_array = function () {
@@ -35,11 +35,11 @@ PolyGon.prototype.lowest_point = function (axis) {
     return low
 };
 
-PolyGon.prototype.heighest_point = function (axis) {
+PolyGon.prototype.highest_point = function (axis) {
     var height = this.point_list[0];
 
     for (var i = 1; i < this.point_list.length; i++) {
-        height = vector.heighest_point(height, this.point_list[i], axis)
+        height = vector.highest_point(height, this.point_list[i], axis)
     }
     return height
 };
@@ -73,22 +73,18 @@ PolyGon.prototype.return_x_on_axis = function () {
         // the x_values that intersect the polygon on this y increment.
         var x_vals = [];
 
-
         // iterate through the coordinates
         for (var a = 0; a < this.point_list.length - 1; a++) {
-
-
             // y-value is between point at index a and point at index a + 1
             if ((this.point_list[a].y >= y) == !(this.point_list[a + 1].y >= y)) {
 
-                var interpolated_point = vector.interpolate_points(this.point_list[a], this.point_list[a + 1], new vector.Point(null, y));
-                x_vals.push(interpolated_point.x)
+                var interpolated_point = vector.interpolate_points(this.point_list[a], this.point_list[a + 1],
+                    new vector.Point(null, y));
+                x_vals.push(interpolated_point.x);
             }
-            
         }
         // switch the last index to the front
         x_vals.sort(function (a, b) { return a - b });
-
         // x_vals contains the x-values. x1 and x2 is solid, x2 and x3 is void, x3 and x4 is solid etc.
         // Pair the solid x-values like so: [[x1, x2], [x3, x4]]
 
@@ -141,6 +137,7 @@ PolyGon.prototype.area = function () {
         var alpha0 = Math.PI * 2 / n;
         var pl = [];
         var p0 = new vector.Point(0, -radius);
+        // translation point. Does nothing else
         var p_set = new vector.Point(radius, radius);
         for (var i = 1; i <= n; i++) {
             var alpha = alpha0 * i;
@@ -156,6 +153,72 @@ PolyGon.prototype.area = function () {
 
     Circle.prototype = Object.create(PolyGon.prototype);
     Circle.prototype.constructor = Circle;
+
+    function Subtractor(top, point_list, n_value) {
+        /**
+         * @param top (float) Top of the parent cross section (y-value)
+         * @param n_value (int) Amount of section in the parent cross section
+         */
+        this.point_list = point_list;
+        this.paired_xvals = [];
+        this.width_array = [];
+        this.top = top;
+        this.n_value = n_value;
+        this.y_val = this.det_height_array();
+        this.return_x_on_axis();
+
+    }
+
+    Subtractor.prototype.merge_width = function (parent) {
+        /**
+         * @param parent Object from the parent cross section.
+         */
+
+        for (var i in parent.width_array) {
+            //console.log(this.width_array[i])
+            parent.width_array[i] -= this.width_array[i]
+        }
+    };
+
+    Subtractor.prototype.return_x_on_axis = PolyGon.prototype.return_x_on_axis;
+    Subtractor.prototype.det_height_array = PolyGon.prototype.det_height_array;
+
+
+    function Tube(radius_out, radius_in) {
+        var n = 100;
+        var alpha0 = Math.PI * 2 / n;
+        var pl_out = [];
+        var pl_in = [];
+        var p0_out = new vector.Point(0, -radius_out);
+        var p0_in = new vector.Point(0, -radius_in);
+
+        // Translation points. Do nothing else
+        var p_set_in = new vector.Point(radius_out, radius_out);
+        var p_set_out = new vector.Point(radius_out, radius_out);
+
+        for (var i = 1; i <= n + 1; i++) {
+            var alpha = alpha0 * i;
+            var p_out = p0_out.rotate_origin(alpha);
+            p_out = new vector.Point(p_out.x + p_set_out.x, p_out.y + p_set_out.y);
+            var p_in = p0_in.rotate_origin(alpha);
+            p_in = new vector.Point(p_in.x + p_set_in.x, p_in.y + p_set_in.y);
+
+            pl_out.push(p_out);
+            pl_in.push(p_in);
+        }
+        PolyGon.call(this, pl_out);
+
+        this.subtractor = new Subtractor(radius_out * 2, pl_in, this.n_value);
+        this.subtractor.merge_width(this)
+
+    }
+
+    Tube.prototype = Object.create(PolyGon.prototype);
+    Tube.prototype.constructor = Tube;
+
+
+    var a = new Tube(90, 80);
+
 
 
 // return from namespace

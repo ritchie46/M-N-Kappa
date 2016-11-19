@@ -39,7 +39,7 @@
                             <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
                         </h3>
                     </div>
-                    <div id="collapse_polygon" class="panel-collapse collapse">
+                    <div id="collapse_polygon" class="panel-collapse collapse in">
                         <div id="pg_body" class="panel-body">
                             <table class="table">
                                 <thead>
@@ -145,7 +145,7 @@
                             <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
                         </h3>
                     </div>
-                    <div  class="panel-collapse collapse">
+                    <div  class="panel-collapse collapse in">
                         <div id="comp_curve_body" class="panel-body">
                             <table class="table">
                                 <thead>
@@ -233,7 +233,7 @@
                             <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
                         </h3>
                     </div>
-                    <div class="panel-collapse collapse">
+                    <div class="panel-collapse collapse in">
                         <div id="tens_curve_body" class="panel-body">
                             <table class="table">
                                 <thead>
@@ -310,7 +310,7 @@
                             <span class="glyphicon glyphicon-triangle-top collapse_glyph"></span>
                         </h3>
                     </div>
-                    <div class="panel-collapse collapse">
+                    <div class="panel-collapse collapse in">
 
                         <div class="panel-body rebar_input">
                             <div class="row custom_row hidden" style="padding-bottom: 40px">
@@ -415,7 +415,7 @@
                         </h3>
                     </div>
 
-                    <div class="panel-collapse collapse">
+                    <div class="panel-collapse collapse in">
                         <div class="panel-body" id="rebar_curves">
                             
                             <div class="hidden rebar_curve" id="rebar_curve_%d">
@@ -609,6 +609,11 @@
                                 <input type="number" class="form-control" id="moment_input">
                                 <span class="input-group-addon">* 10<sup>6</sup></span>
                             </div>
+                        </div>
+
+                        <div class="custom_row hidden" id="calculation_type_discrete">
+                            <label>Moment</label>
+                            <input type="number" class="form-control" id="discrete_points_input">
                         </div>
                 </div>
 
