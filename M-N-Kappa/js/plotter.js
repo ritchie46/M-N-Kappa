@@ -430,7 +430,7 @@ var plt = (function () {
             /*
             mkap = object from moment_kappa class
              */
-            if (std.is_close(-mkap.moment / Math.pow(10, 6), y_value, 1e-3, 1e-3)) {
+            if (std.is_close(-mkap.moment / Math.pow(10, 6), y_value, 1e-6, 1e-6)) {
                 cross_section_view("#modal-svg", mkap);
                 // call the strain diagram plot from here.
             }

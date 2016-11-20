@@ -55,6 +55,8 @@ Session.prototype.calc_hookup = function (reduction) {
     */
 
     var strain = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1];
+    this.mkap.solver(true, strain);
+    this.mkap.det_m_kappa();
     while (!this.mkap.validity()) {
         this.mkap.solver(true, strain);
         this.mkap.det_m_kappa();
@@ -63,9 +65,26 @@ Session.prototype.calc_hookup = function (reduction) {
     return strain
 };
 
-Session.compute_n_points = function (n) {
-    var strain0 = this.calc_hookup(0.05);
-    console.log(strain0)
+Session.prototype.compute_n_points = function (n) {
+    this.all_computed_mkap = [];
+    this.apply_m0();
+    var strain = this.calc_hookup(0.05);
+    var d_str = strain / n;
+    var moment = []; var kappa = [];
+    while (strain > 0) {
+        this.mkap.solver(true, strain);
+        this.mkap.det_m_kappa();
+        if (this.mkap.validity()) {
+            moment.push(Math.abs(this.mkap.moment));
+            kappa.push(Math.abs(this.mkap.kappa));
+            this.all_computed_mkap.push(JSON.parse(JSON.stringify(this.mkap)));
+        }
+        strain -= d_str
+    }
+    return {
+        moment: moment.reverse(),
+        kappa: kappa.reverse()
+    }
 };
 
 Session.prototype.compute_moment = function (moment) {

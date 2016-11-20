@@ -58,7 +58,10 @@ $(document).ready(function () {
     });
 
     $("#calculation_type").on("change", function () {
-        $("#calculation_type_moment").toggleClass("hidden")
+        $(".calculation_type").addClass("hidden");
+        if ($(this).val() == "search moment") {
+            $("#calculation_type_moment").removeClass("hidden")
+        }
     });
 
 
@@ -252,6 +255,20 @@ $(document).ready(function () {
             session.apply_m0();
             session.compute_moment(moment);
             plt.cross_section_view("#modal-svg", session.mkap)
+        }
+        else if (option == "discrete points") {
+            $("#moment_kappa_diagram_output").removeClass("hidden");
+            var sol = session.compute_n_points(50);
+            var moment = sol.moment;
+            var kappa = sol.kappa;
+
+            moment.unshift(0);
+            kappa.unshift(0);
+            plt.moment_kappa(svg, kappa, moment.map(function (i) {
+                return i / 1e6
+            }), session);
+
+
         }
         else {
             $("#moment_kappa_diagram_output").removeClass("hidden");
