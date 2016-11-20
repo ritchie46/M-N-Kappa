@@ -57,10 +57,13 @@ Session.prototype.calc_hookup = function (reduction) {
     var strain = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1];
     this.mkap.solver(true, strain);
     this.mkap.det_m_kappa();
-    while (!this.mkap.validity()) {
+
+    var count = 0;
+    while (!this.mkap.validity() && count < 150) {
         this.mkap.solver(true, strain);
         this.mkap.det_m_kappa();
-        strain *= (1 - reduction)
+        strain *= (1 - reduction);
+        count += 1;
     }
     return strain
 };
@@ -79,7 +82,7 @@ Session.prototype.compute_n_points = function (n) {
             kappa.push(Math.abs(this.mkap.kappa));
             this.all_computed_mkap.push(JSON.parse(JSON.stringify(this.mkap)));
         }
-        strain -= d_str
+        strain -= d_str;
     }
     return {
         moment: moment.reverse(),
