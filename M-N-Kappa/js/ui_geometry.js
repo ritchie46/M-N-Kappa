@@ -9,17 +9,21 @@ function trigger_rebar_input() {
     session.mkap.m0 = [];
     session.mkap.rebar_n = [];
     session.mkap.rebar_diam = [];
+    session.prestress = [];
+    session.compute_prestress = false;
     var n = document.getElementsByClassName("rebar_n");
     var diam = document.getElementsByClassName("rebar_Ø");
     var d = document.getElementsByClassName("rebar_d");
     var rebar_diagram = $(".rebar_material_select");
     var m0 = document.getElementsByClassName("rebar_M0");
+    var prestress = document.getElementsByClassName("prestress_input");
     $slct = $("#option_rebar_results");
     $slct.empty();
     n = extract_floats(n);
     diam = extract_floats(diam);
-    var As = [];
+    prestress = extract_floats(prestress);
 
+    var As = [];
     for (i in n) {
         As.push(0.25 * Math.PI * Math.pow(diam[i], 2) * n[i])
     }
@@ -30,7 +34,16 @@ function trigger_rebar_input() {
 
     for (var i = 0; i < As.length; i++) {
         // The corresponding rebar material
-        var no_of_diagram = rebar_diagram[i].value[rebar_diagram[i].value.length - 1]; //
+        var no_of_diagram = rebar_diagram[i].value[rebar_diagram[i].value.length - 1];
+
+        // check if prestress needs to be taken into account.
+        if ($("#rebar_curve_" + no_of_diagram).find(".prestress_container").find(".prestress_checkbox").is(":checked")) {
+            session.compute_prestress = true;
+            session.prestress.push(prestress[i]);
+        }
+        else {
+            session.prestress.push(0)
+        }
 
         // add the rebar in the correct order to the mkap
         session.mkap.rebar_n[i] = n[i];
@@ -126,7 +139,7 @@ function trigger_polygon() {
         plt.draw_polygon(session.mkap.cross_section.point_list, "skip_this_param", session, false);
     }
     else if (choice == "tube") {
-        var radius = parseFloat(document.getElementById("tube_radius").value);
+        radius = parseFloat(document.getElementById("tube_radius").value);
         var thickness = parseFloat(document.getElementById("tube_thickness").value);
         session.mkap.cross_section = new crsn.Tube(radius, radius - thickness);
         plt.draw_polygon(session.mkap.cross_section.point_list, "skip_this_param", session, false, true)

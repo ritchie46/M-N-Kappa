@@ -40,6 +40,7 @@ var mkap = (function () {
         this.strain_top = null;
         this.strain_btm = null;
         this.zero_line = null ; // xu is height - zero line
+        this.xu = null;
 
         // solver settings
         this.iterations = 120;
@@ -296,7 +297,7 @@ var mkap = (function () {
                     //this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
                 }
                 else {  // compression stress
-                    var stress_reduct = -this.compressive_diagram.det_stress(Math.abs(this.rebar_strain[i]));
+                    stress_reduct = -this.compressive_diagram.det_stress(Math.abs(this.rebar_strain[i]));
                     //this.moment -= stress_reduct * this.rebar_As[i] * this.rebar_z[i]
                 }
             }

@@ -27,6 +27,10 @@ function Session() {
     this.sign_compression_mkap = [];
     this.sign_rebar_mkap = [];
     this.all_computed_mkap = [];
+
+    // prestress options
+    this.compute_prestress = false;
+    this.prestress = [];
 }
 
 Session.prototype.apply_m0 = function () {
@@ -44,6 +48,66 @@ Session.prototype.apply_m0 = function () {
                 this.mkap.rebar_diagram[i].stress.splice(1, 0, 0);
             }
         }
+};
+
+Session.prototype.pre_prestress= function () {
+
+    // take the first tensile point to determine the center line under negative moment.
+    if (this.mkap.tensile_diagram.stress.length == 1){  // there is no tensile capacity list = [0]
+        window.alert("A cross section cannot be prestressed if there is no tensile capacity.");
+        return 0
+    }
+    var strain = this.mkap.tensile_diagram.strain[1];
+    this.mkap.solver(false, strain);
+    this.mkap.det_m_kappa();
+    var z0 = this.mkap.zero_line;
+
+    for (var i in this.mkap.rebar_As) {
+        var mp = this.mkap.rebar_As[i] * this.prestress[i] * (this.mkap.rebar_z[i] - z0)
+        console.log(mp)
+        // You need to check if the prestress is possible. Can B500 take 900 MPa? nope
+    }
+
+
+    // copy mkap
+    var mkap = jQuery.extend(true, {}, this.mkap); // deep copy
+
+    // Turn the cross section 180 degrees
+    var min_x = 1e9; var min_y = 1e9;
+    // rotate the polygon
+    for (i in mkap.cross_section.point_list) {
+        var p = mkap.cross_section.point_list[i];
+        mkap.cross_section.point_list[i] = p.rotate_origin(Math.PI);
+
+        // determine the translation vector.
+        if (mkap.cross_section.point_list[i].x < min_x){
+            min_x = mkap.cross_section.point_list[i].x
+        }
+        if (mkap.cross_section.point_list[i].y < min_y){
+            min_y = mkap.cross_section.point_list[i].y
+        }
+    }
+    // translate back to origin.
+    for (i in mkap.cross_section.point_list) {
+        mkap.cross_section.point_list[i] = new vector.Point(
+            mkap.cross_section.point_list[i].x - min_x,
+            mkap.cross_section.point_list[i].y - min_y
+
+        )
+    }
+    // rotate the rebar.
+    for (i in mkap.rebar_z) {
+        mkap.rebar_z[i] = mkap.cross_section.top - mkap.rebar_z[i]
+    }
+    // determine the width sections
+    mkap.cross_section.instantiate();
+    mkap.solver(false, 0.3);
+    mkap.det_m_kappa();
+
+
+    console.log(mkap.validity())
+    console.log(mkap.moment / 10000000)
+
 };
 
 Session.prototype.calc_hookup = function (reduction) {

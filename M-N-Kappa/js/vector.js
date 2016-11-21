@@ -1,13 +1,13 @@
-﻿'use strict'
+﻿'use strict';
 
 // vector namespace
 var vector = (function () {
 
-    var DEBUG = false
+    var DEBUG = false;
 
 //class
 function Point(x, y) {
-    this.x = x
+    this.x = x;
     this.y = y
 }
 
@@ -20,17 +20,17 @@ Point.prototype.negative = function () {
 };
 
 Point.prototype.rotate_origin = function (alpha) {
-    var radius = this.modulus()
-    var alpha0 = this.angle_orgin_x_axis()
-    var new_p = new Point(0, 0)
-    new_p.displace_polar(alpha + alpha0, radius)
+    var radius = this.modulus();
+    var alpha0 = this.angle_orgin_x_axis();
+    var new_p = new Point(0, 0);
+    new_p.displace_polar(alpha + alpha0, radius);
     return new_p
-}
+};
 
 Point.prototype.displace_polar = function (alpha, radius) {
-    this.x += Math.cos(alpha) * radius
+    this.x += Math.cos(alpha) * radius;
     this.y += Math.sin(alpha) * radius
-}
+};
 
 Point.prototype.angle_orgin_x_axis = function () {
     /**
@@ -42,37 +42,37 @@ Point.prototype.angle_orgin_x_axis = function () {
             var alpha = 0
         }
         else {
-            var alpha = Math.PI;
-        };
+            alpha = Math.PI;
+        }
     }
     else if (this.x == 0) { // vertical
         if (this.y > 0) {
-            var alpha = 0.5 * Math.PI
+            alpha = 0.5 * Math.PI
         }
         else {
-            var alpha = 1.5 * Math.PI
-        };
+            alpha = 1.5 * Math.PI
+        }
     }
     else if (this.x > 0 && this.y > 0) {  // quadrant 1
-        var alpha = 0 + Math.atan(Math.abs(this.y / this.x));
+        alpha = Math.atan(Math.abs(this.y / this.x));
     }
     else if (this.x < 0 && 0 < this.y) { // quadrant 2
-        var alpha = 0.5 * Math.PI + Math.atan(Math.abs(this.x / this.y));
+        alpha = 0.5 * Math.PI + Math.atan(Math.abs(this.x / this.y));
     }
     else if (this.x < 0 && this.y < 0) { // quadrant 3
-        var alpha = Math.PI + Math.atan(Math.abs(this.y / this.x));
+        alpha = Math.PI + Math.atan(Math.abs(this.y / this.x));
     }
     else if (this.x > 0 && 0 > this.y) { // quadrant 4
-        var alpha = 1.5 * Math.PI + Math.atan(Math.abs(this.x / this.y));
+        alpha = 1.5 * Math.PI + Math.atan(Math.abs(this.x / this.y));
     }
     else {
         if (DEBUG) {
             console.log("Can not determine the angle of the point with the axes origin")
         }
-    };
+    }
 
     return alpha
-}
+};
 
 
 
@@ -98,14 +98,14 @@ function interpolate_points(start_p, end_p, req_p) {
         var delta_y = d_y * factor;
     }
     else if (req_p.x == null) {
-        var delta_y = req_p.y - start_p.y;
+        delta_y = req_p.y - start_p.y;
 
-        var factor = delta_y / d_y;
-        var delta_x = d_x * factor;
+        factor = delta_y / d_y;
+        delta_x = d_x * factor;
     }
 
     return new Point(start_p.x + delta_x, start_p.y + delta_y);
-};
+}
 
 
 function lowest_point(point_1, point_2, axis) {
@@ -135,7 +135,7 @@ function lowest_point(point_1, point_2, axis) {
     }
 
     console.log("cannot verify given axis")
-};
+}
 
 function heighest_point(point_1, point_2, axis) {
     /// Returns the heighest point
@@ -143,7 +143,7 @@ function heighest_point(point_1, point_2, axis) {
 
 
     return lowest_point(point_1.negative(), point_2.negative(), axis).negative()
-};
+}
 
 return {
     interpolate_points: interpolate_points,

@@ -98,11 +98,11 @@
                             <div id="rectangle_rows" class="cross_section_type hidden">
                                 <div class="rectangle_row">
                                     <label class="label_input">Width of the cross section</label>
-                                    <input type="number" min="1" id="width" class="form-control" />
+                                    <input type="number" min="1" id="width" class="form-control" value="400" />
                                 </div>
                                 <div class="rectangle_row">
                                     <label class="label_input">Height of the cross section</label>
-                                    <input type="number" min="1" id="height" class="form-control" />
+                                    <input type="number" min="1" id="height" class="form-control" value="500"/>
                                 </div>
                             </div>  
 
@@ -531,6 +531,18 @@
                                         </tr>
                                     </tbody>
                                 </table>
+
+                                <div class="col-xs-12 form-inline prestress_container">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" class="prestress_checkbox"> <strong>Prestress</strong> &nbsp;
+                                        </label>
+
+                                        <input type="number" min="1" class="form-control prestress_input" placeholder="stress" value="900" disabled/>
+
+                                    </div>
+                                </div>
+
                                 <hr />
 
                                 <div class="col-xs-5">
@@ -836,8 +848,10 @@
             <script src="js/moment_kappa.js"></script>
             <script src="js/plotter.js"></script>
             <script src="js/session.js"></script>
+
             <script src="js/ui_geometry.js"></script>
             <script src="js/main.js"></script>
+            <script src="js/material.js"></script>
             <script src="js/tests.js"></script>
 
 </body>

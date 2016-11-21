@@ -7,17 +7,21 @@ function PolyGon(point_list) {
     /// <param name="point_list" type="array">Array with objects from the Point class representing the polygons coordinates</param>
     this.point_list = point_list;
     this.n_value = 1000;
+    this.subtractor = null
+    this.instantiate()
+}
+
+PolyGon.prototype.instantiate = function () {
     this.top = this.highest_point('y').y;
     this.bottom = this.lowest_point('y').y;
     // all the values on the y-axis
     this.y_val = this.det_height_array();
-    
+
     // x_val array has arrays in it representing the results per y_values increment on the y-axis. In these inner arrays are the x-values paired, representing the solid boundaries.
     this.paired_xvals = [];
     this.width_array = [];
     this.return_x_on_axis();
-    this.subtractor = null
-}
+    };
 
 PolyGon.prototype.det_height_array = function () {
     return linspace(0, this.top, this.n_value)
