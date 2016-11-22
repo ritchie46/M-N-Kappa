@@ -1,5 +1,64 @@
 ﻿"use strict";
 
+var calc_hookup = function (reduction, mkap) {
+    /**
+     * Reduction factor (float)
+     *
+     * Starts the calculation with the latest point of the compression material and reduces it until a solution is found.
+     * Returns the strain that resulted in a valid solution.
+     */
+
+    var strain = mkap.compressive_diagram.strain[mkap.compressive_diagram.strain.length - 1];
+    mkap.solver(true, strain);
+    mkap.det_m_kappa();
+
+    var count = 0;
+    while (!mkap.validity() && count < 150) {
+        mkap.solver(true, strain);
+        mkap.det_m_kappa();
+        strain *= (1 - reduction);
+        count += 1;
+    }
+    return strain
+};
+
+var compute_moment = function (moment, mkap) {
+    /**
+     * @param moment: Query moment
+     * @param mkap: Object from the MomentKappa class
+     */
+
+    var top_str = calc_hookup(0.05, mkap);
+    mkap.solver(true, top_str);
+    mkap.det_m_kappa();
+    var count = 0;
+    var factor;
+    while (1) {
+        if (std.convergence_conditions(Math.abs(mkap.moment), moment, 1.001, 0.999)) {
+            if (window.DEBUG) {
+                console.log("moment convergence after %s iterations".replace("%s", count))
+            }
+            if (mkap.validity()) {
+                return mkap.moment;
+            }
+            break
+        }
+        mkap.det_m_kappa();
+        factor = std.convergence(Math.abs(mkap.moment), moment, 5);
+        top_str *= factor;
+
+        mkap.solver(true, top_str, false);
+
+        if (count > 80) {
+            if (window.DEBUG) {
+                console.log("no moment convergence found after %s iterations".replace("%s", count))
+            }
+            break
+        }
+        count += 1;
+    }
+};
+
 
 //class
 function Session() {
@@ -61,14 +120,13 @@ Session.prototype.pre_prestress= function () {
     if (this.mkap.tensile_diagram.stress.length == 1){  // there is no tensile capacity list = [0]
         window.alert("A cross section cannot be pre-stressed if there is no tensile capacity.\n" +
             "Please determine a tensile stress strain diagram.");
-        return 0
+        return 1
     }
 
     // copy mkap
     var mkap = jQuery.extend(true, {}, this.mkap); // deep copy
 
     for (var i in mkap.rebar_As) {
-;
 
         /** Set the reinforcement As equal to 0. We are going to compute the strain due to mp with a zero stiffness.
          * The forces due to pre-stress can be represented as outer loads, thus no stiffness.
@@ -82,7 +140,7 @@ Session.prototype.pre_prestress= function () {
         if (Math.max.apply(null, this.mkap.rebar_diagram[i].stress) < this.prestress[i]) {
             window.alert("The initial stress is higher than the stress capacity of the reinforcement\n" +
                 "Check you reinforcement material diagrams");
-            return 0
+            return 1
         }
     }
 
@@ -132,39 +190,45 @@ Session.prototype.pre_prestress= function () {
     }
     // determine the width sections
     mkap.cross_section.instantiate();
+    console.log("Mp", mp /1e6, "\n z", z0, "\nbottom", mkap.cross_section.bottom)
 
-    console.log("Mp", mp /1e6, "\n z", z0, "\nbottom", mkap.bottom)
-    mkap.solver(false, 0.3);
+    compute_moment(Math.abs(2e6), mkap);
     mkap.det_m_kappa();
+    console.log(mkap.moment / 1e6, mkap.validity(), "tens", mkap.force_tensile)
+    if (!mkap.validity()) {
+        window.alert("Pre-stress moment is higher than the capacity.\nCheck your input.");
+        return 1
+    }
+
+    /**
+     * Translate the reinforcement diagrams for the reinforcement layers that are pre-stressed. The translation will be:
+     * For all values in the stress strain diagram:
+     *      original stress diagram value - (pre-stress + strain_due_to_mp * E)
+     *      thus:
+     *      original stress diagram value - (pre-stress + stress_due_to_mp)
+     *
+     *      Eventually the m-kappa diagram will be translated over y in mp.
+     */
+    for (i in mkap.rebar_As) {
+        if (mkap.prestress[i] > 0) {
+            var diagram = jQuery.extend(true, {}, mkap.rebar_diagrams[i]); // deep copy
+            var strain_mp = mkap.rebar_strain[i];
+            var stress_mp = diagram.det_stress(strain_mp);
+
+            // find the index where the diagram can be sliced
+            var index = std.nearest_index(diagram.strain, strain_mp).low;
+            console.log(index)
+        }
+    }
+    // NOTE TO ME! Change moment query. There are two solution if the rebar is in the top of the cross section.
+    // I am interested in the first (highest solution)
 
 
-
-
-    console.log(mkap.validity())
-    console.log(mkap.moment / 10000000)
 
 };
 
 Session.prototype.calc_hookup = function (reduction) {
-    /**
-     * Reduction factor (float)
-     *
-     * Starts the calculation with the latest point of the compression material and reduces it until a solution is found.
-     * Returns the strain that resulted in a valid solution.
-    */
-
-    var strain = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1];
-    this.mkap.solver(true, strain);
-    this.mkap.det_m_kappa();
-
-    var count = 0;
-    while (!this.mkap.validity() && count < 150) {
-        this.mkap.solver(true, strain);
-        this.mkap.det_m_kappa();
-        strain *= (1 - reduction);
-        count += 1;
-    }
-    return strain
+    return calc_hookup(reduction, this.mkap);
 };
 
 Session.prototype.compute_n_points = function (n) {
@@ -190,38 +254,8 @@ Session.prototype.compute_n_points = function (n) {
 };
 
 Session.prototype.compute_moment = function (moment) {
-
-    var top_str = this.mkap.compressive_diagram.strain[this.mkap.compressive_diagram.strain.length - 1] * 0.5;
-    this.mkap.solver(true, top_str);
-    this.mkap.det_m_kappa();
-    var count = 0;
-    var factor;
-    while (1) {
-        if (std.convergence_conditions(Math.abs(this.mkap.moment), moment, 1.001, 0.999)) {
-            if (window.DEBUG) {
-                console.log("moment convergence after %s iterations".replace("%s", count))
-            }
-            if (this.mkap.validity()) {
-                return this.mkap.moment;
-            }
-            break
-        }
-        this.mkap.det_m_kappa();
-        factor = std.convergence(Math.abs(this.mkap.moment), moment, 5);
-        top_str *= factor;
-
-        this.mkap.solver(true, top_str, false);
-
-        if (count > 80) {
-            if (window.DEBUG) {
-                console.log("no moment convergence found after %s iterations".replace("%s", count))
-            }
-            break
-        }
-        count += 1;
-    }
-};
-
+    compute_moment(moment, this.mkap);
+}
 
 Session.prototype.calculate_significant_points = function () {
     /** 
