@@ -225,7 +225,7 @@ $(document).ready();
     $slct[1].value = "B500";
     $slct.last().trigger("change");
     $slct = $("#cross_section_type");
-    $slct.val("tube");
+    $slct.val("rectangle");
     $slct.trigger("change");
 
     trigger_tens_strain();

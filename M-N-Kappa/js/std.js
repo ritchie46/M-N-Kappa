@@ -1,5 +1,4 @@
-﻿
-// std namespace
+﻿// std namespace
 var std = (function () {
 
     function is_close(a, b, rel_tol, abs_tol) {

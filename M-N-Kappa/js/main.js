@@ -250,7 +250,7 @@ $(document).ready(function () {
 
 
 
-//session.pre_prestress()
+session.pre_prestress()
        
 console.log("version_21-11")
 });

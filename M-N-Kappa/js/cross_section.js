@@ -7,7 +7,7 @@ function PolyGon(point_list) {
     /// <param name="point_list" type="array">Array with objects from the Point class representing the polygons coordinates</param>
     this.point_list = point_list;
     this.n_value = 1000;
-    this.subtractor = null
+    this.subtractor = null;
     this.instantiate()
 }
 

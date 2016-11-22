@@ -52,25 +52,56 @@ Session.prototype.apply_m0 = function () {
 
 Session.prototype.pre_prestress= function () {
 
+    /**
+     * this.mkap is the original.
+     *  mkap is a copy. As will be adapted to mimic the pre-stress conditions
+     */
+
     // take the first tensile point to determine the center line under negative moment.
     if (this.mkap.tensile_diagram.stress.length == 1){  // there is no tensile capacity list = [0]
-        window.alert("A cross section cannot be prestressed if there is no tensile capacity.");
+        window.alert("A cross section cannot be pre-stressed if there is no tensile capacity.\n" +
+            "Please determine a tensile stress strain diagram.");
         return 0
     }
-    var strain = this.mkap.tensile_diagram.strain[1];
-    this.mkap.solver(false, strain);
-    this.mkap.det_m_kappa();
-    var z0 = this.mkap.zero_line;
-
-    for (var i in this.mkap.rebar_As) {
-        var mp = this.mkap.rebar_As[i] * this.prestress[i] * (this.mkap.rebar_z[i] - z0)
-        console.log(mp)
-        // You need to check if the prestress is possible. Can B500 take 900 MPa? nope
-    }
-
 
     // copy mkap
     var mkap = jQuery.extend(true, {}, this.mkap); // deep copy
+
+    for (var i in mkap.rebar_As) {
+;
+
+        /** Set the reinforcement As equal to 0. We are going to compute the strain due to mp with a zero stiffness.
+         * The forces due to pre-stress can be represented as outer loads, thus no stiffness.
+         * Afterwards the Moment due to pre-stress must be determined. As the zero stiffness of the pre-stress
+         * reinforcement has influence on the zero line.
+         */
+        if (this.prestress[i] > 0) {
+            mkap.rebar_As[i] = 0;
+        }
+
+        if (Math.max.apply(null, this.mkap.rebar_diagram[i].stress) < this.prestress[i]) {
+            window.alert("The initial stress is higher than the stress capacity of the reinforcement\n" +
+                "Check you reinforcement material diagrams");
+            return 0
+        }
+    }
+
+    /**
+     * Now the stiffness of the pre-stress reinforcement is zero, the zero line and thus the pre-stress moment can be
+     * determined.
+     */
+    var strain = mkap.tensile_diagram.strain[1];
+    mkap.solver(false, strain);
+    mkap.det_m_kappa();
+    var z0 = mkap.zero_line;
+
+    var mp = 0;
+    for (i in mkap.rebar_As) {
+        // determine the pre-stress moment
+             // these still has get As
+        mp += this.mkap.rebar_As[i] * this.prestress[i] * (mkap.rebar_z[i] - z0)
+    }
+
 
     // Turn the cross section 180 degrees
     var min_x = 1e9; var min_y = 1e9;
@@ -95,14 +126,18 @@ Session.prototype.pre_prestress= function () {
 
         )
     }
-    // rotate the rebar.
+    // rotate the reinforcement.
     for (i in mkap.rebar_z) {
         mkap.rebar_z[i] = mkap.cross_section.top - mkap.rebar_z[i]
     }
     // determine the width sections
     mkap.cross_section.instantiate();
+
+    console.log("Mp", mp /1e6, "\n z", z0, "\nbottom", mkap.bottom)
     mkap.solver(false, 0.3);
     mkap.det_m_kappa();
+
+
 
 
     console.log(mkap.validity())

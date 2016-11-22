@@ -24,7 +24,7 @@ function trigger_rebar_input() {
     prestress = extract_floats(prestress);
 
     var As = [];
-    for (i in n) {
+    for (i=0; i < n.length; i++) {
         As.push(0.25 * Math.PI * Math.pow(diam[i], 2) * n[i])
     }
     d = extract_floats(d);
@@ -168,7 +168,7 @@ $("#cross_section_type").change(function () {
         $(".cross_section_type").addClass("hidden");
         $("#tube_rows").removeClass("hidden")
     }
-    trigger_polygon()
+    trigger_polygon();
     trigger_rebar_input()
 });
 
