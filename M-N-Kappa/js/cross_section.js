@@ -120,6 +120,15 @@ PolyGon.prototype.area = function () {
     return Math.abs(area)
 };
 
+PolyGon.prototype.zero_line = function () {
+    var dh = (this.top - this.bottom) / this.n_value;
+    var sum_A_h = 0;
+    for (var i in this.width_array) {
+        sum_A_h += dh * this.width_array[i] * this.y_val[i]
+    }
+    return sum_A_h / this.area()
+};
+
 // end class
 
     function linspace (a, b, n) {

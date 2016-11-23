@@ -1,20 +1,31 @@
 ﻿"use strict";
 
-var calc_hookup = function (reduction, mkap) {
+var calc_hookup = function (reduction, mkap, top) {
     /**
      * Reduction factor (float)
      *
      * Starts the calculation with the latest point of the compression material and reduces it until a solution is found.
      * Returns the strain that resulted in a valid solution.
+     *
+     * @param reduction: (float) the reduction factor of the strain.
+     * @param mkap: (object) from the MomentKappa class.
+     * @param top: (bool) Depends if the hookup is sought for the top or the bottom of the cross section.
      */
+    top = (typeof top !== "undefined") ? top : true;
 
-    var strain = mkap.compressive_diagram.strain[mkap.compressive_diagram.strain.length - 1];
-    mkap.solver(true, strain);
+    if (top) {
+        var strain = mkap.compressive_diagram.strain[mkap.compressive_diagram.strain.length - 1];
+    }
+    else {
+        strain = mkap.tensile_diagram.strain[mkap.tensile_diagram.strain.length - 1];
+    }
+
+    mkap.solver(top, strain);
     mkap.det_m_kappa();
 
     var count = 0;
     while (!mkap.validity() && count < 150) {
-        mkap.solver(true, strain);
+        mkap.solver(top, strain);
         mkap.det_m_kappa();
         strain *= (1 - reduction);
         count += 1;
@@ -22,14 +33,15 @@ var calc_hookup = function (reduction, mkap) {
     return strain
 };
 
-var compute_moment = function (moment, mkap) {
+var compute_moment = function (moment, mkap, top) {
     /**
      * @param moment: Query moment
      * @param mkap: Object from the MomentKappa class
+     * @param top: (bool) Depends if the hookup is sought for the top or the bottom of the cross section.
      */
-
-    var top_str = calc_hookup(0.05, mkap);
-    mkap.solver(true, top_str);
+    top = (typeof top !== "undefined") ? top : true;
+    var strain = calc_hookup(0.05, mkap, top);
+    mkap.solver(top, strain);
     mkap.det_m_kappa();
     var count = 0;
     var factor;
@@ -45,9 +57,9 @@ var compute_moment = function (moment, mkap) {
         }
         mkap.det_m_kappa();
         factor = std.convergence(Math.abs(mkap.moment), moment, 5);
-        top_str *= factor;
+        strain *= factor;
 
-        mkap.solver(true, top_str, false);
+        mkap.solver(top, strain, false);
 
         if (count > 80) {
             if (window.DEBUG) {
@@ -148,10 +160,12 @@ Session.prototype.pre_prestress= function () {
      * Now the stiffness of the pre-stress reinforcement is zero, the zero line and thus the pre-stress moment can be
      * determined.
      */
-    var strain = mkap.tensile_diagram.strain[1];
-    mkap.solver(false, strain);
-    mkap.det_m_kappa();
-    var z0 = mkap.zero_line;
+    // var strain = mkap.tensile_diagram.strain[1];
+    // mkap.solver(false, strain);
+    // mkap.det_m_kappa();
+    // var z0 = mkap.zero_line;
+
+    var z0 = mkap.cross_section.zero_line();
 
     var mp = 0;
     for (i in mkap.rebar_As) {
@@ -190,11 +204,11 @@ Session.prototype.pre_prestress= function () {
     }
     // determine the width sections
     mkap.cross_section.instantiate();
-    console.log("Mp", mp /1e6, "\n z", z0, "\nbottom", mkap.cross_section.bottom)
 
-    compute_moment(Math.abs(2e6), mkap);
+    // determine the pre-stress strains
+    compute_moment(Math.abs(mp), mkap, false);
     mkap.det_m_kappa();
-    console.log(mkap.moment / 1e6, mkap.validity(), "tens", mkap.force_tensile)
+
     if (!mkap.validity()) {
         window.alert("Pre-stress moment is higher than the capacity.\nCheck your input.");
         return 1
@@ -210,8 +224,8 @@ Session.prototype.pre_prestress= function () {
      *      Eventually the m-kappa diagram will be translated over y in mp.
      */
     for (i in mkap.rebar_As) {
-        if (mkap.prestress[i] > 0) {
-            var diagram = jQuery.extend(true, {}, mkap.rebar_diagrams[i]); // deep copy
+        if (this.prestress[i] > 0) {
+            var diagram = jQuery.extend(true, {}, mkap.rebar_diagram[i]); // deep copy
             var strain_mp = mkap.rebar_strain[i];
             var stress_mp = diagram.det_stress(strain_mp);
 
