@@ -323,7 +323,19 @@ var mkap = (function () {
             && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
             && this.strain_top < 0
             ) {
-            return true
+            var valid = true;
+
+            for (var i in this.rebar_strain) {
+                if (this.rebar_strain[i] > Math.max.apply(null, this.rebar_diagram[i].strain)) {
+                    valid = false;
+                }
+            }
+            if (valid) {
+                return true
+            }
+            else {
+                return false
+            }
         }
         else {
             return false
