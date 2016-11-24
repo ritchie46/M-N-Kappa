@@ -9,7 +9,7 @@ function trigger_rebar_input() {
     session.mkap.m0 = [];
     session.mkap.rebar_n = [];
     session.mkap.rebar_diam = [];
-    session.prestress = [];
+    session.mkap.prestress = [];
     session.compute_prestress = false;
     var n = document.getElementsByClassName("rebar_n");
     var diam = document.getElementsByClassName("rebar_Ø");
@@ -39,10 +39,10 @@ function trigger_rebar_input() {
         // check if prestress needs to be taken into account.
         if ($("#rebar_curve_" + no_of_diagram).find(".prestress_container").find(".prestress_checkbox").is(":checked")) {
             session.compute_prestress = true;
-            session.prestress.push(prestress[i]);
+            session.mkap.prestress.push(prestress[i]);
         }
         else {
-            session.prestress.push(0)
+            session.mkap.prestress.push(0)
         }
 
         // add the rebar in the correct order to the mkap

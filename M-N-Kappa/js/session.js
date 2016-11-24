@@ -101,7 +101,7 @@ function Session() {
 
     // prestress options
     this.compute_prestress = false;
-    this.prestress = [];
+
 }
 
 Session.prototype.apply_m0 = function () {
@@ -145,11 +145,11 @@ Session.prototype.pre_prestress= function () {
          * Afterwards the Moment due to pre-stress must be determined. As the zero stiffness of the pre-stress
          * reinforcement has influence on the zero line.
          */
-        if (this.prestress[i] > 0) {
+        if (this.mkap.prestress[i] > 0) {
             mkap.rebar_As[i] = 0;
         }
 
-        if (Math.max.apply(null, this.mkap.rebar_diagram[i].stress) < this.prestress[i]) {
+        if (Math.max.apply(null, this.mkap.rebar_diagram[i].stress) < this.mkap.prestress[i]) {
             window.alert("The initial stress is higher than the stress capacity of the reinforcement\n" +
                 "Check you reinforcement material diagrams");
             return 1
@@ -171,7 +171,7 @@ Session.prototype.pre_prestress= function () {
     for (i in mkap.rebar_As) {
         // determine the pre-stress moment
              // these still has get As
-        mp += this.mkap.rebar_As[i] * this.prestress[i] * (mkap.rebar_z[i] - z0)
+        mp += this.mkap.rebar_As[i] * this.mkap.prestress[i] * (mkap.rebar_z[i] - z0)
     }
 
 
@@ -217,21 +217,36 @@ Session.prototype.pre_prestress= function () {
     /**
      * Translate the reinforcement diagrams for the reinforcement layers that are pre-stressed. The translation will be:
      * For all values in the stress strain diagram:
-     *      original stress diagram value - (pre-stress + strain_due_to_mp * E)
+     *      original stress diagram value - (pre-stress - strain_due_to_mp * E)
      *      thus:
+     *      original stress diagram value - (pre-stress - stress_due_to_mp)
+     *
+     *      It is (pre-stress - stress_due_to_mp) as long as the pre-stress reinforcement  will extend. (Normal case)
+     *
+     *
+     *      If the pre-stress reinforcement will relax when bending back in the loaded direction
      *      original stress diagram value - (pre-stress + stress_due_to_mp)
+     *      This is only the case with multiple layers of pre-stress reinforcement.
+     *
+     *      In the solver the pre-stress reinforcement should only be activated when extension takes place
+     *
      *
      *      Eventually the m-kappa diagram will be translated over y in mp.
      */
     for (i in mkap.rebar_As) {
-        if (this.prestress[i] > 0) {
+        if (this.mkap.prestress[i] > 0) {
             var diagram = jQuery.extend(true, {}, mkap.rebar_diagram[i]); // deep copy
             var strain_mp = mkap.rebar_strain[i];
-            var stress_mp = diagram.det_stress(strain_mp);
+
+            console.log(strain_mp, "strain")
 
             // find the index where the diagram can be sliced
-            var index = std.nearest_index(diagram.strain, strain_mp).low;
-            console.log(index)
+            if (strain_mp < 0) {
+                strain_mp *= -1;
+                var stress_mp = diagram.det_stress(strain_mp);
+                var index = std.nearest_index(diagram.strain, strain_mp).low;
+                console.log(index, std.nearest_index(diagram.strain, strain_mp).high, mkap.rebar_diagram[i])
+            }
         }
     }
     // NOTE TO ME! Change moment query. There are two solution if the rebar is in the top of the cross section.

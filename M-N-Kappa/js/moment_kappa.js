@@ -27,6 +27,7 @@ var mkap = (function () {
         this.m0 = [];
         this.rebar_strain0 = [];
         this.rebar_diam = null;  // for the plotter
+        this.prestress = [];
     
         /**
         results
@@ -99,11 +100,10 @@ var mkap = (function () {
         }
 
     
-        // determine rebar forces
+        // determine reinforcement forces
         this.rebar_force = [];
         for (i = 0; i < this.rebar_As.length; i++) {
-            var strain = std.interpolate(crs_btm, strain_btm, crs_top, strain_top,
-                this.rebar_z[i]);
+            var strain = std.interpolate(crs_btm, strain_btm, crs_top, strain_top, this.rebar_z[i]);
             this.rebar_strain.push(strain);
 
             var stress = this.rebar_diagram[i].det_stress(Math.abs(strain));
@@ -112,12 +112,12 @@ var mkap = (function () {
             var force = this.rebar_As[i] * stress;
         
             var stress_reduct;
-            if (strain < 0) {
+            if (strain < 0 && this.prestress[i] == 0) {
                 this.force_compression += force;
                 this.rebar_force.push(-force);
 
                 if (reduce_rebar) {
-                    // reduce rebar area from master element
+                    // Subtract reinforcement area from master element
                     stress_reduct = this.compressive_diagram.det_stress(Math.abs(strain));
                     this.force_compression -= this.rebar_As[i] * stress_reduct
                 }
@@ -129,7 +129,7 @@ var mkap = (function () {
                 this.rebar_force.push(force);
 
                 if (reduce_rebar) {
-                    // reduce rebar area from master element
+                    // Subtract reinforcement area from master element
                     stress_reduct = this.tensile_diagram.det_stress(strain);
                     this.force_tensile -= this.rebar_As[i] * stress_reduct
                 }
