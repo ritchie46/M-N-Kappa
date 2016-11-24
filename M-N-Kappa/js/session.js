@@ -238,8 +238,13 @@ Session.prototype.pre_prestress= function () {
     for (i in mkap.rebar_As) {
         if (this.mkap.prestress[i] > 0) {
 
-            //var diagram = jQuery.extend(true, {}, mkap.rebar_diagram[i]); // deep copy
-            var strain_mp = mkap.rebar_strain[i];
+            /**
+             * Underneath strain_mp is the more correct version, but than the material diagrams should be entered correctly
+             * for now it is off.
+             *
+             */
+            //var strain_mp = mkap.rebar_strain[i];
+            var strain_mp = 0;
 
             var pre_strain = mkap.rebar_diagram[i].det_strain(mkap.prestress[i]);
             var d_strain = pre_strain + strain_mp; // the sign +- is correct. See case 1 and case 2
