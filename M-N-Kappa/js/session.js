@@ -33,7 +33,7 @@ var calc_hookup = function (reduction, mkap, top) {
     return strain
 };
 
-var     compute_moment = function (moment, mkap, top) {
+var compute_moment = function (moment, mkap, top) {
     /**
      * @param moment: Query moment
      * @param mkap: Object from the MomentKappa class
@@ -101,6 +101,8 @@ function Session() {
 
     // pre-stress options
     this.compute_prestress = false;
+    // backup
+    this.rebar_diagram = [];
 }
 
 Session.prototype.apply_m0 = function () {
@@ -153,6 +155,8 @@ Session.prototype.pre_prestress= function () {
                 "Check you reinforcement material diagrams");
             return 1
         }
+
+        this.mkap.original_rebar_diagrams[i] = jQuery.extend(true, {}, mkap.rebar_diagram[i]);
     }
 
     /**
@@ -247,7 +251,8 @@ Session.prototype.pre_prestress= function () {
             this.mkap.d_strain[i] = d_strain;
             this.mkap.d_stress[i] = d_stress;
 
-            console.log("P_moment", mp / 1e6, "old diagram", jQuery.extend(true, {}, mkap.rebar_diagram[i]));
+            //console.log("P_moment", mp / 1e6, "old diagram", jQuery.extend(true, {}, mkap.rebar_diagram[i]));
+
             // Insert the stress and strains
             for (var j in mkap.rebar_diagram[i].strain) {
                 if (mkap.rebar_diagram[i].strain[j] < d_strain) {
@@ -266,7 +271,7 @@ Session.prototype.pre_prestress= function () {
                 mkap.rebar_diagram[i].strain[j] -= d_strain;
                 mkap.rebar_diagram[i].stress[j] -= d_stress
             }
-            console.log("new diagram", mkap.rebar_diagram[i]);
+            //console.log("new diagram", mkap.rebar_diagram[i]);
 
             // Replace the original diagram
             this.mkap.rebar_diagram[i] = mkap.rebar_diagram[i];

@@ -90,9 +90,12 @@ $(document).ready(function () {
 
 
     var calculate_mkappa = function () {
+        trigger_rebar_strain();
         trigger_normal_force();
         trigger_rebar_input();
         trigger_comp_strain();
+        trigger_tens_strain();
+
         session.mkap.mp = 0;
 
         if (session.compute_prestress) {
@@ -249,7 +252,7 @@ $(document).ready(function () {
     });
 
        
-console.log("version_21-11")
+console.log("version_24-11.1")
 });
 
 

@@ -35,6 +35,7 @@ var mkap = (function () {
         this.d_stress = [];
         this.d_strain = [];
         this.mp = 0;
+        this.original_rebar_diagrams = [];
     
         /**
         results

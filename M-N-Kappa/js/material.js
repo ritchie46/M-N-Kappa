@@ -56,7 +56,7 @@ $("#rebar_curves").on("change", ".rebar_material", function () {
         $(parent).find(".rebar_strain")[2].value = 50;
         $(parent).find(".rebar_stress")[1].value = fy;
         $(parent).find(".rebar_stress")[2].value = fy;
-        trigger_rebar_strain(parent)
+        trigger_rebar_strain()
     }
 });
 
@@ -116,43 +116,43 @@ $slct.on('click', '.remove_row', function () {
 
 
 /** rebar stress strain
- There can be more than one rebar stress strain diagram
+ There can be more than one reinforcement stress strain diagram
  */
 
-var trigger_rebar_strain = function (parent) {
+var trigger_rebar_strain = function () {
+    for (var i = 1; i < $(".rebar_curve").length; i++) {
+        var id = $($(".rebar_curve")[i]).attr('id');
+        $slct = $('#' + id);
+        var strain = $slct.find('.rebar_strain');
+        var stress = $slct.find('.rebar_stress');
 
-    // find the panel that send the request.
-    var id = parent.attr('id');
-    $slct = $('#' + id);
-    var strain = $slct.find('.rebar_strain');
-    var stress = $slct.find('.rebar_stress');
+        // remove old svg
+        $slct.find('svg').remove();
+        // add new svg
 
-    // remove old svg
-    $slct.find('svg').remove();
-    // add new svg
+        var svg = plt.add_svg('#rebar_svg_' + id[id.length - 1], "strain", "stress");
+        plt.draw_lines(svg, strain, stress);
 
-    var svg = plt.add_svg('#rebar_svg_' + id[id.length - 1], "strain", "stress");
-    plt.draw_lines(svg, strain, stress);
+        strain = extract_floats(strain);
+        stress = extract_floats(stress);
+        strain.unshift(0);
+        stress.unshift(0);
 
-    strain = extract_floats(strain);
-    stress = extract_floats(stress);
-    strain.unshift(0);
-    stress.unshift(0);
-
-    var fact = parseFloat($(parent).find(".rebar_material_factor").val());
-    // reduce with the material factor
-    for (var i = 0; i < stress.length; i++) {
-        stress[i] /= fact
+        var fact = parseFloat($($(".rebar_curve")[i]).find(".rebar_material_factor").val());
+        // reduce with the material factor
+        for (var j = 0; j < stress.length; j++) {
+            stress[j] /= fact
+        }
+        var rebar_number = id[id.length - 1];
+        session.rebar_diagrams[rebar_number - 1] = new mkap.StressStrain(strain, stress);
     }
-    var rebar_number = id[id.length - 1];
-    session.rebar_diagrams[rebar_number - 1] = new mkap.StressStrain(strain, stress)
 };
 
 $slct = $('#rebar_curves');
 $slct.on('click', '.remove_row', function () {
     var parent = $(this).closest('.rebar_curve');
     $(this).closest('.custom_row').remove();
-    trigger_rebar_strain(parent);
+    trigger_rebar_strain();
     $(parent).find(".rebar_material").val("custom")
 });
 
@@ -165,7 +165,7 @@ $slct.on('click', '.add_row_rbr_curves', function () {
 
 $slct.on('change', 'input', function () {
     var parent = $(this).closest('.rebar_curve');
-    trigger_rebar_strain(parent);
+    trigger_rebar_strain();
     $(parent).find(".rebar_material").val("custom")
 });
 

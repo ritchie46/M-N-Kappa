@@ -10,6 +10,8 @@ function trigger_rebar_input() {
     session.mkap.rebar_n = [];
     session.mkap.rebar_diam = [];
     session.mkap.prestress = [];
+    session.mkap.d_stress = [];
+    session.mkap.d_strain = [];
     session.compute_prestress = false;
     var n = document.getElementsByClassName("rebar_n");
     var diam = document.getElementsByClassName("rebar_Ø");
