@@ -243,7 +243,7 @@ Session.prototype.pre_prestress= function () {
             // find the index where the diagram can be sliced
             if (strain_mp < 0) {
                 strain_mp *= -1;
-                var stress_mp = diagram.det_stress(strain_mp);
+                var stress_ = diagram.det_stress(strain_mp);
                 var index = std.nearest_index(diagram.strain, strain_mp).low;
                 console.log(index, std.nearest_index(diagram.strain, strain_mp).high, mkap.rebar_diagram[i])
             }

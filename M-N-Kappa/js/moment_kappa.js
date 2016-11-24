@@ -341,10 +341,12 @@ var mkap = (function () {
 
 
     StressStrain.prototype.det_stress = function (strain) {
-        /// <param name="strain" type="flt">strain for wich the stress needs to be determined</param>
+        /**
+         * @param strain: (float) Strain for which the stress needs to be determined.
+         * Iterate through the strain array until iterated value exceeds the requested strain.
+         * At that the point the two values will interpolated.
+         */
 
-        // iterate through the strain array untill iterated value exceeds the requested strain.
-        // At that the point the two values will interpolated.
         for (var i = 0; i < this.strain.length; i++) {
             if (strain > this.strain[this.strain.length - 1]) {
                 return 0;
@@ -355,6 +357,26 @@ var mkap = (function () {
             else if (this.strain[i] > strain) {
                 return std.interpolate(this.strain[i - 1], this.stress[i - 1],
                     this.strain[i], this.stress[i], strain);
+            }
+        }
+    };
+
+    StressStrain.prototype.det_strain = function (stress) {
+        /**
+         * @param stress: (float) Strain for which the stress needs to be determined.
+         * Iterate through the stress array until iterated value exceeds the requested strain.
+         * At that the point the two values will interpolated.
+         */
+        for (var i = 0; i < this.stress.length; i++) {
+            if (stress > this.stress[this.stress.length - 1]) {
+                return 0;
+            }
+            else if (this.stress[i] == stress) {
+                return this.strain[i]
+            }
+            else if (this.stress[i] > stress) {
+                return std.interpolate(this.stress[i - 1], this.strain[i - 1],
+                    this.stress[i], this.strain[i], stress);
             }
         }
     };
