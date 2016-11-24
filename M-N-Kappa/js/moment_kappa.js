@@ -112,7 +112,7 @@ var mkap = (function () {
         this.rebar_force = [];
         for (i = 0; i < this.rebar_As.length; i++) {
             var strain = std.interpolate(crs_btm, strain_btm, crs_top, strain_top, this.rebar_z[i]);
-            this.rebar_strain.push(strain);
+            this.rebar_strain.push(strain + this.d_strain[i]);
 
             var stress = this.rebar_diagram[i].det_stress(Math.abs(strain));
 
@@ -129,8 +129,6 @@ var mkap = (function () {
                     stress_reduct = this.compressive_diagram.det_stress(Math.abs(strain));
                     this.force_compression -= this.rebar_As[i] * stress_reduct
                 }
-
-
             }
             else {
                 this.force_tensile += force;
@@ -177,7 +175,7 @@ var mkap = (function () {
         var count = 0;
         var factor;
         if (strain_top) {  // top strain remains constant
-            // iterate untill the convergence criteria is met
+            // iterate until the convergence criteria is met
             while (1) {
                 if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                     this.solution = true;
@@ -228,7 +226,7 @@ var mkap = (function () {
             }
         }
         else { // bottom strain remains constant
-            // iterate untill the convergence criteria is met
+            // iterate until the convergence criteria is met
             while (1) {
                 if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                     this.solution = true;
@@ -330,13 +328,10 @@ var mkap = (function () {
                     valid = false;
                 }
             }
-            if (valid) {
-                return true
+
+            return valid
             }
-            else {
-                return false
-            }
-        }
+
         else {
             return false
         }

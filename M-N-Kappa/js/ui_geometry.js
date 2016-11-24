@@ -31,6 +31,8 @@ function trigger_rebar_input() {
     }
     d = extract_floats(d);
     m0 = extract_floats(m0);
+    console.log(m0, "HIER")
+    m0.shift()
     rebar_diagram = rebar_diagram.slice(1);  // the first is the hidden reserve
     var height = session.mkap.cross_section.top;
 
@@ -188,6 +190,7 @@ $slct.on("click", ".remove_row", function () {
 //Call polygon draw function if row is removed
 $slct.on("change", "input", function () {
     trigger_polygon();
+    trigger_rebar_input()
 });
 
 //Call polygon draw function if row is removed
