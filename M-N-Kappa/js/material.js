@@ -176,7 +176,31 @@ $slct.on("change", ".prestress_checkbox", function () {
     else {
         $(this).closest(".checkbox").find(".prestress_input").prop("disabled", true)
     }
+    toggle_phased();
 });
+
+// Make sure that pre-stressed rebar is not phased!
+function toggle_phased() {
+    $(".rebar_M0").removeAttr("disabled")
+    for (i = 0; i < $(".rebar_curve").length; i++) {
+        var prestress = $($(".rebar_curve")[i]).find(".prestress_container").find(".prestress_checkbox").is(":checked");
+        var n = parseInt($($(".rebar_curve")[i]).attr("id")[$($(".rebar_curve")[i]).attr("id").length -1]);
+
+        if (prestress) {
+            for (var j = 0; j < $(".rebar_material_select").length; j++) {
+
+                var el = $(".rebar_material_select")[j];
+                var n_2 = parseInt($(el).val()[$(el).val().length - 1]);
+
+                if (n == n_2) {
+                    var M0_input = $(el).closest(".rebar_row").find(".rebar_M0");
+                    $(M0_input).prop("disabled", true);
+                    $(M0_input).val(0);
+                }
+            }
+        }
+    }
+}
 
 
 
@@ -211,10 +235,16 @@ $slct.on('click', '.remove_row', function () {
 
 $slct.on('change', 'input', function () {
     trigger_rebar_input();
+    toggle_phased()
 });
 
 $slct.on('click', '.add_row', function () {
     trigger_rebar_input();
+    toggle_phased()
+});
+
+$slct.on('change', ".rebar_material_select", function () {
+    toggle_phased()
 });
 
 
