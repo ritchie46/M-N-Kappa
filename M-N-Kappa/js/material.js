@@ -178,6 +178,8 @@ $slct.on("change", ".prestress_checkbox", function () {
     }
 });
 
+
+
 // add extra rebar curves (stress strain diagrams)
 var n_rebar_curves = 1;
 $("#add_rbr_diagram").click(function () {

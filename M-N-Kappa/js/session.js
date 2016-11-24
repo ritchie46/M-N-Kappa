@@ -33,7 +33,7 @@ var calc_hookup = function (reduction, mkap, top) {
     return strain
 };
 
-var compute_moment = function (moment, mkap, top) {
+var     compute_moment = function (moment, mkap, top) {
     /**
      * @param moment: Query moment
      * @param mkap: Object from the MomentKappa class
@@ -99,9 +99,8 @@ function Session() {
     this.sign_rebar_mkap = [];
     this.all_computed_mkap = [];
 
-    // prestress options
+    // pre-stress options
     this.compute_prestress = false;
-
 }
 
 Session.prototype.apply_m0 = function () {
@@ -164,6 +163,7 @@ Session.prototype.pre_prestress= function () {
     var z0 = mkap.cross_section.zero_line();
     var N = 0;
     var mp = 0;
+    console.log(this.mkap.rebar_As, this.mkap.prestress, this.mkap.rebar_z)
     for (i in mkap.rebar_As) {
         // determine the pre-stress moment
              // these still has get As
@@ -206,7 +206,7 @@ Session.prototype.pre_prestress= function () {
     mkap.det_m_kappa();
 
     if (!mkap.validity()) {
-        window.alert("Pre-stress moment is higher than the capacity.\nCheck your input.");
+        window.alert("Pre-stress moment is higher than the capacity.\nCheck your input.\n Moment:" + (mp / 1e6));
         return 1
     }
 
@@ -273,8 +273,7 @@ Session.prototype.pre_prestress= function () {
             this.mkap.normal_force += N;
         }
     }
-
-
+    this.mkap.mp = mp;
 };
 
 Session.prototype.calc_hookup = function (reduction) {

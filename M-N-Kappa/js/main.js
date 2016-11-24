@@ -93,9 +93,12 @@ $(document).ready(function () {
         trigger_normal_force();
         trigger_rebar_input();
         trigger_comp_strain();
+        session.mkap.mp = 0;
 
         if (session.compute_prestress) {
-            session.pre_prestress();
+            if (session.pre_prestress() == 1) {
+                return 1;  // calculation not possible
+            }
         }
 
         // remove old svg
@@ -118,7 +121,7 @@ $(document).ready(function () {
             moment = sol.moment;
             kappa = sol.kappa;
 
-            moment.unshift(0);
+            moment.unshift(-session.mkap.mp);
             kappa.unshift(0);
             plt.moment_kappa(svg, kappa, moment.map(function (i) {
                 return i / 1e6
@@ -133,7 +136,7 @@ $(document).ready(function () {
             var moment = sol.moment;
             var kappa = sol.kappa;
 
-            moment.unshift(0);
+            moment.unshift(-session.mkap.mp);
             kappa.unshift(0);
 
             plt.moment_kappa(svg, kappa, moment.map(function (i) {
@@ -181,7 +184,6 @@ $(document).ready(function () {
                 $slct.last().find(".significant_strain").last().html(Math.round(session.sign_strain_tens[i] * 1000) / 1000);
                 $slct.first().clone().insertAfter($slct.last())
             }
-
             // rebar results table
             update_rebar_results(0)
         }

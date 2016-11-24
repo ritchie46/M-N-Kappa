@@ -28,12 +28,13 @@ var mkap = (function () {
         this.rebar_strain0 = [];
         this.rebar_diam = null;  // for the plotter
 
-        // Applied at t=0
+        // Applied at t=0. 'werkvoorspanning'
         this.prestress = [];
 
         // Stress and strain in the reinforcement after Mp has been applied and the deformation is zero.
         this.d_stress = [];
         this.d_strain = [];
+        this.mp = 0;
     
         /**
         results
@@ -276,7 +277,7 @@ var mkap = (function () {
 
         // center of gravity offset of a section
         this.kappa = (-this.strain_top + this.strain_btm) / (this.cross_section.top - this.cross_section.bottom);  //this.strain_btm / (this.zero_line - this.cross_section.bottom)
-        this.moment = 0;
+        this.moment = this.mp;
         var offset = this.cross_section.y_val[1] * 0.5;
 
         // height of the sections

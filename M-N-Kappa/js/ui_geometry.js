@@ -43,7 +43,7 @@ function trigger_rebar_input() {
         // check if prestress needs to be taken into account.
         if ($("#rebar_curve_" + no_of_diagram).find(".prestress_container").find(".prestress_checkbox").is(":checked")) {
             session.compute_prestress = true;
-            session.mkap.prestress.push(prestress[i]);
+            session.mkap.prestress.push(prestress[no_of_diagram - 1]);
         }
         else {
             session.mkap.prestress.push(0)

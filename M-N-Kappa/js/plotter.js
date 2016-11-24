@@ -339,7 +339,7 @@ var plt = (function () {
 
 
     
-    function draw_lines(svg_struct, xstr, ystr, floats) {
+    function draw_lines(svg_struct, xstr, ystr, floats, start_origin) {
 
         /// <param name="svg" type="object">d3 svg object</param>
         /// <param name="xstr" type="array of strings">array from html input</param>
@@ -352,6 +352,7 @@ var plt = (function () {
          */
         // default parameter
         floats = (typeof floats !== "undefined") ? floats : false;
+        start_origin = (typeof start_origin !== "undefined") ? start_origin : true;
 
         var svg = svg_struct.svg;
 
@@ -386,10 +387,12 @@ var plt = (function () {
             .domain([0, y_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
             .range(svg.range_y);
 
+        var data = [];
+        if (start_origin) {
+            data.push({x: 0 + svg.padding, y: height - svg.padding, y_original: 0})
+        }
 
-        var data = [
-            {x: 0 + svg.padding, y: height - svg.padding, y_original: 0}
-        ];
+
         var loc;
         for (var i = 0; i < xstr.length; i++) {
             if (floats) {
@@ -431,7 +434,7 @@ var plt = (function () {
 
     var moment_kappa_diagram = function (svg_struct, x, y, session) {
         var svg = svg_struct.svg;
-        var data = draw_lines(svg_struct, x, y, true);
+        var data = draw_lines(svg_struct, x, y, true, false);
 
         var is_equal_show_stress_strain_cross_section = function (mkap, y_value) {
             /**
