@@ -145,7 +145,7 @@ Session.prototype.pre_prestress= function () {
          * Afterwards the Moment due to pre-stress must be determined. As the zero stiffness of the pre-stress
          * reinforcement has influence on the zero line.
          */
-        if (this.mkap.prestress[i] > 0) {
+        if (mkap.prestress[i] > 0) {
             mkap.rebar_As[i] = 0;
         }
 
@@ -160,20 +160,16 @@ Session.prototype.pre_prestress= function () {
      * Now the stiffness of the pre-stress reinforcement is zero, the zero line and thus the pre-stress moment can be
      * determined.
      */
-    // var strain = mkap.tensile_diagram.strain[1];
-    // mkap.solver(false, strain);
-    // mkap.det_m_kappa();
-    // var z0 = mkap.zero_line;
 
     var z0 = mkap.cross_section.zero_line();
-
+    var N = 0;
     var mp = 0;
     for (i in mkap.rebar_As) {
         // determine the pre-stress moment
              // these still has get As
-        mp += this.mkap.rebar_As[i] * this.mkap.prestress[i] * (mkap.rebar_z[i] - z0)
+        mp += this.mkap.rebar_As[i] * this.mkap.prestress[i] * (mkap.rebar_z[i] - z0);
+        N -= this.mkap.rebar_As[i] * this.mkap.prestress[i];
     }
-
 
     // Turn the cross section 180 degrees
     var min_x = 1e9; var min_y = 1e9;
@@ -217,13 +213,15 @@ Session.prototype.pre_prestress= function () {
     /**
      * Translate the reinforcement diagrams for the reinforcement layers that are pre-stressed. The translation will be:
      * For all values in the stress strain diagram:
+     *
+     *      CASE 1. (pre-stress - dstrain)
      *      original stress diagram value - (pre-stress - strain_due_to_mp * E)
      *      thus:
      *      original stress diagram value - (pre-stress - stress_due_to_mp)
      *
      *      It is (pre-stress - stress_due_to_mp) as long as the pre-stress reinforcement  will extend. (Normal case)
      *
-     *
+     *      CASE 2. (pre-stress + dstrain)
      *      If the pre-stress reinforcement will relax when bending back in the loaded direction
      *      original stress diagram value - (pre-stress + stress_due_to_mp)
      *      This is only the case with multiple layers of pre-stress reinforcement.
@@ -235,23 +233,46 @@ Session.prototype.pre_prestress= function () {
      */
     for (i in mkap.rebar_As) {
         if (this.mkap.prestress[i] > 0) {
-            var diagram = jQuery.extend(true, {}, mkap.rebar_diagram[i]); // deep copy
+
+            //var diagram = jQuery.extend(true, {}, mkap.rebar_diagram[i]); // deep copy
             var strain_mp = mkap.rebar_strain[i];
 
-            console.log(strain_mp, "strain")
+            var pre_strain = mkap.rebar_diagram[i].det_strain(mkap.prestress[i]);
+            var d_strain = pre_strain + strain_mp; // the sign +- is correct. See case 1 and case 2
 
-            // find the index where the diagram can be sliced
-            if (strain_mp < 0) {
-                strain_mp *= -1;
-                var stress_ = diagram.det_stress(strain_mp);
-                var index = std.nearest_index(diagram.strain, strain_mp).low;
-                console.log(index, std.nearest_index(diagram.strain, strain_mp).high, mkap.rebar_diagram[i])
+            if (d_strain < 0) {
+                console.log("Hmm.. this should not happen. Negative pre-stress. Very low pre-stress input?")
             }
+            var d_stress = mkap.rebar_diagram[i].det_stress(d_strain);
+            this.mkap.d_strain[i] = d_strain;
+            this.mkap.d_stress[i] = d_stress;
+
+            console.log("P_moment", mp / 1e6, "old diagram", jQuery.extend(true, {}, mkap.rebar_diagram[i]));
+            // Insert the stress and strains
+            for (var j in mkap.rebar_diagram[i].strain) {
+                if (mkap.rebar_diagram[i].strain[j] < d_strain) {
+                    mkap.rebar_diagram[i].strain.shift();
+                    mkap.rebar_diagram[i].stress.shift();
+                }
+                else {
+                    mkap.rebar_diagram[i].strain.unshift(d_strain);
+                    mkap.rebar_diagram[i].stress.unshift(d_stress);
+                    break
+                }
+            }
+            // Translate the diagram
+            for (j in mkap.rebar_diagram[i].strain) {
+
+                mkap.rebar_diagram[i].strain[j] -= d_strain;
+                mkap.rebar_diagram[i].stress[j] -= d_stress
+            }
+            console.log("new diagram", mkap.rebar_diagram[i]);
+
+            // Replace the original diagram
+            this.mkap.rebar_diagram[i] = mkap.rebar_diagram[i];
+            this.mkap.normal_force += N;
         }
     }
-    // NOTE TO ME! Change moment query. There are two solution if the rebar is in the top of the cross section.
-    // I am interested in the first (highest solution)
-
 
 
 };
@@ -284,7 +305,7 @@ Session.prototype.compute_n_points = function (n) {
 
 Session.prototype.compute_moment = function (moment) {
     compute_moment(moment, this.mkap);
-}
+};
 
 Session.prototype.calculate_significant_points = function () {
     /** 

@@ -36,6 +36,10 @@ function trigger_rebar_input() {
         // The corresponding rebar material
         var no_of_diagram = rebar_diagram[i].value[rebar_diagram[i].value.length - 1];
 
+        // initiate the d_stress d_strain values. These may be changed in the session.pre_prestress() function.
+        session.mkap.d_stress.push(0);
+        session.mkap.d_strain.push(0);
+
         // check if prestress needs to be taken into account.
         if ($("#rebar_curve_" + no_of_diagram).find(".prestress_container").find(".prestress_checkbox").is(":checked")) {
             session.compute_prestress = true;

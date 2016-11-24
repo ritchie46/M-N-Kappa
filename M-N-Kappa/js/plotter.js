@@ -283,20 +283,20 @@ var plt = (function () {
         svg.padding = padding;
         svg.range_x = [padding, width - padding];
         svg.range_y = [padding, height - padding];
-        var xaxis = d3.axisTop()
+        var x_axis = d3.axisTop()
             .scale(d3.scaleLinear().domain([0, 10.5]).range(svg.range_x));
-        var yaxis = d3.axisRight()
+        var y_axis = d3.axisRight()
             .scale(d3.scaleLinear().domain([0, 10.5]).range(svg.range_y));
 
         svg.append('g')
         .attr("transform", "translate(" + (padding) + "," + (height - padding) + ")")
-        .attr("class", "xaxis")
-        .call(xaxis);
+        .attr("class", "x_axis")
+        .call(x_axis);
 
         svg.append('g')
-            .attr("class", "yaxis")
+            .attr("class", "y_axis")
             .attr("transform", "translate(" + (padding) + ", " + (-padding) + " )")
-            .call(yaxis);
+            .call(y_axis);
 
         if (name_x != false) {
             svg.append("text")
@@ -310,7 +310,10 @@ var plt = (function () {
                 .attr("transform", "translate(" + (padding / 2) +","+(height / 2)+")rotate(-90)")
                 .text(name_y)
         }
-        return svg
+        return {
+            "svg": svg,
+            "padding": padding
+        }
     }
 
     function det_min_max_str(array) {
@@ -336,7 +339,8 @@ var plt = (function () {
 
 
     
-    function draw_lines(svg, xstr, ystr, floats) {
+    function draw_lines(svg_struct, xstr, ystr, floats) {
+
         /// <param name="svg" type="object">d3 svg object</param>
         /// <param name="xstr" type="array of strings">array from html input</param>
         /// <param name="ystr" type="array of strings">array from html input</param>
@@ -344,10 +348,12 @@ var plt = (function () {
         /// <param name="circle" type="boolean"> if true, circles added to data points</param>
 
         /**
-         Draws lines on a given svg canvast. Input is standard form listst, thus contains strings.
+         Draws lines on a given svg canvas. Input is standard form listst, thus contains strings.
          */
         // default parameter
         floats = (typeof floats !== "undefined") ? floats : false;
+
+        var svg = svg_struct.svg;
 
         /**
          Math.max.apply(null, xstr) determines the max value of a string. .apply() is a method for applying arrays on the object.
@@ -399,7 +405,7 @@ var plt = (function () {
                 if (xstr[i].value.length > 0 && ystr[i].value.length > 0) {
                     loc = {
                         x: scale_x(parseFloat(xstr[i].value) - x_bound.min) + svg.padding,
-                        y: -scale_y(parseFloat(ystr[i].value) - y_bound.min) + height - svg.padding,
+                        y: -scale_y(parseFloat(ystr[i].value) - y_bound.min) + height ,
                         y_original: parseFloat(ystr[i].value)
                     };
                     data.push(loc)
@@ -408,30 +414,31 @@ var plt = (function () {
         }
 
         svg.select("path").attr("d", linefunc(data));
-
         // update the axes
-        var xaxis = d3.axisTop()
-            .scale(d3.scaleLinear().domain([0, x_bound.max * 1.05]).range([0, width]));
-        var yaxis = d3.axisRight()
-            .scale(d3.scaleLinear().domain([0, y_bound.max * 1.05]).range([height, 0]));
+        var x_axis = d3.axisTop()
+            .scale(d3.scaleLinear().domain([0, x_bound.max * 1.05]).range([0, svg.range_x[1]]));
+        var y_axis = d3.axisRight()
+            .scale(d3.scaleLinear().domain([0, y_bound.max * 1.05]).range([svg.range_y[1], svg.range_x[0]]));
 
-        svg.selectAll("g.xaxis")
-            .call(xaxis);
-        svg.selectAll("g.yaxis")
-            .call(yaxis);
+        svg.selectAll("g.x_axis")
+            .call(x_axis);
+        svg.selectAll("g.y_axis")
+            .call(y_axis)
+            .attr("transform", "translate(" + (svg.padding) + ", 0 )");
 
         return data
     }
 
-    var moment_kappa_diagram = function (svg, x, y, session) {
-        var data = draw_lines(svg, x, y, true);
+    var moment_kappa_diagram = function (svg_struct, x, y, session) {
+        var svg = svg_struct.svg;
+        var data = draw_lines(svg_struct, x, y, true);
 
-        var is_equal = function (mkap, y_value) {
-            /*
-            mkap = object from moment_kappa class
+        var is_equal_show_stress_strain_cross_section = function (mkap, y_value) {
+            /**
+             * @param mkap = object from moment_kappa class
              */
             if (std.is_close(-mkap.moment / Math.pow(10, 6), y_value, 1e-6, 1e-6)) {
-                cross_section_view("#modal-svg", mkap);
+                show_stress_strain_cross_section_view("#modal-svg", mkap);
                 // call the strain diagram plot from here.
             }
         };
@@ -453,12 +460,12 @@ var plt = (function () {
                     if (session.all_computed_mkap[i].length >= 1) {// the rebar solution has got multiple mkappa's in an array.
                         for (j = 0; j < session.all_computed_mkap[i].length; j++ ) {
                             mkap = session.all_computed_mkap[i][j];
-                            is_equal(mkap, d.y_original)
+                            is_equal_show_stress_strain_cross_section(mkap, d.y_original)
                         }
                     }
                     else {
                         mkap = session.all_computed_mkap[i];
-                        is_equal(mkap, d.y_original)
+                        is_equal_show_stress_strain_cross_section(mkap, d.y_original)
                     }
                 }
             })
@@ -472,7 +479,7 @@ var plt = (function () {
     };
 
 
-    var cross_section_view = function(selector, mkap) {
+    var show_stress_strain_cross_section_view = function(selector, mkap) {
 
         $("#myModal").modal();
         $(selector).find("svg").remove();
@@ -554,13 +561,12 @@ var plt = (function () {
 
 
 
-
     return {
         draw_polygon: draw_polygon,
         draw_lines: draw_lines,
         add_svg: add_svg,
         input_strings_to_floats: input_strings_to_floats,
-        cross_section_view: cross_section_view,
+        cross_section_view: show_stress_strain_cross_section_view,
         moment_kappa: moment_kappa_diagram
     }
 

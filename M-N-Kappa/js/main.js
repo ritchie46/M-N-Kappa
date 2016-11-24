@@ -76,9 +76,6 @@ $(document).ready(function () {
         session.mkap.normal_force = N
     }
 
-    $("#normal_force").change(function () {
-        trigger_normal_force()
-    });
     $slct = $('#comp_curve_body');
     $slct.on('change', 'input', function () {
         $("#compression_material").val('custom');
@@ -93,6 +90,7 @@ $(document).ready(function () {
 
 
     var calculate_mkappa = function () {
+        trigger_normal_force();
         trigger_rebar_input();
         trigger_comp_strain();
 

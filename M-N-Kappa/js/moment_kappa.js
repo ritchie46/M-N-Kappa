@@ -27,7 +27,13 @@ var mkap = (function () {
         this.m0 = [];
         this.rebar_strain0 = [];
         this.rebar_diam = null;  // for the plotter
+
+        // Applied at t=0
         this.prestress = [];
+
+        // Stress and strain in the reinforcement after Mp has been applied and the deformation is zero.
+        this.d_stress = [];
+        this.d_strain = [];
     
         /**
         results
