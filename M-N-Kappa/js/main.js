@@ -115,8 +115,18 @@ $(document).ready(function () {
         if (option == "search moment") {
             moment = -parseFloat($("#moment_input").val()) * Math.pow(10, 6);
             session.apply_m0();
-            session.compute_moment(moment);
-            plt.cross_section_view("#modal-svg", session.mkap)
+            if (session.compute_prestress) {
+                var sol = session.compute_moment(moment, false);
+            }
+            else {
+                sol = session.compute_moment(moment, true);
+            }
+            if (sol == 0) {
+                plt.cross_section_view("#modal-svg", session.mkap)
+            }
+            else {
+                window.alert("No solution found.")
+            }
         }
         else if (option == "discrete points") {
             $("#moment_kappa_diagram_output").removeClass("hidden");

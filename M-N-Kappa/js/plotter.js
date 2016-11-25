@@ -496,13 +496,13 @@ var plt = (function () {
             .attr("height", height)
             .append('g');
 
-        var min_x = mkap.strain_top;
-        var max_x = mkap.strain_btm;
+        var min_x = Math.min(mkap.strain_top, Math.min.apply(null, mkap.rebar_strain));
+        var max_x = Math.max(mkap.strain_btm, Math.max.apply(null, mkap.rebar_strain));
         var min_y = mkap.cross_section.bottom;
         var max_y = mkap.cross_section.top;
         var origin_x = 0 - min_x;
         max_y -= min_y;
-        max_x -= min_x; min_x -= min_x;
+        max_x -= min_x; //min_x -= min_x;
 
         var padding = 20;
         var padding_x = 45;
@@ -513,8 +513,8 @@ var plt = (function () {
 
         var data = [
             {x:origin_x, y: z_top, val: ""},
-            {x: min_x, y: z_top, val: mkap.strain_top},
-            {x: max_x, y: z_btm, val: mkap.strain_btm},
+            {x: mkap.strain_top - min_x, y: z_top, val: mkap.strain_top},
+            {x: mkap.strain_btm - min_x, y: z_btm, val: mkap.strain_btm},
             {x: origin_x, y: z_btm, val: ""},
             {x: origin_x, y: z_top, val: ""}
         ];

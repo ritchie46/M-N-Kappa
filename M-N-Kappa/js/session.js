@@ -51,7 +51,7 @@ var compute_moment = function (moment, mkap, top) {
                 console.log("moment convergence after %s iterations".replace("%s", count))
             }
             if (mkap.validity()) {
-                return mkap.moment;
+                return 0
             }
             break
         }
@@ -65,7 +65,7 @@ var compute_moment = function (moment, mkap, top) {
             if (window.DEBUG) {
                 console.log("no moment convergence found after %s iterations".replace("%s", count))
             }
-            break
+            return 1
         }
         count += 1;
     }
@@ -312,8 +312,12 @@ Session.prototype.compute_n_points = function (n) {
     }
 };
 
-Session.prototype.compute_moment = function (moment) {
-    compute_moment(moment, this.mkap);
+Session.prototype.compute_moment = function (moment, top) {
+    /**
+     * @param top: (bool) Depends if the hookup is sought for the top or the bottom of the cross section.
+     */
+    top = (typeof top !== "undefined") ? top : true;
+    return compute_moment(moment, this.mkap, top);
 };
 
 Session.prototype.calculate_significant_points = function () {

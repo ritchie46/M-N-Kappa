@@ -29,14 +29,13 @@ $compression_material.on("change", function () {
     }
 });
 
-// rebar material
+// reinforcement material diagram
 $("#rebar_curves").on("change", ".rebar_material", function () {
-    if (this.value !== "custom") {
+
+    // standard B500 and B400
+    if (this.value !== "custom" && this.value[0] == 'B') {
         var fact = 1.15;
-        $(parent).find(".rebar_material_factor").val(fact);
-
         // get the value between after 'B' in for instance 'B500'
-
         var fy = this.value.substring(1, 4);
 
         // 3 input rows are needed. Two for the material. 1 hidden.
