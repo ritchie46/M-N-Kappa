@@ -32,31 +32,30 @@ $compression_material.on("change", function () {
 // reinforcement material diagram
 $("#rebar_curves").on("change", ".rebar_material", function () {
 
-    // standard B500 and B400
-    if (this.value !== "custom" && this.value[0] == 'B') {
-        var fact = 1.15;
-        // get the value between after 'B' in for instance 'B500'
-        var fy = this.value.substring(1, 4);
-
-        // 3 input rows are needed. Two for the material. 1 hidden.
+    if (this.value != "custom") {
+        var material = lib.reinforcement[this.value];
+        // Count the amount of input rows.
         var parent = $(this).closest(".rebar_curve");
         var n = $(parent).find(".rebar_strain").length;
 
-
-        for (n; n < 3; n++) {
+        // Add or remove rows if needed.
+        for (n; n <= material.stress.length; n++) {
             add_row($(parent).find(".add_row_rbr_curves"));
-
         }
-        for (n; n > 3; n--) {
+        for (n; n > material.stress.length + 1; n--) {
             var row = $(parent).children(".custom_row").last();
             remove_row(row);
         }
-        $(parent).find(".rebar_strain")[1].value = Math.round(parseFloat(fy) / 200 / fact * 1000) / 1000;
-        $(parent).find(".rebar_strain")[2].value = 50;
-        $(parent).find(".rebar_stress")[1].value = fy;
-        $(parent).find(".rebar_stress")[2].value = fy;
-        trigger_rebar_strain()
-    }
+
+        for (var j = 0; j < material.stress.length; j++) {
+            $(parent).find(".rebar_strain")[j + 1].value = Math.round(material.strain[j] * 1000) / 1000;
+            $(parent).find(".rebar_stress")[j + 1].value = material.stress[j]
+        }
+        $(parent).find(".rebar_material_factor")[0].value = material.gamma
+
+        }
+    trigger_rebar_strain()
+
 });
 
 // compression stress strain

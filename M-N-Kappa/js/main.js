@@ -14,6 +14,11 @@ function add_row(self) {
     $row.after($clone);
 }
 
+// General remove panel row logic
+function remove_row(self) {
+    self.closest('.custom_row').remove()
+}
+
 
 $(document).ready(function () {
 
@@ -35,10 +40,6 @@ $(document).ready(function () {
         add_row($(this))
     });
 
-    // General remove panel row logic
-    function remove_row(self) {
-        self.closest('.custom_row').remove()
-    }
 
     $(".panel").on("click", ".remove_row", function () {
         remove_row($(this))
@@ -262,7 +263,7 @@ $(document).ready(function () {
     });
 
        
-console.log("version_24-11.1")
+console.log("version_27-11.1")
 });
 
 

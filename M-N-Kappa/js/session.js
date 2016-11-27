@@ -210,8 +210,8 @@ Session.prototype.pre_prestress= function () {
     mkap.det_m_kappa();
 
     if (!mkap.validity()) {
-        window.alert("Pre-stress moment is higher than the capacity.\nCheck your input.\n Moment:" + (mp / 1e6));
-        return 1
+        window.alert("Pre-stress moment is higher than the capacity before cracking.\n Moment:" + (mp / 1e6) +
+            "\nThe calculation will continue. Check if the bending moment due to own weight is sufficient to prevent cracking.");
     }
 
     /**
