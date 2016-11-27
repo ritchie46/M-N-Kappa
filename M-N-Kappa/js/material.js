@@ -2,31 +2,61 @@
 
 // compression material
 var $compression_material = $("#compression_material");
+
 $compression_material.on("change", function () {
-    if (this.value !== "custom") {
-        // get the value between 'C' and '/' in for instance C20/25
-        var end_index = this.value.indexOf('/');
-        var fc = this.value.substring(1, end_index);
+    // Count the amount of input rows.
+    var n = $(".comp_strain").length;
 
-        // 3 input rows are needed. Two for the material. 1 hidden.
-        var n = document.getElementsByClassName("comp_strain").length;
+    if (this.value != "custom") {
+        var material = lib.concrete[this.value];
 
-        for (n; n < 3; n++) {
+        // Add or remove rows if needed.
+        for (n; n <= material.stress.length; n++) {
             add_row($("#compression_add_row"));
-
         }
         $slct = $("#comp_curve_body");
-        for (n; n > 3; n--) {
-            var row = $slct.children(".custom_row").last();
+        for (n; n > material.stress.length + 1; n--) {
+            var row = $slct.find(".custom_row").last();
             remove_row(row);
         }
 
-        $slct.find(".comp_strain")[1].value = 1.75;
-        $slct.find(".comp_strain")[2].value = 3.5;
-        $slct.find(".comp_stress")[1].value = fc;
-        $slct.find(".comp_stress")[2].value = fc;
-        trigger_comp_strain()
+        for (var j = 0; j < material.stress.length; j++) {
+            $(".comp_strain")[j + 1].value = Math.round(material.strain[j] * 1000) / 1000;
+            $(".comp_stress")[j + 1].value = Math.round(material.stress[j] * 100) / 100;
+        }
+        $("#comp_material_factor").value = material.gamma;
     }
+    else {
+        for (var i = 0; i < n - 2; i++) {
+            var row = $("#comp_curve_body").find(".custom_row").last();
+            remove_row(row)
+        }
+    }
+    trigger_comp_strain()
+    // if (this.value !== "custom") {
+    //     // get the value between 'C' and '/' in for instance C20/25
+    //     var end_index = this.value.indexOf('/');
+    //     var fc = this.value.substring(1, end_index);
+    //
+    //     // 3 input rows are needed. Two for the material. 1 hidden.
+    //     var n = document.getElementsByClassName("comp_strain").length;
+    //
+    //     for (n; n < 3; n++) {
+    //         add_row($("#compression_add_row"));
+    //
+    //     }
+    //     $slct = $("#comp_curve_body");
+    //     for (n; n > 3; n--) {
+    //         var row = $slct.children(".custom_row").last();
+    //         remove_row(row);
+    //     }
+    //
+    //     $slct.find(".comp_strain")[1].value = 1.75;
+    //     $slct.find(".comp_strain")[2].value = 3.5;
+    //     $slct.find(".comp_stress")[1].value = fc;
+    //     $slct.find(".comp_stress")[2].value = fc;
+    //     trigger_comp_strain()
+    // }
 });
 
 // reinforcement material diagram
@@ -249,7 +279,7 @@ $slct.on('change', ".rebar_material_select", function () {
 $(document).ready();
 {
 // setting up the presettings
-    $compression_material.val("C20/25");
+    $compression_material.val("C20/25 parabolic-rectangular");
     $compression_material.trigger("change");
     $slct = $(".rebar_material");
     $slct[1].value = "B500";

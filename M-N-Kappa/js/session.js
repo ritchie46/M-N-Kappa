@@ -107,7 +107,6 @@ function Session() {
 
 Session.prototype.apply_m0 = function () {
         this.mkap.rebar_strain0 = Array.apply(null, Array(25)).map(Number.prototype.valueOf, 0);
-        console.log(this.mkap.m0)
         var original_diagram;
         for (var i = 0; i < this.mkap.m0.length; i++) {
             if (this.mkap.m0[i] > 0) {

@@ -82,6 +82,19 @@ var std = (function () {
         return {"low": arr.indexOf(Math.max.apply(null, lower)), "high": arr.indexOf(Math.min.apply(null, higher))}
     }
 
+    function linspace (a, b, n) {
+        if (typeof n === 'undefined') n = Math.max(Math.round(b - a) + 1, 1);
+        if (n < 2) {
+            return n === 1 ? [a] : []
+        }
+        var i, ret = Array(n);
+        n--;
+        for (i = n; i >= 0; i--) {
+            ret[i] = (i * b + (n - i) * a) / n
+        }
+        return ret
+    }
+
 
 
 
@@ -92,7 +105,8 @@ var std = (function () {
         convergence_conditions: convergence_conditions,
         is_number: is_number,
         nearest_index: nearest_index,
-        is_close: is_close
+        is_close: is_close,
+        linspace: linspace
     }
     
 })();  // std namespace

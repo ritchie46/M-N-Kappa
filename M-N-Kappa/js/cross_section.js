@@ -24,7 +24,7 @@ PolyGon.prototype.instantiate = function () {
     };
 
 PolyGon.prototype.det_height_array = function () {
-    return linspace(0, this.top, this.n_value)
+    return std.linspace(0, this.top, this.n_value)
 };
 
 PolyGon.prototype.lowest_point = function (axis) {
@@ -131,20 +131,7 @@ PolyGon.prototype.zero_line = function () {
 
 // end class
 
-    function linspace (a, b, n) {
-    if (typeof n === 'undefined') n = Math.max(Math.round(b - a) + 1, 1);
-    if (n < 2) {
-        return n === 1 ? [a] : []
-    }
-    var i, ret = Array(n);
-    n--;
-    for (i = n; i >= 0; i--) {
-        ret[i] = (i * b + (n - i) * a) / n
-    }
-    return ret
-    }
-    
- 
+
     function Circle(radius) {
         var n = 100;
         var alpha0 = Math.PI * 2 / n;
