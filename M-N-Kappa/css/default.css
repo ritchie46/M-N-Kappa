@@ -44,3 +44,9 @@
     overflow-y: scroll;
     overflow-x:hidden;
 }
+
+.pagebreak {
+    page-break-after: always;
+    page-break-inside: avoid;
+    float: none;
+}

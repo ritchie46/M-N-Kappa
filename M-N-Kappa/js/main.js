@@ -19,6 +19,9 @@ function remove_row(self) {
     self.closest('.custom_row').remove()
 }
 
+$("#print_btn").click(function () {
+    print()
+});
 
 $(document).ready(function () {
 
@@ -262,7 +265,6 @@ $(document).ready(function () {
 
     });
 
-       
 console.log("version_27-11.1")
 });
 
