@@ -329,9 +329,22 @@ Session.prototype.compute_n_points = function (n) {
             }
             strain -= d_str;
         }
+
+        // sort the arrays on inclining kappa.
+        var a = [];
+        // sort them
+        a.sort(function (b, c) {
+            return ((b.k < c.k) ? -1 : ((b.k < c.k) ? 0 : 1));
+        });
+
+        for (var i = 0; i < a.length; i++) {
+            moment[i] = a[i].m;
+            kappa[i] = a[i].k;
+        }
+
         return {
-            moment: moment.reverse(),
-            kappa: kappa.reverse()
+            moment: moment, //moment.reverse(),
+            kappa: kappa //kappa.reverse()
         }
     }
 };

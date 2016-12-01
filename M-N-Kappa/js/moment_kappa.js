@@ -236,6 +236,50 @@ var mkap = (function () {
         }
     };
 
+    MomentKappa.prototype.iterator_complete_pressure = function (top_str) {
+        /**
+         * Compression in bottom may not be higher than in top.
+         */
+
+        var btm_str = top_str;
+
+        this.det_force_distribution(top_str, btm_str);
+        if (this.force_tensile > this.force_compression) {
+            // No equilibrium possible with positive kappa.
+            return 1
+        }
+
+        var count = 0;
+        // iterate until the convergence criteria is met
+        while (1) {
+            if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
+                this.solution = true;
+                if (print) {
+                    if (window.DEBUG) {
+                        console.log("convergence after %s iterations".replace("%s", count))
+                    }
+                }
+                break
+            }
+
+            var factor = std.convergence(this.force_compression, this.force_tensile, 2.5);
+            btm_str = btm_str * factor;
+
+            this.det_force_distribution(top_str, btm_str);
+
+            if (count > this.iterations) {
+                if (print) {
+                    if (window.DEBUG) {
+                        console.log("no convergence found after %s iterations".replace("%s", count))
+                    }
+                }
+                break
+            }
+            count += 1
+        }
+    };
+
+
     MomentKappa.prototype.solver = function (strain_top, strain, print) {
         /**
          * Return the .det_stress method several times and adapt the input until the convergence criteria is met.
@@ -276,7 +320,7 @@ var mkap = (function () {
              * Try to solve for a cross section completely under pressure.
              */
 
-            this.iterator_btm_constant(top_str, top_str, print)
+            this.iterator_complete_pressure(top_str)
         }
     };
 

@@ -135,8 +135,8 @@ $(document).ready(function () {
             sol = session.compute_n_points(50);
             moment = sol.moment;
             kappa = sol.kappa;
-            moment.unshift(-session.mkap.mp);
-            kappa.unshift(0);
+            moment.push(-session.mkap.mp);
+            kappa.push(0);
             plt.moment_kappa(svg, kappa, moment.map(function (i) {
                 return i / 1e6
             }), session);
