@@ -14,6 +14,10 @@ function add_row(self) {
     $row.after($clone);
 }
 
+$(".add_row").click(function () {
+    add_row($(this))
+});
+
 // General remove panel row logic
 function remove_row(self) {
     self.closest('.custom_row').remove()
@@ -35,12 +39,6 @@ $(document).ready(function () {
     $(".collapse_glyph").click(function () {
         $(this).closest(".panel").children(".collapse").toggle();
         $(this).toggleClass('glyphicon-triangle-top glyphicon-triangle-bottom')
-    });
-
-
-        
-    $(".add_row").click(function () {
-        add_row($(this))
     });
 
 

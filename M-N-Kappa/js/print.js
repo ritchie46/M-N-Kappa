@@ -24,8 +24,8 @@ function print() {
     page.focus(); // necessary for IE >= 10*/
 
     $(page.document).ready(function () {
-        page.print();
-        page.close();
+        // page.print();
+        // page.close();
     });
 
     return true;

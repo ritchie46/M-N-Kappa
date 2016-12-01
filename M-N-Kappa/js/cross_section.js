@@ -11,6 +11,10 @@ function PolyGon(point_list) {
     this.instantiate()
 }
 
+PolyGon.prototype.activate_subtractor = function() {
+        this.subtractor.merge_width(this)
+    };
+
 PolyGon.prototype.instantiate = function () {
     this.top = this.highest_point('y').y;
     this.bottom = this.lowest_point('y').y;
@@ -235,7 +239,6 @@ PolyGon.prototype.zero_line = function () {
 
         this.subtractor = new Subtractor(radius_out * 2, pl_in, this.n_value);
         this.subtractor.merge_width(this)
-
     }
 
     Tube.prototype = Object.create(PolyGon.prototype);
@@ -248,7 +251,8 @@ PolyGon.prototype.zero_line = function () {
 return {
     PolyGon: PolyGon,
     Circle: Circle,
-    Tube: Tube
+    Tube: Tube,
+    Subtractor: Subtractor
 }
     
 })();  // crsn namespace

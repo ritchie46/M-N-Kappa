@@ -176,7 +176,7 @@ var plt = (function () {
         }
         // reset
         svg_cross_section.select("#subtract").attr("d", linefunc(0));
-        // draw subtracter
+        // draw subtractor
         if (subtract) {
             data = [];
             var pl = session.mkap.cross_section.subtractor.point_list;

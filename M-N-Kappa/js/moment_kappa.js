@@ -159,11 +159,11 @@ var mkap = (function () {
         this.solution = false;
 
         if (this.normal_force != 0) {
-            this.div = 10;
+            this.div = 2.5;
             this.iterations = 150
         }
         else {
-            this.div = 4;
+            this.div = 2.5;
             this.iterations = 120
         }
 
@@ -323,11 +323,11 @@ var mkap = (function () {
             ) {
             var valid = true;
 
-            for (var i in this.rebar_strain) {
-                if (this.rebar_strain[i] > Math.max.apply(null, this.rebar_diagram[i].strain)) {
-                    valid = false;
-                }
-            }
+            // for (var i in this.rebar_strain) {
+            //     if (this.rebar_strain[i] > Math.max.apply(null, this.rebar_diagram[i].strain)) {
+            //         valid = false;
+            //     }
+            // }
 
             return valid
             }

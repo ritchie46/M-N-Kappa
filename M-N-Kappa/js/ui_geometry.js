@@ -31,7 +31,7 @@ function trigger_rebar_input() {
     }
     d = extract_floats(d);
     m0 = extract_floats(m0);
-    m0.shift()
+    m0.shift();
     rebar_diagram = rebar_diagram.slice(1);  // the first is the hidden reserve
     var height = session.mkap.cross_section.top;
 
@@ -86,6 +86,7 @@ function trigger_polygon() {
     var rotation = (isNaN(parseFloat($slct.val()))) ? 0 : parseFloat($slct.val());
     var choice = $("#cross_section_type").val();
     var x; var y;
+
     if (choice == "custom") {
         x = document.getElementsByClassName("xval");
         y = document.getElementsByClassName("yval");
@@ -151,6 +152,26 @@ function trigger_polygon() {
         session.mkap.cross_section = new crsn.Tube(radius, radius - thickness);
         plt.draw_polygon(session.mkap.cross_section.point_list, "skip_this_param", session, false, true)
     }
+
+    /**
+     * Subtractor
+     */
+    x = document.getElementsByClassName("xval_sbtrct");
+    y = document.getElementsByClassName("yval_sbtrct");
+    x = plt.input_strings_to_floats(x);
+    y = plt.input_strings_to_floats(y);
+
+    if (y.length > 0) {
+        var point_list = [];
+        for (var i = 0; i < x.length; i++) {
+            point_list.push(new vector.Point(x[i], session.mkap.cross_section.top - y[i]))
+        }
+        point_list.push(new vector.Point(point_list[0].x, point_list[0].y));
+        session.mkap.cross_section.subtractor = new crsn.Subtractor(session.mkap.cross_section.top, point_list,
+            session.mkap.cross_section.n_value);
+        plt.draw_polygon(session.mkap.cross_section.point_list, "", session, false, true);
+        session.mkap.cross_section.activate_subtractor();
+    }
 }
 
 // cross-section type
@@ -179,7 +200,7 @@ $("#cross_section_type").change(function () {
     trigger_rebar_input()
 });
 
-var $slct = $('#pg_body');
+var $slct = $('#pg_body, #subtract_body');
 //Call polygon draw function if row is removed
 $slct.on("click", ".remove_row", function () {
     $(this).closest('.custom_row').remove();
