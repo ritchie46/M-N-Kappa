@@ -144,6 +144,98 @@ var mkap = (function () {
 
     };
 
+    MomentKappa.prototype.iterator_top_constant = function (btm_str, top_str, print) {
+        /**
+         * @param btm_str: (float) strain to start
+         * @param top_str: (float) strain to start
+         */
+
+        var count = 0;
+        // iterate until the convergence criteria is met
+        while (1) {
+            if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
+                this.solution = true;
+                if (print) {
+                    if (window.DEBUG) {
+                        console.log("convergence after %s iterations".replace("%s", count))
+                    }
+                }
+                break
+            }
+
+            // if the rebar is above the zero line, there will sometimes be no tensile force
+            var low = Math.min.apply(null, this.rebar_z);
+            for (var i = 0; i < this.rebar_As.length; i++) {
+                if (this.rebar_z[i] == low) {
+                    var str_rbr = this.rebar_strain[i];
+                    var rbr_index = i
+                }
+            }
+
+            if (this.force_tensile === 0 && str_rbr <= 0) {
+                // Extrapolate the from the first significant rebar strain point, to the bottom strain.
+                // Needed when the rebar is above the neutral line.
+                btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
+
+            }
+            else if (isNaN(this.force_tensile)) {
+                btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
+            }
+            else {
+
+                var factor = std.convergence(this.force_tensile, this.force_compression, this.div);
+                btm_str = btm_str * factor;
+            }
+
+            this.det_force_distribution(top_str, btm_str);
+            if (count > this.iterations) {
+                if (print) {
+                    if (window.DEBUG) {
+                        console.log("no convergence found after %s iterations".replace("%s", count))
+                    }
+                }
+                break
+
+            }
+            count += 1
+        }
+    };
+
+    MomentKappa.prototype.iterator_btm_constant = function (btm_str, top_str, print) {
+        /**
+         * @param btm_str: (float) strain to start
+         * @param top_str: (float) strain to start
+         */
+        var count = 0;
+        // iterate until the convergence criteria is met
+        while (1) {
+            if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
+                this.solution = true;
+                if (print) {
+                    if (window.DEBUG) {
+                        console.log("convergence after %s iterations".replace("%s", count))
+                    }
+                }
+                break
+            }
+
+            var factor = std.convergence(this.force_compression, this.force_tensile, this.div);
+            top_str = top_str * factor;
+
+            this.det_force_distribution(top_str, btm_str);
+
+            if (count > this.iterations) {
+                if (print) {
+                    if (window.DEBUG) {
+                        console.log("no convergence found after %s iterations".replace("%s", count))
+                    }
+                }
+                break
+            }
+            count += 1
+        }
+    };
+
     MomentKappa.prototype.solver = function (strain_top, strain, print) {
         /**
          * Return the .det_stress method several times and adapt the input until the convergence criteria is met.
@@ -172,91 +264,20 @@ var mkap = (function () {
         var top_str = -strain;
 
         this.det_force_distribution(top_str, btm_str);
-        var count = 0;
-        var factor;
         if (strain_top) {  // top strain remains constant
-            // iterate until the convergence criteria is met
-            while (1) {
-                if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
-                    this.solution = true;
-                    if (print) {
-                        if (window.DEBUG) {
-                            console.log("convergence after %s iterations".replace("%s", count))
-                        }
-                    }
-                    break
-                }
-                
-                // if the rebar is above the zero line, there will sometimes be no tensile force
-                var low = Math.min.apply(null, this.rebar_z);
-                for (var i = 0; i < this.rebar_As.length; i++) {
-                    if (this.rebar_z[i] == low) {
-                        var str_rbr = this.rebar_strain[i];
-                        var rbr_index = i
-                        }
-                    }
-
-
-                if (this.force_tensile === 0 && str_rbr <= 0) {
-                    // Extrapolate the from the first significant rebar strain point, to the bottom strain.
-                    // Needed when the rebar is above the neutral line.
-                    btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
-                         
-                }
-                else if (isNaN(this.force_tensile)) {
-                    btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
-                }
-                else {
-
-                    factor = std.convergence(this.force_tensile, this.force_compression, this.div);
-                    btm_str = btm_str * factor;
-                }
-                
-                this.det_force_distribution(top_str, btm_str);
-                if (count > this.iterations) {
-                    if (print) {
-                        if (window.DEBUG) {
-                            console.log("no convergence found after %s iterations".replace("%s", count))
-                        }
-                    }
-                    break
-
-                }
-                count += 1
-            }
+            this.iterator_top_constant(btm_str, top_str, print)
         }
         else { // bottom strain remains constant
-            // iterate until the convergence criteria is met
-            while (1) {
-                if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
-                    this.solution = true;
-                    if (print) {
-                        if (window.DEBUG) {
-                            console.log("convergence after %s iterations".replace("%s", count))
-                        }
-                    }
-                    break
-                }
-
-                factor = std.convergence(this.force_compression, this.force_tensile, this.div);
-                top_str = top_str * factor;
-     
-                this.det_force_distribution(top_str, btm_str);
-
-                if (count > this.iterations) {
-                    if (print) {
-                        if (window.DEBUG) {
-                            console.log("no convergence found after %s iterations".replace("%s", count))
-                        }
-                    }
-                    break
-                }
-                count += 1
-            }
+            this.iterator_btm_constant(btm_str, top_str, print)
         }
 
-        this.zero_line = std.interpolate(this.strain_top, this.cross_section.top, this.strain_btm,
-            this.cross_section.bottom, 0);
+        if (!this.validity() && this.normal_force != 0) {
+            /**
+             * Try to solve for a cross section completely under pressure.
+             */
+
+            this.iterator_btm_constant(top_str, top_str, print)
+        }
     };
 
     MomentKappa.prototype.det_m_kappa = function () {
@@ -275,7 +296,7 @@ var mkap = (function () {
         */
 
         // center of gravity offset of a section
-        this.kappa = (-this.strain_top + this.strain_btm) / (this.cross_section.top - this.cross_section.bottom);  //this.strain_btm / (this.zero_line - this.cross_section.bottom)
+        this.kappa = (-this.strain_top + this.strain_btm) / (this.cross_section.top - this.cross_section.bottom);
         this.moment = this.mp;
         var offset = this.cross_section.y_val[1] * 0.5;
 

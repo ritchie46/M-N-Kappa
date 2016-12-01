@@ -135,7 +135,6 @@ $(document).ready(function () {
             sol = session.compute_n_points(50);
             moment = sol.moment;
             kappa = sol.kappa;
-
             moment.unshift(-session.mkap.mp);
             kappa.unshift(0);
             plt.moment_kappa(svg, kappa, moment.map(function (i) {
@@ -147,7 +146,7 @@ $(document).ready(function () {
         else {
             $("#moment_kappa_diagram_output").removeClass("hidden");
             $("#significant_results_output").removeClass("hidden");
-            var sol = session.calculate_significant_points();
+            sol = session.calculate_significant_points();
             var moment = sol.moment;
             var kappa = sol.kappa;
 
@@ -263,7 +262,7 @@ $(document).ready(function () {
 
     });
 
-console.log("version_27-11.1")
+console.log("version_1-12")
 });
 
 

@@ -322,9 +322,9 @@ Session.prototype.compute_n_points = function (n) {
         while (strain > 0) {
             this.mkap.solver(true, strain);
             this.mkap.det_m_kappa();
-            if (this.mkap.validity()) {
+            if (this.mkap.validity() && this.mkap.kappa > 0) {
                 moment.push(Math.abs(this.mkap.moment));
-                kappa.push(Math.abs(this.mkap.kappa));
+                kappa.push(this.mkap.kappa);
                 this.all_computed_mkap.push(JSON.parse(JSON.stringify(this.mkap)));
             }
             strain -= d_str;
