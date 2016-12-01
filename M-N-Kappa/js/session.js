@@ -131,7 +131,14 @@ Session.prototype.apply_m0 = function () {
                 original_diagram = this.mkap.rebar_diagram[i];
                 this.mkap.rebar_diagram[i] = new mkap.StressStrain([0, 0], [0, 0]);
                 this.compute_moment(-this.mkap.m0[i]);
-                this.mkap.rebar_strain0[i] = this.mkap.rebar_strain[i];
+
+                if (this.mkap.rebar_strain[i] < 0) {
+                    this.mkap.d_strain[i] = -this.mkap.rebar_strain[i];
+                    this.mkap.rebar_strain0[i] = 0;
+                }
+                else {
+                    this.mkap.rebar_strain0[i] = this.mkap.rebar_strain[i];
+                }
                 this.mkap.rebar_diagram[i] = jQuery.extend(true, {}, original_diagram); // deep copy
                 this.mkap.rebar_diagram[i].strain.splice(1, 0, this.mkap.rebar_strain0[i]);  // js version of insert
                 this.mkap.rebar_diagram[i].stress.splice(1, 0, 0);

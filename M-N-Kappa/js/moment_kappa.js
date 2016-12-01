@@ -31,6 +31,9 @@ var mkap = (function () {
         // Applied at t=0. 'werkvoorspanning'
         this.prestress = [];
 
+        // Due to negative curvature at placement at M0
+        this.dsigma_m0 = [];
+
         // Stress and strain in the reinforcement after Mp has been applied and the deformation is zero.
         this.d_stress = [];
         this.d_strain = [];
