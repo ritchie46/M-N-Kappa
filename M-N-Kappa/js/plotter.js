@@ -486,8 +486,10 @@ var plt = (function () {
 
         $("#myModal").modal();
         $(selector).find("svg").remove();
-        $("#strain_diagram_moment").html("<strong>bending moment $ *10<sup>6</sup></strong>".replace("$",
-            -Math.round(mkap.moment / Math.pow(10, 4)) / 100));
+        $("#strain_diagram_moment").html("<strong>bending moment: $ *10<sup>6</sup></strong>".replace("$",
+            -Math.round(mkap.moment / Math.pow(10, 4)) / 100) +
+            "  <br> <strong>kappa: $</strong>".replace("$", Math.round(mkap.kappa * 1000) / 1000) +
+            "  <br> <strong>Xu: $ mm</strong>".replace("$", Math.round(mkap.xu)))
 
         width = $('#pg_svg').width() * 0.5;
 
