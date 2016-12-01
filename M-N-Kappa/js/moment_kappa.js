@@ -146,12 +146,12 @@ var mkap = (function () {
 
     MomentKappa.prototype.solver = function (strain_top, strain, print) {
         /**
-        Return the .det_stress method several times and adapt the input untill the convergence criteria is met.
-    
-        /// <param name="strain_top" type="bool">constant strain</param>
-        If the strain_top == true, the strain at the top will remain constant and the strain at the bottom will be iterated
-        over. If false vice versa for strain_bottom.
-        */
+         * Return the .det_stress method several times and adapt the input until the convergence criteria is met.
+         * @param strain_top: (bool) Constant strain at the top.
+         * If the strain_top == true, the strain at the top will remain constant and the strain at the bottom will
+         * be iterated over. If false vice versa for strain_bottom.
+         */
+
         // default parameter
         strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
         print = (typeof print !== "undefined") ? print : true;
