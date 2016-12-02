@@ -542,7 +542,7 @@ var plt = (function () {
         for (var i = 0; i < mkap.rebar_z.length; i++){
             y = mkap.cross_section.top - mkap.rebar_z[i];
             x = mkap.rebar_strain[i];
-            x0 = mkap.rebar_strain0[i];
+            x0 = mkap.rebar_strain0_plt[i];
             if (Math.abs(x0) < Math.abs(x)) {
                 x0 -= min_x; x -= min_x;
                 a = {x: scale_x(x0), y: scale_y(y), val: x0};

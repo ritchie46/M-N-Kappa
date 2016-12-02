@@ -25,7 +25,7 @@ var mkap = (function () {
         this.rebar_diagram = [];
         // phased rebar
         this.m0 = [];
-        this.rebar_strain0 = [];
+        this.rebar_strain0_plt = [];
         this.rebar_diam = null;  // for the plotter
 
         // Applied at t=0. 'werkvoorspanning'
@@ -115,6 +115,7 @@ var mkap = (function () {
         this.rebar_force = [];
         for (i = 0; i < this.rebar_As.length; i++) {
             var strain = std.interpolate(crs_btm, strain_btm, crs_top, strain_top, this.rebar_z[i]);
+
             this.rebar_strain.push(strain + this.d_strain[i]);
 
             var stress = this.rebar_diagram[i].det_stress(Math.abs(strain));
