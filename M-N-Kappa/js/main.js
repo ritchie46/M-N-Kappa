@@ -262,7 +262,7 @@ $(document).ready(function () {
 
     });
 
-console.log("version_1-12")
+console.log("version_2-12")
 });
 
 
