@@ -54,9 +54,6 @@ var mkap = (function () {
         this.zero_line = null ; // xu is height - zero line
         this.xu = null;
 
-        // solver settings
-        this.iterations = 120;
-        this.div = 4;
         this.reduce_rebar = false
 
     }
@@ -148,6 +145,19 @@ var mkap = (function () {
 
     };
 
+    MomentKappa.prototype.set_div = function(str) {
+        str = Math.abs(str);
+        if (str < 0.05 && str > 0.01) {
+            this.div = 0.5
+        }
+        else if (str < 0.01) {
+            this.div = 0.1
+        }
+        else {
+            this.div = 2.5
+        }
+    };
+
     MomentKappa.prototype.iterator_top_constant = function (btm_str, top_str, print) {
         /**
          * @param btm_str: (float) strain to start
@@ -186,6 +196,8 @@ var mkap = (function () {
                 btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
             }
             else {
+
+                this.set_div(btm_str);
 
                 var factor = std.convergence(this.force_tensile, this.force_compression, this.div);
                 btm_str = btm_str * factor;
@@ -266,7 +278,9 @@ var mkap = (function () {
                 break
             }
 
-            var factor = std.convergence(this.force_compression, this.force_tensile, 2.5);
+            this.set_div(btm_str);
+
+            var factor = std.convergence(this.force_compression, this.force_tensile, this.div);
             btm_str = btm_str * factor;
 
             this.det_force_distribution(top_str, btm_str);
@@ -391,12 +405,6 @@ var mkap = (function () {
             && this.strain_top < 0
             ) {
             var valid = true;
-
-            // for (var i in this.rebar_strain) {
-            //     if (this.rebar_strain[i] > Math.max.apply(null, this.rebar_diagram[i].strain)) {
-            //         valid = false;
-            //     }
-            // }
 
             return valid
             }
