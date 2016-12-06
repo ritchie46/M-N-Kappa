@@ -162,15 +162,15 @@ function trigger_polygon() {
     y = plt.input_strings_to_floats(y);
 
     if (y.length > 0) {
-        var point_list = [];
+        var point_list_plt = [];
         for (var i = 0; i < x.length; i++) {
-            point_list.push(new vector.Point(x[i], session.mkap.cross_section.top - y[i]))
+            point_list_plt.push(new vector.Point(x[i], y[i]))
         }
-        point_list.push(new vector.Point(point_list[0].x, point_list[0].y));
-        session.mkap.cross_section.subtractor = new crsn.Subtractor(session.mkap.cross_section.top, point_list,
+        point_list_plt.push(new vector.Point(point_list_plt[0].x, point_list_plt[0].y));
+        session.mkap.cross_section.subtractor = new crsn.Subtractor(session.mkap.cross_section.top, point_list_plt,
             session.mkap.cross_section.n_value);
-        plt.draw_polygon(session.mkap.cross_section.point_list, "", session, false, true);
         session.mkap.cross_section.activate_subtractor();
+        plt.draw_polygon(session.mkap.cross_section.point_list, "", session, false, true);
     }
 }
 

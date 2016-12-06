@@ -181,7 +181,7 @@ var plt = (function () {
             data = [];
             var pl = session.mkap.cross_section.subtractor.point_list;
             for (i in pl) {
-                data.push({x: scale(pl[i].x), y: scale(pl[i].y)}
+                data.push({x: scale(pl[i].x), y: scale(-pl[i].y + max_y)}
                 )
             }
             svg_cross_section.select("#subtract").attr("d", linefunc(data));

@@ -67,7 +67,7 @@ var compute_moment = function (moment, mkap, top) {
             break
         }
         mkap.det_m_kappa();
-        factor = std.convergence(Math.abs(mkap.moment), moment, 3);
+        factor = std.convergence(Math.abs(mkap.moment), moment, 2.5);
         strain *= factor;
 
         mkap.solver(top, strain, false);
