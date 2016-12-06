@@ -143,13 +143,19 @@
                                 </div>
                             </div>
 
+                            <div style="padding-top: 20px; float: right;">
+                                <button type="button" class="btn btn-primary" id="btn_sbtrct">Subtract a cross section</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
-            <div class="row">
 
+
+            <!-- Subtractor -->
+            <div class="row" id="panel_sbtrct">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">
@@ -170,7 +176,7 @@
                                         <span class="glyphicon glyphicon-remove-circle"></span>
                                     </button>
                                 </div>
-
+                                The polygon that is subtracted should be completely included in the main cross section.
                                 <div class="row custom_row">
                                     <div class="col-xs-5">
                                         <input type="number" class="xval_sbtrct form-control" placeholder="x-value">

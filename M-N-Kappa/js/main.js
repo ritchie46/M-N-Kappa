@@ -14,6 +14,11 @@ function add_row(self) {
     $row.after($clone);
 }
 
+$("#btn_sbtrct").click(function () {
+    $("#panel_sbtrct").toggleClass("hidden")
+});
+
+
 $(".add_row").click(function () {
     add_row($(this))
 });
