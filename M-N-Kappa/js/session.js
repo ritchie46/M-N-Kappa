@@ -294,9 +294,9 @@ Session.prototype.pre_prestress= function () {
             this.mkap.d_strain[i] = d_strain;
             this.mkap.d_stress[i] = d_stress;
 
-            console.log("P_moment", mp / 1e6, "old diagram", jQuery.extend(true, {}, mkap.rebar_diagram[i]));
-
             // Insert the stress and strains
+            // clone diagram
+            mkap.rebar_diagram[i] = jQuery.extend(true, {}, mkap.rebar_diagram[i]);
             for (var j in mkap.rebar_diagram[i].strain) {
                 if (mkap.rebar_diagram[i].strain[j] < d_strain) {
                     mkap.rebar_diagram[i].strain.shift();

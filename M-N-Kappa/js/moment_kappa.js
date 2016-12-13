@@ -31,9 +31,6 @@ var mkap = (function () {
         // Applied at t=0. 'werkvoorspanning'
         this.prestress = [];
 
-        // Due to negative curvature at placement at M0
-        this.dsigma_m0 = [];
-
         // Stress and strain in the reinforcement after Mp has been applied and the deformation is zero.
         this.d_stress = [];
         this.d_strain = [];
@@ -148,10 +145,10 @@ var mkap = (function () {
     MomentKappa.prototype.set_div = function(str) {
         str = Math.abs(str);
         if (str < 0.05 && str > 0.01) {
-            this.div = 0.5
+            this.div = 1
         }
         else if (str < 0.01) {
-            this.div = 0.1
+            this.div = 1
         }
         else {
             this.div = 2.5
