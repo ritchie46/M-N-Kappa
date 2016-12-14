@@ -370,7 +370,7 @@ var mkap = (function () {
         }
 
         // N normal force share
-        this.moment -= this.normal_force * (this.cross_section.top - this.cross_section.bottom) * 0.5;
+        this.moment -= this.normal_force * this.cross_section.zero_line();
 
         // rebar share
         for (i = 0; i < this.rebar_As.length; i++) {

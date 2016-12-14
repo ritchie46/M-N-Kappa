@@ -317,10 +317,10 @@ Session.prototype.pre_prestress= function () {
 
             // Replace the original diagram
             this.mkap.rebar_diagram[i] = mkap.rebar_diagram[i];
-            this.mkap.normal_force += N;
         }
     }
     this.mkap.mp = mp;
+    this.mkap.normal_force += N;
 };
 
 Session.prototype.calc_hookup = function (reduction) {
