@@ -12,7 +12,11 @@
 <!-- split content.html -->
     <!-- %s1 -->
     <!--ROW 1 -->
-    <div class="col-xs-8">
+    <div class="col-xs-8" id="wrap_mkap_app">
+        <div class="btn-group" role="group" aria-label="..." style="float: right">
+            <button type="button" class="btn btn-default" id="save">Save in local storage</button>
+            <button type="button" class="btn btn-default" id="load">Load from local storage</button>
+        </div>
         <ul class="nav nav-tabs clickable">
             <li role="presentation" class="active main_navbar" id="geometry_nav"><a>Geometry</a></li>
             <li role="presentation" class="main_navbar" id="rebar_nav"><a>Rebar</a></li>
@@ -918,7 +922,6 @@
             <script src="js/plotter.js"></script>
             <script src="js/session.js"></script>
             <script src="js/material/library.js"></script>
-
             <script src="js/ui_geometry.js"></script>
             <script src="js/main.js"></script>
             <script src="js/material.js"></script>

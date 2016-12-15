@@ -32,7 +32,7 @@ $compression_material.on("change", function () {
             remove_row(row)
         }
     }
-    trigger_comp_strain()
+    trigger_comp_strain();
     // if (this.value !== "custom") {
     //     // get the value between 'C' and '/' in for instance C20/25
     //     var end_index = this.value.indexOf('/');

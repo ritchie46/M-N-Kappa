@@ -403,6 +403,12 @@ var mkap = (function () {
             ) {
             var valid = true;
 
+            for (var i in this.rebar_strain) {
+                if (this.rebar_strain[i] > Math.max.apply(null, this.rebar_diagram[i].strain)) {
+                    valid = false;
+                }
+            }
+
             return valid
             }
 
