@@ -19,7 +19,7 @@ function trigger_rebar_input() {
     var rebar_diagram = $(".rebar_material_select");
     var m0 = document.getElementsByClassName("rebar_M0");
     var prestress = document.getElementsByClassName("prestress_input");
-    $slct = $("#option_rebar_results");
+    var $slct = $("#option_rebar_results");
     $slct.empty();
     n = extract_floats(n);
     diam = extract_floats(diam);
@@ -175,46 +175,30 @@ function trigger_polygon() {
 }
 
 // cross-section type
-$("#cross_section_type").change(function () {
-    if (this.value == "rectangle") {
+function cross_section_type_change(_this) {
+    if (_this.value == "rectangle") {
         $(".cross_section_type").addClass("hidden");
         $("#rectangle_rows").removeClass("hidden")
     }
-    else if (this.value == "custom") {
+    else if (_this.value == "custom") {
         $(".cross_section_type").addClass("hidden");
         $("#polygon_rows").removeClass("hidden")
     }
-    else if (this.value == "T-beam" || this.value == "I-beam") {
+    else if (_this.value == "T-beam" || _this.value == "I-beam") {
         $(".cross_section_type").addClass("hidden");
         $("#T-beam_rows").removeClass("hidden")
     }
-    else if (this.value == "circle") {
+    else if (_this.value == "circle") {
         $(".cross_section_type").addClass("hidden");
         $("#circle_rows").removeClass("hidden")
     }
-    else if (this.value == "tube") {
+    else if (_this.value == "tube") {
         $(".cross_section_type").addClass("hidden");
         $("#tube_rows").removeClass("hidden")
     }
     trigger_polygon();
     trigger_rebar_input()
-});
+}
 
-var $slct = $('#pg_body, #subtract_body');
-//Call polygon draw function if row is removed
-$slct.on("click", ".remove_row", function () {
-    $(this).closest('.custom_row').remove();
-    trigger_polygon();
-});
 
-//Call polygon draw function if row is removed
-$slct.on("change", "input", function () {
-    trigger_polygon();
-    trigger_rebar_input()
-});
-
-//Call polygon draw function if row is removed
-$slct.on("change", "input", function () {
-    trigger_polygon();
-});
 
