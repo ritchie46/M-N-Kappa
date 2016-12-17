@@ -11,10 +11,6 @@ var watch = function () {
         add_row($(this))
     });
 
-// General remove panel row logic
-    function remove_row(self) {
-        self.closest('.custom_row').remove()
-    }
 
     $("#print_btn").click(function () {
         print()
@@ -120,4 +116,6 @@ var watch = function () {
     $("#cross_section_type").change(function () {
         cross_section_type_change(this)
     });
+
+    watch_material()
 };

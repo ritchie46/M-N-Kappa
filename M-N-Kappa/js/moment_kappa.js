@@ -36,6 +36,7 @@ var mkap = (function () {
         this.d_strain = [];
         this.mp = 0;
         this.original_rebar_diagrams = [];
+        this.iterations = 110;
     
         /**
         results
@@ -144,14 +145,13 @@ var mkap = (function () {
 
     MomentKappa.prototype.set_div = function(str) {
         str = Math.abs(str);
-        if (str < 0.05 && str > 0.01) {
-            this.div = 1
-        }
-        else if (str < 0.01) {
-            this.div = 1
+        if (str < 0.15) {
+            this.div = 1;
+            this.iterations = 500
         }
         else {
-            this.div = 2.5
+            this.div = 2.5;
+            this.iterations = 110;
         }
     };
 
@@ -308,15 +308,6 @@ var mkap = (function () {
         print = (typeof print !== "undefined") ? print : true;
 
         this.solution = false;
-
-        if (this.normal_force != 0) {
-            this.div = 2.5;
-            this.iterations = 150
-        }
-        else {
-            this.div = 2.5;
-            this.iterations = 120
-        }
 
         // first iteration
         var btm_str = strain;

@@ -14,6 +14,11 @@ function add_row(self) {
     $row.after($clone);
 }
 
+// General remove panel row logic
+function remove_row(self) {
+    self.closest('.custom_row').remove()
+}
+
 function trigger_normal_force() {
     var N = parseFloat($("#normal_force").val()) * 1e3;
     if (isNaN(N)) {
@@ -171,9 +176,10 @@ function update_rebar_results(index) {
     }
 }
 
-$(document).ready(
-    watch()
-);
+
+
+
+
 
 
 console.log("version_15-12");

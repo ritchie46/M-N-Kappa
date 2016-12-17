@@ -39,6 +39,7 @@ t_1 = function () {
     prestress = [0, 0];
     output = t_mkap(loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, true,
         3.5 * 1e-3, prestress);
+    console.log(output[0])
     console.log(output[0] == -1609.477047738069 && output[1] == 0.000008675806475328787)     
 };
 
@@ -54,6 +55,7 @@ t_2 = function () {
     prestress = [0, 0];
     output = t_mkap(loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, false,
         0.291 * 1e-3, prestress);
+    console.log(output[0])
     console.log(output[0] == -588.8121002447566 && output[1] == 0.000001800858769298804)
 };
 
@@ -69,9 +71,10 @@ t_3 = function () {
     prestress = [0];
     output = t_mkap(loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, true,
         3.5 * 1e-3, prestress);
+    console.log(output[0])
     console.log(output[0] == -52.99534062209125 && output[1] == 0.00014066990087225017)
 };
 
-// t_1();
-// t_2();
-// t_3();
+t_1();
+t_2();
+t_3();

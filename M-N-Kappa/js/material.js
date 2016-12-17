@@ -3,90 +3,158 @@
 // compression material
 var $compression_material = $("#compression_material");
 
-$compression_material.on("change", function () {
-    // Count the amount of input rows.
-    var n = $(".comp_strain").length;
+watch_material = function () {
 
-    if (this.value != "custom") {
-        var material = lib.concrete[this.value];
 
-        // Add or remove rows if needed.
-        for (n; n <= material.stress.length; n++) {
-            add_row($("#compression_add_row"));
-        }
-        $slct = $("#comp_curve_body");
-        for (n; n > material.stress.length + 1; n--) {
-            var row = $slct.find(".custom_row").last();
-            remove_row(row);
-        }
+    $compression_material.on("change", function () {
+        // Count the amount of input rows.
+        var n = $(".comp_strain").length;
 
-        for (var j = 0; j < material.stress.length; j++) {
-            $(".comp_strain")[j + 1].value = Math.round(material.strain[j] * 1000) / 1000;
-            $(".comp_stress")[j + 1].value = Math.round(material.stress[j] * 100) / 100;
+        if (this.value != "custom") {
+            var material = lib.concrete[this.value];
+
+            // Add or remove rows if needed.
+            for (n; n <= material.stress.length; n++) {
+                add_row($("#compression_add_row"));
+            }
+            $slct = $("#comp_curve_body");
+            for (n; n > material.stress.length + 1; n--) {
+                var row = $slct.find(".custom_row").last();
+                remove_row(row);
+            }
+
+            for (var j = 0; j < material.stress.length; j++) {
+                $(".comp_strain")[j + 1].value = Math.round(material.strain[j] * 1000) / 1000;
+                $(".comp_stress")[j + 1].value = Math.round(material.stress[j] * 100) / 100;
+            }
+            $("#comp_material_factor").value = material.gamma;
         }
-        $("#comp_material_factor").value = material.gamma;
-    }
-    else {
-        for (var i = 0; i < n - 2; i++) {
-            var row = $("#comp_curve_body").find(".custom_row").last();
-            remove_row(row)
+        else {
+            for (var i = 0; i < n - 2; i++) {
+                var row = $("#comp_curve_body").find(".custom_row").last();
+                remove_row(row)
+            }
         }
-    }
-    trigger_comp_strain();
-    // if (this.value !== "custom") {
-    //     // get the value between 'C' and '/' in for instance C20/25
-    //     var end_index = this.value.indexOf('/');
-    //     var fc = this.value.substring(1, end_index);
-    //
-    //     // 3 input rows are needed. Two for the material. 1 hidden.
-    //     var n = document.getElementsByClassName("comp_strain").length;
-    //
-    //     for (n; n < 3; n++) {
-    //         add_row($("#compression_add_row"));
-    //
-    //     }
-    //     $slct = $("#comp_curve_body");
-    //     for (n; n > 3; n--) {
-    //         var row = $slct.children(".custom_row").last();
-    //         remove_row(row);
-    //     }
-    //
-    //     $slct.find(".comp_strain")[1].value = 1.75;
-    //     $slct.find(".comp_strain")[2].value = 3.5;
-    //     $slct.find(".comp_stress")[1].value = fc;
-    //     $slct.find(".comp_stress")[2].value = fc;
-    //     trigger_comp_strain()
-    // }
-});
+        trigger_comp_strain();
+
+    });
 
 // reinforcement material diagram
-$("#rebar_curves").on("change", ".rebar_material", function () {
+    $("#rebar_curves").on("change", ".rebar_material", function () {
 
-    if (this.value != "custom") {
-        var material = lib.reinforcement[this.value];
-        // Count the amount of input rows.
-        var parent = $(this).closest(".rebar_curve");
-        var n = $(parent).find(".rebar_strain").length;
+        if (this.value != "custom") {
+            var material = lib.reinforcement[this.value];
+            // Count the amount of input rows.
+            var parent = $(this).closest(".rebar_curve");
+            var n = $(parent).find(".rebar_strain").length;
 
-        // Add or remove rows if needed.
-        for (n; n <= material.stress.length; n++) {
-            add_row($(parent).find(".add_row_rbr_curves"));
+            // Add or remove rows if needed.
+            for (n; n <= material.stress.length; n++) {
+                add_row($(parent).find(".add_row_rbr_curves"));
+            }
+            for (n; n > material.stress.length + 1; n--) {
+                var row = $(parent).children(".custom_row").last();
+                remove_row(row);
+            }
+
+            for (var j = 0; j < material.stress.length; j++) {
+                $(parent).find(".rebar_strain")[j + 1].value = Math.round(material.strain[j] * 1000) / 1000;
+                $(parent).find(".rebar_stress")[j + 1].value = material.stress[j]
+            }
+            $(parent).find(".rebar_material_factor")[0].value = material.gamma
+
         }
-        for (n; n > material.stress.length + 1; n--) {
-            var row = $(parent).children(".custom_row").last();
-            remove_row(row);
-        }
+        trigger_rebar_strain()
+    });
 
-        for (var j = 0; j < material.stress.length; j++) {
-            $(parent).find(".rebar_strain")[j + 1].value = Math.round(material.strain[j] * 1000) / 1000;
-            $(parent).find(".rebar_stress")[j + 1].value = material.stress[j]
-        }
-        $(parent).find(".rebar_material_factor")[0].value = material.gamma
+    $slct = $('#tens_curve_body');
+    $slct.on('change', 'input', function () {
+        trigger_tens_strain();
+    });
 
-        }
-    trigger_rebar_strain()
+    $slct.on('click', '.remove_row', function () {
+        $(this).closest('.custom_row').remove();
+        trigger_tens_strain();
+    });
 
-});
+    $slct = $('#rebar_curves');
+    $slct.on('click', '.remove_row', function () {
+        var parent = $(this).closest('.rebar_curve');
+        $(this).closest('.custom_row').remove();
+        trigger_rebar_strain();
+        $(parent).find(".rebar_material").val("custom")
+    });
+
+    $slct.on('click', '.add_row_rbr_curves', function () {
+        var $row = $(this).closest(".rebar_curve").find(".custom_row").last();
+        var $clone = $row.clone();
+        $clone.removeClass('hidden');
+        $row.after($clone);
+    });
+
+    $slct.on('change', 'input', function () {
+        var parent = $(this).closest('.rebar_curve');
+        trigger_rebar_strain();
+        $(parent).find(".rebar_material").val("custom")
+    });
+
+    $slct.on("change", ".prestress_checkbox", function () {
+        if ($(this).is(":checked")) {
+            $(this).closest(".checkbox").find(".prestress_input").removeAttr("disabled")
+        }
+        else {
+            $(this).closest(".checkbox").find(".prestress_input").prop("disabled", true)
+        }
+        toggle_phased();
+    });
+
+
+// add extra rebar curves (stress strain diagrams)
+    var n_rebar_curves = 1;
+    $("#add_rbr_diagram").click(function () {
+        n_rebar_curves += 1;
+        $slct = $(".rebar_curve");
+        var clone = $slct.last().clone().removeClass("hidden");
+        clone.attr("id", "rebar_curve_" + n_rebar_curves);
+        var svg = clone.find(".rebar_strain_svg_div");
+        svg.attr("id", "rebar_svg_" + n_rebar_curves);
+        $slct.last().after(clone);
+        $(".diagram_header").last().html("Diagram #" + n_rebar_curves);
+        trigger_rebar_strain(clone);
+
+        // Append the diagram options at the rebar input fields
+        $(".rebar_material_select").append("<option>diagram #%d</option>".replace("%d", n_rebar_curves));
+    });
+
+
+
+// Watch on #rebar_curves to add rows for every new diagram.
+// Do not forget to change the numbering of the id's when making a clone.
+
+
+    $slct = $('.rebar_input');
+    $slct.on('click', '.remove_row', function () {
+        $(this).closest('.custom_row').remove();
+        trigger_rebar_input();
+    });
+
+    $slct.on('change', 'input', function () {
+        trigger_rebar_input();
+        toggle_phased()
+    });
+
+    $slct.on('click', '.add_row', function () {
+        trigger_rebar_input();
+        toggle_phased()
+    });
+
+    $slct.on('change', ".rebar_material_select", function () {
+        toggle_phased()
+    });
+
+
+
+};
 
 // compression stress strain
 var trigger_comp_strain = function () {
@@ -132,15 +200,6 @@ var trigger_tens_strain = function () {
 
     session.mkap.tensile_diagram = new mkap.StressStrain(strain, stress)
 };
-$slct = $('#tens_curve_body');
-$slct.on('change', 'input', function () {
-    trigger_tens_strain();
-});
-
-$slct.on('click', '.remove_row', function () {
-    $(this).closest('.custom_row').remove();
-    trigger_tens_strain();
-});
 
 
 /** rebar stress strain
@@ -176,36 +235,7 @@ var trigger_rebar_strain = function () {
     }
 };
 
-$slct = $('#rebar_curves');
-$slct.on('click', '.remove_row', function () {
-    var parent = $(this).closest('.rebar_curve');
-    $(this).closest('.custom_row').remove();
-    trigger_rebar_strain();
-    $(parent).find(".rebar_material").val("custom")
-});
 
-$slct.on('click', '.add_row_rbr_curves', function () {
-    var $row = $(this).closest(".rebar_curve").find(".custom_row").last();
-    var $clone = $row.clone();
-    $clone.removeClass('hidden');
-    $row.after($clone);
-});
-
-$slct.on('change', 'input', function () {
-    var parent = $(this).closest('.rebar_curve');
-    trigger_rebar_strain();
-    $(parent).find(".rebar_material").val("custom")
-});
-
-$slct.on("change", ".prestress_checkbox", function () {
-    if ($(this).is(":checked")) {
-        $(this).closest(".checkbox").find(".prestress_input").removeAttr("disabled")
-    }
-    else {
-        $(this).closest(".checkbox").find(".prestress_input").prop("disabled", true)
-    }
-    toggle_phased();
-});
 
 // Make sure that pre-stressed rebar is not phased!
 function toggle_phased() {
@@ -232,63 +262,3 @@ function toggle_phased() {
 
 
 
-// add extra rebar curves (stress strain diagrams)
-var n_rebar_curves = 1;
-$("#add_rbr_diagram").click(function () {
-    n_rebar_curves += 1;
-    $slct = $(".rebar_curve");
-    var clone = $slct.last().clone().removeClass("hidden");
-    clone.attr("id", "rebar_curve_" + n_rebar_curves);
-    var svg = clone.find(".rebar_strain_svg_div");
-    svg.attr("id", "rebar_svg_" + n_rebar_curves);
-    $slct.last().after(clone);
-    $(".diagram_header").last().html("Diagram #" + n_rebar_curves);
-    trigger_rebar_strain(clone);
-
-    // Append the diagram options at the rebar input fields
-    $(".rebar_material_select").append("<option>diagram #%d</option>".replace("%d", n_rebar_curves));
-});
-
-
-
-// Watch on #rebar_curves to add rows for every new diagram.
-// Do not forget to change the numbering of the id's when making a clone.
-
-
-$slct = $('.rebar_input');
-$slct.on('click', '.remove_row', function () {
-    $(this).closest('.custom_row').remove();
-    trigger_rebar_input();
-});
-
-$slct.on('change', 'input', function () {
-    trigger_rebar_input();
-    toggle_phased()
-});
-
-$slct.on('click', '.add_row', function () {
-    trigger_rebar_input();
-    toggle_phased()
-});
-
-$slct.on('change', ".rebar_material_select", function () {
-    toggle_phased()
-});
-
-
-$(document).ready();
-{
-// setting up the presettings
-    $compression_material.val("C20/25 parabolic-rectangular");
-    $compression_material.trigger("change");
-    $slct = $(".rebar_material");
-    $slct[1].value = "B500";
-    $slct.last().trigger("change");
-    $slct = $("#cross_section_type");
-    $slct.val("rectangle");
-    $slct.trigger("change");
-
-    trigger_tens_strain();
-    trigger_polygon();
-    $(".rebar_d").trigger("change");
-}
