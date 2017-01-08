@@ -5,8 +5,8 @@ $("#save").click(function () {
 
     // saves geometry
     var input = [];
-    var all = $("#polygon_input").find("input").toArray();
-    all = all.concat($("#polygon_input").find("select").toArray());
+    var all = $("#geometry_column").find("input").toArray();
+    all = all.concat($("#geometry_column").find("select").toArray());
     for (var i = 0; i < all.length; i++) {
         if (!$(all[i]).hasClass("hidden")){
             if (all[i].value == undefined) {
@@ -17,8 +17,8 @@ $("#save").click(function () {
             }
         }
     }
-    var a = {pg: $("#polygon_input").html(),
-            pg_val: input};
+    var a = {geom: $("#geometry_column").html(),
+            geom_val: input};
 
 
     // saves reinforcement column
@@ -50,15 +50,15 @@ $("#load").click(function () {
     var a = JSON.parse(localStorage.getItem(save_loc));
 
     // loads geometry
-    var $slct = $("#polygon_input");
-    $slct.html(a.pg);
+    var $slct = $("#geometry_column");
+    $slct.html(a.geom);
     var all = $slct.find("input").toArray();
     all = all.concat($slct.find("select").toArray());
 
     for (var i = 0; i < all.length; i++) {
         if (!$(all[i]).hasClass("hidden")){
-            if (a.pg_val[i] !== "na") {
-                $(all[i]).val(a.pg_val[i]);
+            if (a.geom_val[i] !== "na") {
+                $(all[i]).val(a.geom_val[i]);
 
             }
         }
@@ -72,7 +72,7 @@ $("#load").click(function () {
 
     for (i = 0; i < all.length; i++) {
         if (!$(all[i]).hasClass("hidden")){
-            if (a.pg_val[i] !== "na") {
+            if (a.geom_val[i] !== "na") {
                 $(all[i]).val(a.rebar_row_val[i]);
 
             }
@@ -81,5 +81,7 @@ $("#load").click(function () {
 
     watch();
     trigger_polygon();
-    trigger_rebar_input()
+    trigger_rebar_input();
+    trigger_comp_strain();
+    trigger_tens_strain()
 });

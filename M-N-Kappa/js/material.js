@@ -1,12 +1,10 @@
 // Material library
-
 // compression material
 var $compression_material = $("#compression_material");
 
 watch_material = function () {
 
-
-    $compression_material.on("change", function () {
+    $("#compression_material").on("change", function () {
         // Count the amount of input rows.
         var n = $(".comp_strain").length;
 
