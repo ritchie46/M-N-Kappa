@@ -399,6 +399,12 @@ var mkap = (function () {
                     valid = false;
                 }
             }
+            // Odd results if this is off.
+            if (std.is_close(this.strain_btm, 0, 0.01, 0.03)) {
+                if (this.xu >= (this.cross_section.top - this.cross_section.bottom)) {
+                    return false
+                }
+            }
 
             return valid
             }
