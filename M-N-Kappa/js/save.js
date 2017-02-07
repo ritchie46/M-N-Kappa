@@ -1,7 +1,7 @@
 
 $("#save").click(function () {
-    var save_loc = prompt("The cross section will be saved in your browser memory\n" +
-        "Under which name should it be saved? : ", "name");
+    // var save_loc = prompt("The cross section will be saved in your browser memory\n" +
+    //     "Under which name should it be saved? : ", "name");
 
     // saves geometry
     var input = [];
@@ -40,8 +40,12 @@ $("#save").click(function () {
     a.rebar_row = $slct.html();
     a.rebar_row_val = input;
 
-    localStorage.setItem(save_loc, JSON.stringify(a))
-
+    //localStorage.setItem(save_loc, JSON.stringify(a))
+    var link = document.createElement("a");
+    link.setAttribute("href", "data:text/plain;charset=utf-u, " + encodeURIComponent(JSON.stringify(a)));
+    link.setAttribute("download", "my_cross-section.json");
+    document.body.appendChild(link); // this is required for the firefox browser.
+    link.click()
 
 });
 
