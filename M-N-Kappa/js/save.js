@@ -43,26 +43,45 @@ $("#save").click(function () {
     //localStorage.setItem(save_loc, JSON.stringify(a))
     var link = document.createElement("a");
     link.setAttribute("href", "data:text/plain;charset=utf-u, " + encodeURIComponent(JSON.stringify(a)));
-    link.setAttribute("download", "my_cross-section.json");
+    link.setAttribute("download", "save_cs.json");
     document.body.appendChild(link); // this is required for the firefox browser.
     link.click()
 
 });
 
 $("#load").click(function () {
-    var save_loc = prompt("Enter the name of your saved cross section : ", "name");
-    var a = JSON.parse(localStorage.getItem(save_loc));
+    if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
+        alert("Your browser does not support the File APIs. Please update your browser and try again.")
+    }
+    input = document.getElementById("file_input");
+    input.click();
 
+});
+
+$("#file_input").on("change", function () {
+
+    var a = null;
+    var file = input.files[0];
+    // FileReader is async. An event handler is executed on loadend
+    fr = new FileReader();
+    fr.onloadend = function () {
+        a = JSON.parse(fr.result);
+        load(a)
+    };
+    fr.readAsText(file);
+});
+
+function load (data) {
     // loads geometry
     var $slct = $("#geometry_column");
-    $slct.html(a.geom);
+    $slct.html(data.geom);
     var all = $slct.find("input").toArray();
     all = all.concat($slct.find("select").toArray());
 
     for (var i = 0; i < all.length; i++) {
         if (!$(all[i]).hasClass("hidden")){
-            if (a.geom_val[i] !== "na") {
-                $(all[i]).val(a.geom_val[i]);
+            if (data.geom_val[i] !== "na") {
+                $(all[i]).val(data.geom_val[i]);
 
             }
         }
@@ -70,14 +89,14 @@ $("#load").click(function () {
 
     // loads rebar column
     $slct = $("#rebar_column");
-    $slct.html(a.rebar_row);
+    $slct.html(data.rebar_row);
     all = $slct.find("input").toArray()
         .concat($slct.find("select").toArray());
 
     for (i = 0; i < all.length; i++) {
         if (!$(all[i]).hasClass("hidden")){
-            if (a.geom_val[i] !== "na") {
-                $(all[i]).val(a.rebar_row_val[i]);
+            if (data.geom_val[i] !== "na") {
+                $(all[i]).val(data.rebar_row_val[i]);
 
             }
         }
@@ -88,4 +107,4 @@ $("#load").click(function () {
     trigger_rebar_input();
     trigger_comp_strain();
     trigger_tens_strain()
-});
+}
