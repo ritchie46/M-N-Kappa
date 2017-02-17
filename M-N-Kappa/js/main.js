@@ -83,8 +83,8 @@ var calculate_mkappa = function () {
         sol = session.compute_n_points(50);
         moment = sol.moment;
         kappa = sol.kappa;
-        moment.push(-session.mkap.mp);
-        kappa.push(0);
+        // moment.push(-session.mkap.mp);
+        // kappa.push(0);
         plt.moment_kappa(svg, kappa, moment.map(function (i) {
             return i / 1e6
         }), session);
@@ -181,7 +181,7 @@ function update_rebar_results(index) {
 
 
 
-console.log("version_10-02");
+console.log("version_17-02");
 
 
 

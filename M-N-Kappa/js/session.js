@@ -336,24 +336,12 @@ Session.prototype.compute_n_points = function (n) {
         while (strain > 0) {
             this.mkap.solver(true, strain);
             this.mkap.det_m_kappa();
-            if (this.mkap.validity() && this.mkap.kappa > 0) {
-                moment.push(Math.abs(this.mkap.moment));
+            if (this.mkap.validity() && this.mkap.kappa > 0 && this.mkap.moment < 0) {
+                moment.push(-this.mkap.moment);
                 kappa.push(this.mkap.kappa);
                 this.all_computed_mkap.push(JSON.parse(JSON.stringify(this.mkap)));
             }
             strain -= d_str;
-        }
-
-        // sort the arrays on inclining kappa.
-        var a = [];
-        // sort them
-        a.sort(function (b, c) {
-            return ((b.k < c.k) ? -1 : ((b.k < c.k) ? 0 : 1));
-        });
-
-        for (var i = 0; i < a.length; i++) {
-            moment[i] = a[i].m;
-            kappa[i] = a[i].k;
         }
 
         return {

@@ -260,6 +260,7 @@ var mkap = (function () {
 
         var count = 0;
         // iterate until the convergence criteria is met
+
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                 this.solution = true;

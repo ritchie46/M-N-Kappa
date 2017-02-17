@@ -61,12 +61,7 @@ var std = (function () {
         limit_lower = (typeof limit_lower !== "undefined") ? limit_lower : 0.999;
 
         var ratio = Math.abs(rhs) / Math.abs(lhs);
-        if (limit_lower <= ratio && ratio <= limit_up) {
-            return true
-        }
-        else {
-            return false
-        }
+        return (limit_lower <= ratio && ratio <= limit_up)
     }
 
     function nearest_index(arr, x) {

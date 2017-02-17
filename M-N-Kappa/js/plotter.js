@@ -433,6 +433,7 @@ var plt = (function () {
     }
 
     var moment_kappa_diagram = function (svg_struct, x, y, session) {
+
         var svg = svg_struct.svg;
         var data = draw_lines(svg_struct, x, y, true, false);
 
