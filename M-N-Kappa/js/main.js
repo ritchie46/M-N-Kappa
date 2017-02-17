@@ -4,7 +4,6 @@ Note to self:
 */
 
 "use strict";
-var DEBUG = true;
 
 // General add row logic
 function add_row(self) {
@@ -182,7 +181,7 @@ function update_rebar_results(index) {
 
 
 
-console.log("version_10-01");
+console.log("version_10-02");
 
 
 

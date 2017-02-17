@@ -123,7 +123,6 @@ Session.prototype.apply_m0 = function () {
         var original_diagram;
 
     if (window.DEBUG) {
-        console.log("In apply m0")
     }
 
         for (var i = 0; i < this.mkap.m0.length; i++) {

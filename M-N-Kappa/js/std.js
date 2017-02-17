@@ -49,7 +49,7 @@ var std = (function () {
         /// <returns type="flt" />
         */
         // default parameter
-        div = (typeof div !== "undefined") ? div: 3;
+        div = (typeof div !== "undefined") ? div: 1;
 
         var ratio = Math.abs(rhs) / Math.abs(lhs);
         return (ratio - 1) / div + 1

@@ -1,7 +1,5 @@
 ﻿'use strict';
-
 var DEBUG = false;
-
 // mkap namespace
 var mkap = (function () {
 
@@ -36,7 +34,7 @@ var mkap = (function () {
         this.d_strain = [];
         this.mp = 0;
         this.original_rebar_diagrams = [];
-        this.iterations = 110;
+        this.iterations = 250;
     
         /**
         results
@@ -146,12 +144,10 @@ var mkap = (function () {
     MomentKappa.prototype.set_div = function(str) {
         str = Math.abs(str);
         if (str < 0.15) {
-            this.div = 1;
             this.iterations = 500
         }
         else {
-            this.div = 2.5;
-            this.iterations = 110;
+            this.iterations = 250;
         }
     };
 
@@ -267,11 +263,11 @@ var mkap = (function () {
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                 this.solution = true;
-                if (print) {
-                    if (window.DEBUG) {
-                        console.log("convergence after %s iterations".replace("%s", count))
-                    }
+
+                if (window.DEBUG) {
+                    console.log("convergence after %s iterations".replace("%s", count))
                 }
+
                 break
             }
 
@@ -283,11 +279,11 @@ var mkap = (function () {
             this.det_force_distribution(top_str, btm_str);
 
             if (count > this.iterations) {
-                if (print) {
-                    if (window.DEBUG) {
-                        console.log("no convergence found after %s iterations".replace("%s", count))
-                    }
+
+                if (window.DEBUG) {
+                    console.log("no convergence found after %s iterations".replace("%s", count))
                 }
+
                 break
             }
             count += 1
@@ -386,32 +382,31 @@ var mkap = (function () {
     };
 
     MomentKappa.prototype.validity = function () {
+        var valid = true;
         if (std.is_number(this.moment)
             && std.is_number(this.kappa)
             && this.solution
             && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
             && this.strain_top < 0
             ) {
-            var valid = true;
-
             for (var i in this.rebar_strain) {
                 if (this.rebar_strain[i] > Math.max.apply(null, this.rebar_diagram[i].strain)) {
                     valid = false;
                 }
             }
             // Odd results if this is off.
-            if (std.is_close(this.strain_btm, 0, 0.01, 0.03)) {
+            if (std.is_close(this.strain_btm, 0, 0.01, 0.01)) {
                 if (this.xu >= (this.cross_section.top - this.cross_section.bottom)) {
                     return false
                 }
             }
-
-            return valid
             }
 
         else {
-            return false
+            valid = false;
         }
+
+        return valid
     };
 
 
