@@ -12,9 +12,11 @@ var mkap = (function () {
         this.force_tensile = 0;
         this.force_compression = 0;
         this.normal_force = 0;
+        this.iterations = 250;
 
-        /** 
-        rebar
+        /*
+        * Reinforcement.
+        * For n layers of reinforcement, n parameters need to be initiated in the arrays.
         */
         this.rebar_As = [];
         // distance rebar from the bottom of the master cross section
@@ -34,7 +36,7 @@ var mkap = (function () {
         this.d_strain = [];
         this.mp = 0;
         this.original_rebar_diagrams = [];
-        this.iterations = 250;
+
     
         /**
         results
@@ -179,7 +181,7 @@ var mkap = (function () {
                         console.log("convergence after %s iterations".replace("%s", count))
                     }
                 }
-                break
+                return [0, count]; // [success, count]
             }
 
             // if the rebar is above the zero line, there will sometimes be no tensile force
@@ -215,7 +217,7 @@ var mkap = (function () {
                         console.log("no convergence found after %s iterations".replace("%s", count))
                     }
                 }
-                break
+                return [1, count];
 
             }
             count += 1
@@ -237,7 +239,7 @@ var mkap = (function () {
                         console.log("convergence after %s iterations".replace("%s", count))
                     }
                 }
-                break
+                return [0, count]
             }
 
             var factor = std.convergence(this.force_compression, this.force_tensile, this.div);
@@ -251,7 +253,7 @@ var mkap = (function () {
                         console.log("no convergence found after %s iterations".replace("%s", count))
                     }
                 }
-                break
+                return [1, count]
             }
             count += 1
         }
@@ -280,8 +282,7 @@ var mkap = (function () {
                 if (window.DEBUG) {
                     console.log("convergence after %s iterations".replace("%s", count))
                 }
-
-                break
+                return [0, count]
             }
 
             this.set_div(btm_str);
@@ -296,8 +297,7 @@ var mkap = (function () {
                 if (window.DEBUG) {
                     console.log("no convergence found after %s iterations".replace("%s", count))
                 }
-
-                break
+                return [1, count]
             }
             count += 1
         }
@@ -317,17 +317,31 @@ var mkap = (function () {
         strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
 
         this.solution = false;
+        var total_iter = 0;
 
         // first iteration
         var btm_str = strain;
         var top_str = -strain;
-
         this.det_force_distribution(top_str, btm_str);
+
+
         if (strain_top) {  // top strain remains constant
-            this.iterator_top_constant(btm_str, top_str)
+            var sol = this.iterator_top_constant(btm_str, top_str);
+            if (sol[0] === 0) {
+                return sol[1]
+            }
+            else {
+                total_iter += sol[1]
+            }
         }
         else { // bottom strain remains constant
-            this.iterator_btm_constant(btm_str, top_str)
+            sol = this.iterator_btm_constant(btm_str, top_str);
+            if (sol[0] === 0) {
+                return sol[1]
+            }
+            else {
+                total_iter += sol[1]
+            }
         }
 
         if (!this.validity() && this.normal_force != 0) {
@@ -335,8 +349,15 @@ var mkap = (function () {
              * Try to solve for a cross section completely under pressure.
              */
 
-            this.iterator_complete_pressure(top_str)
+            sol = this.iterator_complete_pressure(top_str);
+            if (sol[0] === 0) {
+                return sol[1]
+            }
+            else {
+                total_iter += sol[1]
+            }
         }
+        return total_iter
     };
 
     MomentKappa.prototype.det_m_kappa = function () {
@@ -395,6 +416,11 @@ var mkap = (function () {
     };
 
     MomentKappa.prototype.validity = function () {
+        /**
+         * Check if the found equilibrium solution could be regarded as valid.
+         *
+         * @type {boolean}
+         */
         var valid = true;
         if (std.is_number(this.moment)
             && std.is_number(this.kappa)
@@ -429,10 +455,11 @@ var mkap = (function () {
     //class
     function StressStrain(strain, stress) {
         /**
-        Class for creating stress strain diagrams.
+         * Class for creating stress strain diagrams.
+         *
+         * @param strain: (array) Strain values of the diagram.
+         * @param stress: (array) Stress values of the diagram.
         */
-        /// <param name="strain" type="array">Contains strain values corresponding with this.stress</param>
-        /// <param name="stress" type="array">Contains stress values corresponding with this.strain</param>
 
         this.strain = strain;
         this.stress = stress
