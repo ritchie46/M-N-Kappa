@@ -55,6 +55,14 @@ var mkap = (function () {
     }
 
     MomentKappa.prototype.det_force_distribution = function (strain_top, strain_btm, reduce_rebar) {
+        /**
+         * Sum the tensile and compression forces based on the strain distribution
+         *
+         * @param strain_top: (float) Strain at the top of the cross section.
+         * @param strain_btm: (float) Strain at the bottom of the cross section.
+         * @param reduce_rebar: (bool) Subtract the reinforcement cross section of the whole cross section.
+         *
+         */
         this.force_compression = 0;
         this.force_tensile = 0;
         this.stress = [];
@@ -142,8 +150,12 @@ var mkap = (function () {
     };
 
     MomentKappa.prototype.set_div = function(str) {
-        str = Math.abs(str);
-        if (str < 0.15) {
+        /**
+         * Up the allowed iterations at small strains. Due to asymptotic behaviour there are more iterations needed.
+         *
+         * @param str: (float) Strain.
+         */
+        if (Math.abs(str) < 0.15) {
             this.iterations = 500
         }
         else {
@@ -292,17 +304,17 @@ var mkap = (function () {
     };
 
 
-    MomentKappa.prototype.solver = function (strain_top, strain, print) {
+    MomentKappa.prototype.solver = function (strain_top, strain) {
         /**
          * Return the .det_stress method several times and adapt the input until the convergence criteria is met.
-         * @param strain_top: (bool) Constant strain at the top.
-         * If the strain_top == true, the strain at the top will remain constant and the strain at the bottom will
-         * be iterated over. If false vice versa for strain_bottom.
+         *
+         * @param strain_top: (bool) Constant strain at the top. If true, the strain at the top will remain constant
+         *                      and the strain at the bottom will be iterated over. If false vice versa for strain_bottom.
+         * @param strain: (float) Constant strain at the top or bottom.
          */
 
         // default parameter
         strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
-        print = (typeof print !== "undefined") ? print : true;
 
         this.solution = false;
 
@@ -312,10 +324,10 @@ var mkap = (function () {
 
         this.det_force_distribution(top_str, btm_str);
         if (strain_top) {  // top strain remains constant
-            this.iterator_top_constant(btm_str, top_str, print)
+            this.iterator_top_constant(btm_str, top_str)
         }
         else { // bottom strain remains constant
-            this.iterator_btm_constant(btm_str, top_str, print)
+            this.iterator_btm_constant(btm_str, top_str)
         }
 
         if (!this.validity() && this.normal_force != 0) {
@@ -406,7 +418,6 @@ var mkap = (function () {
         else {
             valid = false;
         }
-
         return valid
     };
 
