@@ -439,6 +439,7 @@ var mkap = (function () {
             }
         }
 
+        this.moment *= -1;
         // zero line
         this.zero_line = std.interpolate(this.strain_btm, this.cross_section.bottom, this.strain_top, this.cross_section.top, 0);
         this.xu = this.cross_section.top - this.zero_line

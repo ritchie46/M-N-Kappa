@@ -55,7 +55,7 @@ var compute_moment = function (moment, mkap, top) {
     var count = 0;
     var factor;
     while (1) {
-        if (std.convergence_conditions(Math.abs(mkap.moment), moment, 1.001, 0.999)) {
+        if (std.convergence_conditions(mkap.moment, moment, 1.001, 0.999)) {
             if (window.DEBUG) {
                 console.log("moment convergence after %s iterations".replace("%s", count) + "moment :" + (moment));
                 console.log("validity " + (mkap.validity()), "straintop ", mkap.strain_top, "mkap",mkap.kappa,
@@ -336,8 +336,8 @@ Session.prototype.compute_n_points = function (n) {
         while (strain > 0) {
             this.mkap.solver(true, strain);
             this.mkap.det_m_kappa();
-            if (this.mkap.validity() && this.mkap.kappa > 0 && this.mkap.moment < 0) {
-                moment.push(-this.mkap.moment);
+            if (this.mkap.validity() && this.mkap.kappa > 0 && this.mkap.moment > 0) {
+                moment.push(this.mkap.moment);
                 kappa.push(this.mkap.kappa);
                 this.all_computed_mkap.push(JSON.parse(JSON.stringify(this.mkap)));
             }
@@ -403,7 +403,7 @@ Session.prototype.calculate_significant_points = function () {
             if (this.mkap.validity()) {
                 moment.push(Math.abs(this.mkap.moment));
                 kappa.push(Math.abs(this.mkap.kappa));
-                this.moment_compression.push(Math.abs(this.mkap.moment));
+                this.moment_compression.push(this.mkap.moment);
                 this.kappa_compression.push(Math.abs(this.mkap.kappa));
                 this.sign_strain_comp.push(this.mkap.strain_top);
 

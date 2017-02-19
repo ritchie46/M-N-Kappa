@@ -1,13 +1,16 @@
 ﻿QUnit.test("interpolation", function (assert) {
+    // simple interpolation
     assert.close(std.interpolate(0, 1, 10, 8, 7), 5.9, 0.01);
+    // negative interpolation
     assert.close(std.interpolate(-3, -25, 3, 30, -2), -15.833, 0.01);
     assert.close(std.interpolate(0, -3.5, 250, 3.5, 25), -2.8, 0.01);
+    // extrapolation
     assert.close(std.interpolate(0, 1, 15, 20, 25), 32.667, 0.01)
 
 });
 
 QUnit.test("Moment Kappa outcome", function (assert) {
-    assert.close(t_1(), -1591, 5)
+    assert.close(t_1(), 1591, 5)
 });
 
 QUnit.test("Instantiate standard M-Kappa", function (assert) {
