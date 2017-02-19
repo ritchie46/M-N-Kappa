@@ -13,6 +13,7 @@ var mkap = (function () {
         this.force_compression = 0;
         this.normal_force = 0;
         this.iterations = 250;
+        this.div = 1;
 
         /*
         * Reinforcement.
@@ -118,7 +119,6 @@ var mkap = (function () {
         this.rebar_force = [];
         for (i = 0; i < this.rebar_As.length; i++) {
             var strain = std.interpolate(crs_btm, strain_btm, crs_top, strain_top, this.rebar_z[i]);
-
             this.rebar_strain.push(strain + this.d_strain[i]);
 
             var stress = this.rebar_diagram[i].det_stress(Math.abs(strain));
@@ -140,6 +140,9 @@ var mkap = (function () {
             else {
                 this.force_tensile += force;
                 this.rebar_force.push(force);
+
+                this.reinforcement_tensile += force;
+
 
                 if (reduce_rebar) {
                     // Subtract reinforcement area from master element
@@ -165,11 +168,20 @@ var mkap = (function () {
         }
     };
 
-    MomentKappa.prototype.iterator_top_constant = function (btm_str, top_str, print) {
+    MomentKappa.prototype.iterator_top_constant = function (btm_str, top_str) {
         /**
          * @param btm_str: (float) strain to start
          * @param top_str: (float) strain to start
          */
+
+        // If the reinforcement is above the zero line, there will sometimes be no tensile force
+        // Find the index of the highest reinforcement layer.
+        var top_reinf = Math.min.apply(null, this.rebar_z);
+        for (var i = 0; i < this.rebar_As.length; i++) {
+            if (this.rebar_z[i] == top_reinf) {
+                var rbr_index = i
+            }
+        }
 
         var count = 0;
         // iterate until the convergence criteria is met
@@ -184,38 +196,22 @@ var mkap = (function () {
                 return [0, count]; // [success, count]
             }
 
-            // if the rebar is above the zero line, there will sometimes be no tensile force
-            var low = Math.min.apply(null, this.rebar_z);
-            for (var i = 0; i < this.rebar_As.length; i++) {
-                if (this.rebar_z[i] == low) {
-                    var str_rbr = this.rebar_strain[i];
-                    var rbr_index = i
-                }
+            // Extrapolate the strain from the first significant rebar strain point, to the bottom strain.
+            // Needed when the rebar is above the neutral line.
+            else if (isNaN(this.force_tensile) || this.force_tensile == 0) {
+                btm_str = std.interpolate(this.cross_section.top, top_str, top_reinf, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
             }
 
-            if (this.force_tensile === 0 && str_rbr <= 0) {
-                // Extrapolate the from the first significant rebar strain point, to the bottom strain.
-                // Needed when the rebar is above the neutral line.
-                btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
-
-            }
-            else if (isNaN(this.force_tensile)) {
-                btm_str = std.interpolate(this.cross_section.top, top_str, low, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
-            }
-            else {
-
+            else if (this.force_tensile > 0) {
                 this.set_div(btm_str);
-
                 var factor = std.convergence(this.force_tensile, this.force_compression, this.div);
                 btm_str = btm_str * factor;
             }
 
             this.det_force_distribution(top_str, btm_str);
             if (count > this.iterations) {
-                if (print) {
-                    if (window.DEBUG) {
-                        console.log("no convergence found after %s iterations".replace("%s", count))
-                    }
+                if (window.DEBUG) {
+                    console.log("no convergence found after %s iterations".replace("%s", count))
                 }
                 return [1, count];
 
@@ -224,7 +220,7 @@ var mkap = (function () {
         }
     };
 
-    MomentKappa.prototype.iterator_btm_constant = function (btm_str, top_str, print) {
+    MomentKappa.prototype.iterator_btm_constant = function (btm_str, top_str) {
         /**
          * @param btm_str: (float) strain to start
          * @param top_str: (float) strain to start
@@ -234,10 +230,9 @@ var mkap = (function () {
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                 this.solution = true;
-                if (print) {
-                    if (window.DEBUG) {
-                        console.log("convergence after %s iterations".replace("%s", count))
-                    }
+
+                if (window.DEBUG) {
+                    console.log("convergence after %s iterations".replace("%s", count))
                 }
                 return [0, count]
             }
@@ -248,10 +243,8 @@ var mkap = (function () {
             this.det_force_distribution(top_str, btm_str);
 
             if (count > this.iterations) {
-                if (print) {
-                    if (window.DEBUG) {
-                        console.log("no convergence found after %s iterations".replace("%s", count))
-                    }
+                if (window.DEBUG) {
+                    console.log("no convergence found after %s iterations".replace("%s", count))
                 }
                 return [1, count]
             }
@@ -429,11 +422,11 @@ var mkap = (function () {
             && this.strain_top < 0
             ) {
             for (var i in this.rebar_strain) {
-                if (this.rebar_strain[i] > Math.max.apply(null, this.rebar_diagram[i].strain)) {
+                if (Math.abs(this.rebar_strain[i]) > Math.max.apply(null, this.rebar_diagram[i].strain)) {
                     valid = false;
                 }
             }
-            // Odd results if this is off.
+
             if (std.is_close(this.strain_btm, 0, 0.01, 0.01)) {
                 if (this.xu >= (this.cross_section.top - this.cross_section.bottom)) {
                     return false

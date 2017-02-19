@@ -324,3 +324,4 @@ Thumbs.db
 *.pdf
 /__pycache__
 *.pyc
+*qunit*
