@@ -13,7 +13,7 @@ var mkap = (function () {
         this.force_compression = 0;
         this.normal_force = 0;
         this.iterations = 250;
-        this.div = 1;
+        this.div = 3;
 
         /*
         * Reinforcement.

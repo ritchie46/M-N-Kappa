@@ -40,16 +40,17 @@ var std = (function () {
 
     function convergence(lhs, rhs, div) {
         /**Converting by adapting one value by a factor. The factor is determined by the ratio of the left hand side and
-    the right hand side of the equation. 
-    
-        Factor:
-        ((Left / Right) - 1) / 3 + 1
-        /// <param name="rhs" type="flt">right hand side of equation</param>
-        /// <param name="rhs" type="flt">left hand side of equation</param>
-        /// <returns type="flt" />
+         * the right hand side of the equation.
+         *
+         * Factor: ((Left / Right) - 1) / div + 1
+         *
+         * @param rhs: {float} Value
+         * @param lhs: {float} Value
+         *
+         * Convergence = lhs *= factor
         */
         // default parameter
-        div = (typeof div !== "undefined") ? div: 1.5;
+        div = (typeof div !== "undefined") ? div: 3;
 
         var ratio = Math.abs(rhs) / Math.abs(lhs);
         return (ratio - 1) / div + 1
