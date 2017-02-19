@@ -555,9 +555,44 @@ var mkap = (function () {
         }
     };
 
+    function calcHookup (reduction, mkap, top) {
+        /**
+         * Reduction factor (float)
+         *
+         * Starts the calculation with the latest point of the compression material and reduces it until a solution is found.
+         * Returns the strain that resulted in a valid solution.
+         *
+         * @param reduction: {float} the reduction factor of the strain.
+         * @param mkap: {object} from the MomentKappa class.
+         * @param top: {bool} Depends if the hookup is sought for the top or the bottom of the cross section.
+         */
+        top = (typeof top !== "undefined") ? top : true;
+        var strain;
+        if (top) {
+            strain = mkap.compressive_diagram.strain[mkap.compressive_diagram.strain.length - 1];
+        }
+        else {
+            strain = mkap.tensile_diagram.strain[mkap.tensile_diagram.strain.length - 1];
+        }
+
+        mkap.solver(top, strain);
+        mkap.det_m_kappa();
+
+
+        var count = 0;
+        while (!mkap.validity() && count < 150) {
+            mkap.solver(top, strain);
+            mkap.det_m_kappa();
+            strain *= (1 - reduction);
+            count += 1;
+        }
+        return strain
+    }
+
 
     return {    MomentKappa: MomentKappa,
-                StressStrain: StressStrain
+                StressStrain: StressStrain,
+                calcHookup: calcHookup
     }
 
 })();  // mkap namespace

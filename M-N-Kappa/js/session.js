@@ -1,42 +1,5 @@
 ﻿"use strict";
 
-var calc_hookup = function (reduction, mkap, top) {
-    /**
-     * Reduction factor (float)
-     *
-     * Starts the calculation with the latest point of the compression material and reduces it until a solution is found.
-     * Returns the strain that resulted in a valid solution.
-     *
-     * @param reduction: (float) the reduction factor of the strain.
-     * @param mkap: (object) from the MomentKappa class.
-     * @param top: (bool) Depends if the hookup is sought for the top or the bottom of the cross section.
-     */
-    top = (typeof top !== "undefined") ? top : true;
-
-    if (top) {
-        var strain = mkap.compressive_diagram.strain[mkap.compressive_diagram.strain.length - 1];
-    }
-    else {
-        strain = mkap.tensile_diagram.strain[mkap.tensile_diagram.strain.length - 1];
-    }
-
-    mkap.solver(top, strain);
-    mkap.det_m_kappa();
-
-    if (window.DEBUG) {
-        console.log("In calc hookup")
-    }
-
-    var count = 0;
-    while (!mkap.validity() && count < 150) {
-        mkap.solver(top, strain);
-        mkap.det_m_kappa();
-        strain *= (1 - reduction);
-        count += 1;
-    }
-    return strain
-};
-
 var compute_moment = function (moment, mkap, top) {
     /**
      * @param moment: Query moment
@@ -323,7 +286,7 @@ Session.prototype.pre_prestress= function () {
 };
 
 Session.prototype.calc_hookup = function (reduction) {
-    return calc_hookup(reduction, this.mkap);
+    return mkap.calcHookup(reduction, this.mkap)
 };
 
 Session.prototype.compute_n_points = function (n) {
