@@ -6,10 +6,14 @@
 
 });
 
+QUnit.test("Moment Kappa outcome", function (assert) {
+    assert.close(t_1(), -1591, 5)
+});
+
 t_mkap = function (loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, top, promille,
 prestress) {
     // cross section
-    for (i = 0; i < loc.length; i++) {
+    for (var i = 0; i < loc.length; i++) {
         loc[i] = new vector.Point(loc[i][0], loc[i][1])
     }
 
@@ -30,9 +34,9 @@ prestress) {
     for (i = 0; i < run.rebar_As.length; i++) {
         run.rebar_diagram.push(new mkap.StressStrain([0, 2.175, 50], [0, 435, 435]))
     }
-
+    run.solver(top, promille);
     run.det_m_kappa();
-    return [run.moment, run.validity()];
+    return [run.moment / 1e6, run.validity()];
 };
 
 t_1 = function () {
@@ -47,42 +51,13 @@ t_1 = function () {
     prestress = [0, 0];
     output = t_mkap(loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, true,
         3, prestress);
-    console.log(output[0])
-    //console.log(output[0] == -1609.477047738069 && output[1] == 0.000008675806475328787)
+
+    if (output[1]) {
+        return output[0]
+    }
+    else {
+        return 1
+    }
 };
 
-t_2 = function () {
-    loc = [[0, 0], [500, 0], [500, 800], [0, 800], [0, 0]];
-    comp_strain = [0, 1.75, 3.5];
-    comp_stress = [0, 13.3, 13.3];
-    tens_strain = [0, 0.291];
-    tens_stress = [0, 2.21];
-    As = [4021, 4021];
-    rebar_z = [80, 720];
-    normal_force = -2e6;
-    prestress = [0, 0];
-    output = t_mkap(loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, false,
-        0.291, prestress);
-    console.log(output[0])
-    //console.log(output[0] == -588.8121002447566 && output[1] == 0.000001800858769298804)
-};
 
-t_3 = function () {
-    loc = [[0, 0], [500, 0], [500, 300], [0, 300], [0, 0]];
-    comp_strain = [0, 1.75, 3.5];
-    comp_stress = [0, 13.3, 13.3];
-    tens_strain = [0];
-    tens_stress = [0];
-    As = [805];
-    rebar_z = [170];
-    normal_force = 0;
-    prestress = [0];
-    output = t_mkap(loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, true,
-        3.5, prestress);
-    console.log(output[0]);
-    //console.log(output[0] == -52.99534062209125 && output[1] == 0.00014066990087225017)
-};
-
-// t_1();
-// t_2();
-t_3();

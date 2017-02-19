@@ -141,9 +141,6 @@ var mkap = (function () {
                 this.force_tensile += force;
                 this.rebar_force.push(force);
 
-                this.reinforcement_tensile += force;
-
-
                 if (reduce_rebar) {
                     // Subtract reinforcement area from master element
                     stress_reduct = this.tensile_diagram.det_stress(strain);
@@ -317,37 +314,75 @@ var mkap = (function () {
         var top_str = -strain;
         this.det_force_distribution(top_str, btm_str);
 
+        // If the axial force is substantial start with a solver completely under pressure.
+        var a = this.compressive_diagram.det_stress(-top_str) * this.cross_section.area() * 0.75;
+        if (-this.normal_force > a) {
+                /**
+                 * Try to solve for a cross section completely under pressure.
+                 */
 
-        if (strain_top) {  // top strain remains constant
-            var sol = this.iterator_top_constant(btm_str, top_str);
-            if (sol[0] === 0) {
-                return sol[1]
-            }
-            else {
-                total_iter += sol[1]
-            }
+                sol = this.iterator_complete_pressure(top_str);
+                if (sol[0] === 0) {
+                    return sol[1]
+                }
+                else {
+                    total_iter += sol[1]
+
+                    if (strain_top) {  // top strain remains constant
+                        var sol = this.iterator_top_constant(btm_str, top_str);
+                        if (sol[0] === 0) {
+                            return sol[1]
+                        }
+                        else {
+                            total_iter += sol[1]
+                        }
+                    }
+                    else { // bottom strain remains constant
+                        sol = this.iterator_btm_constant(btm_str, top_str);
+                        if (sol[0] === 0) {
+                            return sol[1]
+                        }
+                        else {
+                            total_iter += sol[1]
+                        }
+                    }
+
+                }
         }
-        else { // bottom strain remains constant
-            sol = this.iterator_btm_constant(btm_str, top_str);
-            if (sol[0] === 0) {
-                return sol[1]
-            }
-            else {
-                total_iter += sol[1]
-            }
-        }
+        // Standard control flow
+        else {
 
-        if (!this.validity() && this.normal_force != 0) {
-            /**
-             * Try to solve for a cross section completely under pressure.
-             */
-
-            sol = this.iterator_complete_pressure(top_str);
-            if (sol[0] === 0) {
-                return sol[1]
+            if (strain_top) {  // top strain remains constant
+                var sol = this.iterator_top_constant(btm_str, top_str);
+                if (sol[0] === 0) {
+                    return sol[1]
+                }
+                else {
+                    total_iter += sol[1]
+                }
             }
-            else {
-                total_iter += sol[1]
+            else { // bottom strain remains constant
+                sol = this.iterator_btm_constant(btm_str, top_str);
+                if (sol[0] === 0) {
+                    return sol[1]
+                }
+                else {
+                    total_iter += sol[1]
+                }
+            }
+
+            if (!this.validity() && this.normal_force != 0) {
+                /**
+                 * Try to solve for a cross section completely under pressure.
+                 */
+
+                sol = this.iterator_complete_pressure(top_str);
+                if (sol[0] === 0) {
+                    return sol[1]
+                }
+                else {
+                    total_iter += sol[1]
+                }
             }
         }
         return total_iter
