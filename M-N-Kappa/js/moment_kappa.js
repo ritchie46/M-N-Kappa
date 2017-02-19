@@ -36,6 +36,7 @@ var mkap = (function () {
         this.d_stress = [];
         this.d_strain = [];
         this.mp = 0;
+        // Used by session.js when prestress is applied.
         this.original_rebar_diagrams = [];
 
     
@@ -475,12 +476,30 @@ var mkap = (function () {
         return valid
     };
 
+    MomentKappa.prototype.instantiate_standard_reinforcement = function(As, rebar_z, rebar_diagram) {
+        /**
+         * Instantiate standard moment kappa solver. Because of the extra options regarding phased moments, prestress
+         * etc. some extra parameters need to be instantiated.
+         *
+         * @param As: {Array} Area of the reinforcement per layer.
+         * @param rebar_z: {Array} Height of the reinforcement layer with respect to the bottom of the cross section.
+         * @param rebar_diagram: {StressStrain} Diagram object.
+         */
+
+        this.rebar_z = rebar_z;
+        this.rebar_As = As;
+
+        this.prestress = this.m0 = this.d_stress = this.d_strain =
+            Array.apply(null, Array(As.length)).map(Number.prototype.valueOf, 0);
+
+        this.rebar_diagram = Array.apply(null, Array(As.length)).map(function () {
+            return rebar_diagram
+        });
+
+    };
 
 
-    //end class
 
-
-    //class
     function StressStrain(strain, stress) {
         /**
          * Class for creating stress strain diagrams.
@@ -534,7 +553,7 @@ var mkap = (function () {
             }
         }
     };
-    //end class
+
 
     return {    MomentKappa: MomentKappa,
                 StressStrain: StressStrain

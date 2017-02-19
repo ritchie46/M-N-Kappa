@@ -10,6 +10,18 @@ QUnit.test("Moment Kappa outcome", function (assert) {
     assert.close(t_1(), -1591, 5)
 });
 
+QUnit.test("Instantiate standard M-Kappa", function (assert) {
+    var run = new mkap.MomentKappa();
+    var a = new mkap.StressStrain([0], [0]);
+    run.instantiate_standard_reinforcement([100, 200], [20, 80], a);
+    assert.equal(run.rebar_diagram[0], a);
+    assert.equal(run.rebar_diagram[1], a);
+    assert.equal(run.prestress[1], 0);
+    assert.equal(run.d_stress[1], 0);
+    assert.equal(run.m0[1], 0);
+
+});
+
 t_mkap = function (loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, top, promille,
 prestress) {
     // cross section
@@ -18,7 +30,6 @@ prestress) {
     }
 
     cs = new crsn.PolyGon(loc);
-
     var concrete_comp = new mkap.StressStrain(comp_strain, comp_stress);
     var concrete_tensile = new mkap.StressStrain(tens_strain, tens_stress);
 
@@ -36,6 +47,7 @@ prestress) {
     }
     run.solver(top, promille);
     run.det_m_kappa();
+    console.log(run.moment)
     return [run.moment / 1e6, run.validity()];
 };
 
