@@ -129,13 +129,6 @@ Session.prototype.pre_prestress= function () {
      *  mkap is a copy. As will be adapted to mimic the pre-stress conditions
      */
 
-    // take the first tensile point to determine the center line under negative moment.
-    if (this.mkap.tensile_diagram.stress.length == 1){  // there is no tensile capacity list = [0]
-        window.alert("A cross section cannot be pre-stressed if there is no tensile capacity.\n" +
-            "Please determine a tensile stress strain diagram.");
-        return 1
-    }
-
     // copy mkap
     var mkap = jQuery.extend(true, {}, this.mkap); // deep copy
 
@@ -175,44 +168,6 @@ Session.prototype.pre_prestress= function () {
         N -= this.mkap.rebar_As[i] * this.mkap.prestress[i];
     }
 
-    // // Turn the cross section 180 degrees
-    // var min_x = 1e9; var min_y = 1e9;
-    // // rotate the polygon
-    // for (i in mkap.cross_section.point_list) {
-    //     var p = mkap.cross_section.point_list[i];
-    //     mkap.cross_section.point_list[i] = p.rotate_origin(Math.PI);
-    //
-    //     // determine the translation vector.
-    //     if (mkap.cross_section.point_list[i].x < min_x){
-    //         min_x = mkap.cross_section.point_list[i].x
-    //     }
-    //     if (mkap.cross_section.point_list[i].y < min_y){
-    //         min_y = mkap.cross_section.point_list[i].y
-    //     }
-    // }
-    // // translate back to origin.
-    // for (i in mkap.cross_section.point_list) {
-    //     mkap.cross_section.point_list[i] = new vector.Point(
-    //         mkap.cross_section.point_list[i].x - min_x,
-    //         mkap.cross_section.point_list[i].y - min_y
-    //
-    //     )
-    // }
-    // // rotate the reinforcement.
-    // for (i in mkap.rebar_z) {
-    //     mkap.rebar_z[i] = mkap.cross_section.top - mkap.rebar_z[i]
-    // }
-    // // determine the width sections
-    // mkap.cross_section.instantiate();
-
-    // determine the pre-stress strains
-    // compute_moment(Math.abs(mp), mkap, false);
-    // mkap.det_m_kappa();
-
-    // if (!mkap.validity()) {
-    //     window.alert("Pre-stress moment is higher than the capacity before cracking.\n Moment:" + (mp / 1e6) +
-    //         "\nThe calculation will continue. Check if the bending moment due to own weight is sufficient to prevent cracking.");
-    // }
 
     /**
      * Translate the reinforcement diagrams for the reinforcement layers that are pre-stressed. The translation will be:
