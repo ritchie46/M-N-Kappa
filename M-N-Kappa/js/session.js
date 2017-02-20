@@ -445,6 +445,35 @@ Session.prototype.calculate_significant_points = function () {
     }
 
 };
+
+Session.prototype.axial_moment_diagram = function () {
+
+    var moment = [];
+    var axial = [];
+    var n = 50;
+    // The maximum possible concrete resistance force
+    var max_N = Math.max.apply(null, this.mkap.compressive_diagram.stress) * this.mkap.cross_section.area();
+
+    // The maximum possible reinforcement resistance force
+    for (var i = 0; i < this.mkap.rebar_As.length; i++) {
+        max_N += Math.max.apply(null, this.mkap.rebar_diagram[i].stress) * this.mkap.rebar_As[i]
+    }
+    this.mkap.normal_force = - max_N;
+
+    var dN = max_N / n;
+
+    for (i = 0; i < n; i++)
+        this.calc_hookup(0.05);
+        axial.push(this.mkap.normal_force);
+        moment.push(this.mkap.normal_force);
+        this.mkap.normal_force -= dN;
+
+    return {
+        moment: moment,
+        axial: axial
+    }
+
+};
 // end class
 
 var session = new Session();
