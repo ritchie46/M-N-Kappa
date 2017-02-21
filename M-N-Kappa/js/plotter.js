@@ -73,6 +73,8 @@ var plt = (function () {
 
     function draw_polygon(x, y, session, add_to_mkap, subtract) {
         /**
+         * Draw a cross section plot.
+         *
          * @param session (object) From the session class.
          * @param add_to_mkap (boolean) If true the x and y coordinates will be added to the mkappa object as a new
          *                              cross section.
@@ -257,6 +259,15 @@ var plt = (function () {
     var height = 300;
 
     function add_svg(selector, name_x, name_y) {
+        /**
+         * Add a new svg in a html div.
+         *
+         * @param selector: {string} JQuery selection syntax.
+         * @param name_x: {string} Name of x axis.
+         * @param name_y: {string} Name of y axis.
+         *
+         * @return object: {svg: svg object, padding: float}
+         */
         if (selector == ".mkappa_svg") {
             width = $('#pg_svg').width() * 0.7
         }
@@ -340,12 +351,14 @@ var plt = (function () {
 
     
     function draw_lines(svg_struct, xstr, ystr, floats, start_origin) {
+        /**
+         * @param: svg_struct: {object} Return object from the add_svg function.
+         * @param: xstr: {Array} Array from html input.
+         * @param: ystr: {Array} Array from html input.
+         * @param: floats: {Boolean} If true the x and y arrays may contain floats.
+         * @param: start_origin: {Boolean} Start the plot at [0, 0].
+         */
 
-        /// <param name="svg" type="object">d3 svg object</param>
-        /// <param name="xstr" type="array of strings">array from html input</param>
-        /// <param name="ystr" type="array of strings">array from html input</param>
-        /// <param name="floats" type="boolean">If true the x and y arrays may contain floats</param>
-        /// <param name="circle" type="boolean"> if true, circles added to data points</param>
 
         /**
          Draws lines on a given svg canvas. Input is standard form listst, thus contains strings.
@@ -433,6 +446,15 @@ var plt = (function () {
     }
 
     var moment_kappa_diagram = function (svg_struct, x, y, session) {
+        /**
+         * Plot moment kappa diagram with stress strain result click feedback. May also be used for axial force moment
+         * diagram.
+         *
+         * @param: svg_struct: {object} Return object from the add_svg function.
+         * @param: x: {Array} Containing float values.
+         * @param: y: {Array} Containing float values.
+         * @param: session: {Session}
+        */
 
         var svg = svg_struct.svg;
         var data = draw_lines(svg_struct, x, y, true, false);
@@ -484,13 +506,18 @@ var plt = (function () {
 
 
     var show_stress_strain_cross_section_view = function(selector, mkap) {
-
+        /**
+         * Creates a stress strain plot when the result moment kappa diagram is clicked.
+         *
+         * @param selector: {string} JQuery selection syntax of the html element to place the plot.
+         * @param mkap: {MomentKappa}
+         */
         $("#myModal").modal();
         $(selector).find("svg").remove();
         $("#strain_diagram_moment").html("<strong>bending moment: $ *10<sup>6</sup></strong>".replace("$",
             -Math.round(mkap.moment / Math.pow(10, 4)) / 100) +
             "  <br> <strong>kappa: $</strong>".replace("$", Math.round(mkap.kappa * 1000) / 1000) +
-            "  <br> <strong>Xu: $ mm</strong>".replace("$", Math.round(mkap.xu)))
+            "  <br> <strong>Xu: $ mm</strong>".replace("$", Math.round(mkap.xu)));
 
         width = $('#pg_svg').width() * 0.5;
 
