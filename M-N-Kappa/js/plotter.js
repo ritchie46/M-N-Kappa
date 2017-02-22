@@ -509,6 +509,8 @@ var plt = (function () {
          * @param selector: {string} JQuery selection syntax of the html element to place the plot.
          * @param mkap: {MomentKappa}
          */
+
+        // Modal popup
         $("#myModal").modal();
         $(selector).find("svg").remove();
         $("#strain_diagram_moment").html("<strong>bending moment: $ *10<sup>6</sup></strong>".replace("$",
@@ -518,6 +520,9 @@ var plt = (function () {
 
         width = $('#pg_svg').width() * 0.5;
 
+        /*
+        Strain diagram
+         */
         var svg = d3.select(selector).append("svg")
             .attr("width", width)
             .attr("height", height)
@@ -529,7 +534,7 @@ var plt = (function () {
         var max_y = mkap.cross_section.top;
         var origin_x = 0 - min_x;
         max_y -= min_y;
-        max_x -= min_x; //min_x -= min_x;
+        max_x -= min_x;
 
         var padding = 20;
         var padding_x = 45;
@@ -538,6 +543,7 @@ var plt = (function () {
 
         var z_top = 0; var z_btm = mkap.cross_section.top;
 
+        // Strain diagram whole cross section
         var data = [
             {x:origin_x, y: z_top, val: ""},
             {x: mkap.strain_top - min_x, y: z_top, val: mkap.strain_top},
@@ -558,7 +564,7 @@ var plt = (function () {
             .attr("stroke-width", 1)
             .attr("fill", "none");
 
-
+        // Strain diagram reinforcement
         var y;
         var x;
         var a; var b;
@@ -587,7 +593,43 @@ var plt = (function () {
                 if (typeof  d.val == 'number') {
                     return "" + (Math.round(d.val * 100) / 100) + ""
                 }
-            })};
+            });
+
+        /*
+        Stress diagram
+         */
+        var svg = d3.select(selector).append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append('g');
+
+        //min_x = Math.min.apply(null, mkap.stress);
+        max_x = -Math.min.apply(null, mkap.stress);
+        min_x = -max_x;
+
+        max_y -= min_y;
+        max_x -= min_x;
+        origin_x =  max_x;
+
+        scale_x = d3.scaleLinear().domain([0, max_x * 1.5]).range([padding_x, width - padding_x]);
+        scale_y = d3.scaleLinear().domain([0, max_y]).range([padding, height - padding]);
+
+        var crs_height = mkap.cross_section.top - mkap.cross_section.bottom;
+        for (i = 0; i < mkap.cross_section.n_value; i += 1) {
+            var z = scale_y(crs_height -  crs_height / mkap.cross_section.n_value * i);
+            data =[{x: scale_x(origin_x), y: z, val: ""},
+                        {x: scale_x(mkap.stress[i] + origin_x), y: z, val: ""}];
+
+            svg.append("svg:path")
+                .attr("d", linefunc(data))
+                .attr("stroke", "blue")
+                .attr("stroke-width", 1)
+                .attr("fill", "none");
+        }
+
+
+
+    };
 
 
 
