@@ -679,7 +679,7 @@
                 <div class="panel-body">
 
                     <div class="col-xs-4">
-                        <label >Normal force</label>
+                        <label >Axial force</label>
                         <div class="input-group">
                         <input type="number" class="form-control" placeholder="axial force" id="normal_force">
                         <span class="input-group-addon">* 10<sup>3</sup></span>
@@ -707,6 +707,12 @@
                             <label>Moment</label>
                             <input type="number" class="form-control" id="discrete_points_input">
                         </div>
+
+                        <div class="checkbox" style="float: left;">
+                            <label>
+                                <input type="checkbox" id="axial_checkbox"> <strong>N-M-Diagram</strong> 
+                            </label>
+                        </div>
                 </div>
 
                     <button type="button" class="btn btn-primary" id="calculate">Calculate</button>
@@ -721,8 +727,14 @@
 
             <div class="panel panel-default result_output hidden" id="moment_kappa_diagram_output">
                 <div class="panel-body">
-                    <label>MOMENT CURVATURE DIAGRAM</label>
+                    <label>MOMENT - CURVATURE DIAGRAM</label>
                     <div class="mkappa_svg col-xs-12"></div>
+                </div>
+            </div>
+            <div class="panel panel-default result_output hidden" id="axial_moment_diagram_output">
+                <div class="panel-body">
+                    <label>AXIAL FORCE - MOMENT DIAGRAM</label>
+                    <div class="axial_moment_svg col-xs-12"></div>
                 </div>
             </div>
 
@@ -901,13 +913,6 @@
                 </div>
 
             </div>
-        </div>
-    </div>
-
-    <div class="panel panel-default result_output hidden" id="axial_moment_diagram_output">
-        <div class="panel-body">
-            <label>AXIAL FORCE MOMENT DIAGRAM</label>
-            <div class="mkappa_svg col-xs-12"></div>
         </div>
     </div>
 

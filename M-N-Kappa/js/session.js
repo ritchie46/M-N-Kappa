@@ -458,15 +458,27 @@ Session.prototype.axial_moment_diagram = function () {
     for (var i = 0; i < this.mkap.rebar_As.length; i++) {
         max_N += Math.max.apply(null, this.mkap.rebar_diagram[i].stress) * this.mkap.rebar_As[i]
     }
-    this.mkap.normal_force = - max_N;
 
     var dN = max_N / n;
 
-    for (i = 0; i < n; i++)
+    var fail_count = 0;
+    this.mkap.normal_force = 0;
+
+    for (i = 0; i < n; i++) {
         this.calc_hookup(0.05);
-        axial.push(this.mkap.normal_force);
-        moment.push(this.mkap.normal_force);
+        if (this.mkap.validity()) {
+            axial.push(-this.mkap.normal_force);
+            moment.push(this.mkap.moment);
+        }
+        else {
+            fail_count++;
+            if (fail_count > 2) {
+                i = n; // break
+            }
+        }
         this.mkap.normal_force -= dN;
+    }
+
 
     return {
         moment: moment,

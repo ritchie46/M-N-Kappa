@@ -370,41 +370,39 @@ var plt = (function () {
         var svg = svg_struct.svg;
 
         /**
-         Math.max.apply(null, xstr) determines the max value of a string. .apply() is a method for applying arrays on the object.
+         Math.max.apply(null, xstr) determines the max value of a string.
          */
         var x_bound;
         var y_bound;
         if (floats) {
             x_bound = {
-                max: Math.max(Math.max.apply(null, xstr), 1e-9),
-                min: Math.min(Math.min.apply(null, xstr), 0)
+                max: Math.max(Math.max.apply(null, xstr), -1e9),
+                min: Math.min(Math.min.apply(null, xstr), 1e9)
             };
 
             y_bound = {
-                max: Math.max(Math.max.apply(null, ystr), 1e-9),
-                min: Math.min(Math.min.apply(null, ystr), 0)
+                max: Math.max(Math.max.apply(null, ystr), -1e9),
+                min: Math.min(Math.min.apply(null, ystr), 1e9)
             }
         }
 
         else {
-
             x_bound = det_min_max_str(xstr);
             y_bound = det_min_max_str(ystr);
         }
 
         var scale_x = d3.scaleLinear()
-            .domain([0, x_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
+            .domain([0, (x_bound.max - x_bound.min) * 1.05])  // make sure that all the values fit in the domain, thus also negative values
             .range(svg.range_x);
 
         var scale_y = d3.scaleLinear()
-            .domain([0, y_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
+            .domain([0, (y_bound.max - y_bound.min) * 1.05])  // make sure that all the values fit in the domain, thus also negative values
             .range(svg.range_y);
 
         var data = [];
         if (start_origin) {
             data.push({x: 0 + svg.padding, y: height - svg.padding, y_original: 0})
         }
-
 
         var loc;
         for (var i = 0; i < xstr.length; i++) {
@@ -441,7 +439,6 @@ var plt = (function () {
         svg.selectAll("g.y_axis")
             .call(y_axis)
             .attr("transform", "translate(" + (svg.padding) + ", 0 )");
-
         return data
     }
 

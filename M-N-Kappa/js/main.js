@@ -57,7 +57,7 @@ var calculate_mkappa = function () {
     // remove old svg
     $('.mkappa_svg').find('svg').remove();
     // add new svg
-    var svg = plt.add_svg('.mkappa_svg', "curvature", "bending moment  [*10^6]");
+    var svg = plt.add_svg('.mkappa_svg', "curvature", "bending moment  [*10⁶]");
 
     $(".result_output").addClass("hidden");
     var option = $("#calculation_type").val();
@@ -149,7 +149,30 @@ var calculate_mkappa = function () {
         // rebar results table
         update_rebar_results(0)
     }
+
+    // Axial force moment diagram
+    if ($("#axial_checkbox").is(":checked")) {
+        // remove old svg
+        $('.axial_moment_svg').find('svg').remove();
+        // add new svg
+        svg = plt.add_svg('.axial_moment_svg', "bending moment [*10⁶]", "axial force  [*10³]");
+
+        $("#axial_moment_diagram_output").removeClass("hidden");
+        sol = session.axial_moment_diagram();
+        moment = sol.moment;
+        var axial = sol.axial;
+
+        plt.draw_lines(svg, moment.map(function (i) {
+            return i / 1e6
+        }), axial.map(function (i) {
+            return i / 1e3
+        }), true, false);
+    }
+    else {
+        $("#axial_moment_diagram_output").addClass("hidden");
+    }
 };
+
 
 
 //-- Set rebar result table
