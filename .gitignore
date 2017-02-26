@@ -320,7 +320,7 @@ Thumbs.db
 */.idea/*
 */.__pycache__/*
 *.xml
-*.PNG
+
 *.pdf
 /__pycache__
 *.pyc
