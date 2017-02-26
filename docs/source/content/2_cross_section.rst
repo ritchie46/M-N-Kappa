@@ -2,6 +2,9 @@
 Cross sections
 ================
 
+Preset geometries
+-----------------
+
 The input of a new moment curvature analysis starts at the geometry tab.
 M-N-Kappa is capable of computing various cross sections. Some cross section types are preset.
 
@@ -15,6 +18,11 @@ M-N-Kappa is capable of computing various cross sections. Some cross section typ
 	:alt: Geometry input.
 	:scale: 75%
 
+*Standard geometry input.*
+
+Custom geometries
+-----------------
+
 If the required cross section is not available you can choose the custom option and insert points 
 on a x- and y axis to create a random cross section.
 
@@ -24,3 +32,5 @@ this value. This means the polygon closes automatically as shown in the figure b
 .. image:: ../_static/img/geometry_input_2.png
 	:alt: Geometry input.
 	:scale: 75%
+
+*Custom geometry input.*
