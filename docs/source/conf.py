@@ -153,5 +153,5 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
+# custom by ritchie46
 
