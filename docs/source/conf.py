@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # M-N-Kappa documentation build configuration file, created by
-# sphinx-quickstart on Sat Feb 25 21:29:40 2017.
+# sphinx-quickstart on Sun Feb 26 11:54:18 2017.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -69,7 +69,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
