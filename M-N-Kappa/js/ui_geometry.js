@@ -14,7 +14,7 @@ function trigger_rebar_input() {
     session.mkap.d_strain = [];
     session.compute_prestress = false;
     var n = document.getElementsByClassName("rebar_n");
-    var diam = document.getElementsByClassName("rebar_Ø");
+    var diam = document.getElementsByClassName("rebar_row_diam");
     var d = document.getElementsByClassName("rebar_d");
     var rebar_diagram = $(".rebar_material_select");
     var m0 = document.getElementsByClassName("rebar_M0");
