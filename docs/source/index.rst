@@ -11,6 +11,11 @@ M-N-Kappa
 =========
 M-N-Kappa is a free online moment curvature calculation tool. 
 
+Try `M-N-Kappa calculation tool here`_!
+
+.. _M-N-Kappa calculation tool here: http://ritchievink.com/mnkappa/
+
+
 It is based on the moment curvature analysis method, which is used to determine the 
 load-deformation behaviour of concrete sections based on non linear material stress-strain 
 relationships.

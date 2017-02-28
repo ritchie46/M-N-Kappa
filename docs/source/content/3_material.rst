@@ -16,13 +16,13 @@ The standard input units are:
 Below are both input fields shown.
 
 
-.. image:: ../_static/img/compressive_diagram_1.png
+.. image:: ../_static/img/compressive_diagram_1.PNG
 	:alt: Compressive diagram.
 	:width: 75%
 	
 *Compressive diagram.*
 	
-.. image:: ../_static/img/tensile_diagram_1.png
+.. image:: ../_static/img/tensile_diagram_1.PNG
 	:alt: Tensile diagram.
 	:width: 75%
 
@@ -38,16 +38,16 @@ by choosing the custom option.
 The preset concrete types are available in simple bi-linear diagrams and in parabolic-rectangular diagrams.
 
 +-------------------------+-------------------------+
-| |bi-lin|                | |para-rect|             |
+|  |bi-lin|               |  |para-rect|            |
 |                         |                         |
 | *bi-linear*             | *parabolic-rectangular* |
 +-------------------------+-------------------------+
 
 
-.. |bi-lin| 	image:: ../_static/img/bi_linear.png
+.. |bi-lin| 	image:: ../_static/img/bi_linear.PNG
 
 	
-.. |para-rect|	image:: ../_static/img/parabolic_rectangular.png
+.. |para-rect|	image:: ../_static/img/parabolic_rectangular.PNG
 
 
 Material factor

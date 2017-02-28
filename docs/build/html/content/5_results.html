@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>3. Reinforcement &mdash; M-N-Kappa 1.0b documentation</title>
+  <title>4. Results &mdash; M-N-Kappa 1.0b documentation</title>
   
 
   
@@ -31,8 +31,7 @@
 
   
     <link rel="top" title="M-N-Kappa 1.0b documentation" href="../index.html"/>
-        <link rel="next" title="4. Results" href="5_results.html"/>
-        <link rel="prev" title="2. Materials" href="3_material.html"/> 
+        <link rel="prev" title="3. Reinforcement" href="4_reinforcement.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -85,12 +84,14 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="2_cross_section.html">1. Cross sections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3_material.html">2. Materials</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">3. Reinforcement</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#reinforcement-rows">3.1. Reinforcement rows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#materials">3.2. Materials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_reinforcement.html">3. Reinforcement</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">4. Results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#moment-curvature-interaction-diagram">4.1. Moment curvature interaction diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#section-diagrams">4.2. Section diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#axial-force">4.3. Axial force</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#axial-force-moment-interation-diagram">4.4. Axial force - moment interation diagram</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="5_results.html">4. Results</a></li>
 </ul>
 
             
@@ -121,11 +122,11 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>3. Reinforcement</li>
+    <li>4. Results</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/content/4_reinforcement.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/content/5_results.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -135,82 +136,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="reinforcement">
-<h1>3. Reinforcement<a class="headerlink" href="#reinforcement" title="Permalink to this headline">¶</a></h1>
-<p>Reinforcements can be added to your selected cross sections in the <strong>rebar</strong> tab.
-In this input tab the amount of reinforcement and the type of reinforcement material can be selected
-or customised to your preferences. Both the amount of reinforcement layers as the amount of reinforcement
-materials in a cross section are not limited.</p>
-<div class="section" id="reinforcement-rows">
-<h2>3.1. Reinforcement rows<a class="headerlink" href="#reinforcement-rows" title="Permalink to this headline">¶</a></h2>
-<p>The amount of reinforcement is set with reinforcement rows. Every row represents a layer of reinforcement in the
-cross section. If you need reinforcement in the top and the bottom of the beam, two layers, thus two reinforcement
-rows are needed.</p>
-<p>The input field of a rebar row is shown below.</p>
-<img alt="../_images/rebar_row_1.PNG" src="../_images/rebar_row_1.PNG" />
-<p><em>Rebar row input</em></p>
-<p>Every row requires the following input:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="47%" />
-<col width="53%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Input field</th>
-<th class="head">Note</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>Number of bars</td>
-<td><div class="first last line-block">
-<div class="line">Amount of bars in that layer.</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Distance to the top of the cross section</td>
-<td><div class="first last line-block">
-<div class="line">Measured until the center of the layer.</div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Moment at placement</td>
-<td><div class="first last line-block">
-<div class="line">The bending moment active when the</div>
-<div class="line">reinforcement is activated. Used for phased</div>
-<div class="line">loading or CFRP.</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Rebar material diagram</td>
-<td><div class="first last line-block">
-<div class="line">Type of stress strain diagram defined in</div>
-<div class="line">this tab.</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="materials">
-<h2>3.2. Materials<a class="headerlink" href="#materials" title="Permalink to this headline">¶</a></h2>
-<p>Different reinforcement materials can be added following the same rules as applied in <a class="reference internal" href="3_material.html#chapt-materials"><span>Materials</span></a></p>
-<p>The preset reinforcement materials are:</p>
-<p><em>Standard reinforcement steel</em></p>
+  <div class="section" id="results">
+<h1>4. Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h1>
+<p>Under the <strong>results</strong> tab the available results will be shown. Results are a:</p>
 <ul class="simple">
-<li>B500</li>
-<li>B400</li>
+<li>moment curvature interaction diagram</li>
+<li>axial force - moment interaction diagram</li>
+<li>strain results in a section at a queried bending moment</li>
+<li>stress results in a section at a queried bending moment</li>
 </ul>
-<p><em>Prestressing steel</em></p>
-<ul class="simple">
-<li>Y1860</li>
-<li>Y1770</li>
-<li>Y1670</li>
-</ul>
-<p><em>(Carbon) Fibre Reinforced Polymer</em></p>
-<ul class="simple">
-<li>CFRP</li>
-</ul>
-<p>If a non-standard material is required. The material diagrams can be customised.</p>
+<div class="section" id="moment-curvature-interaction-diagram">
+<h2>4.1. Moment curvature interaction diagram<a class="headerlink" href="#moment-curvature-interaction-diagram" title="Permalink to this headline">¶</a></h2>
+<p>After running a calculation the moment curvature diagram will show. Only positive moments and positive bending moments are shown.
+If you are interested in the results in the other direction, you could rotate the cross section 90 degrees.</p>
+<img alt="Example of a moment curvature diagram" src="../_images/mkappa_11.png" />
+<p><em>M-N-Kappa.</em></p>
+</div>
+<div class="section" id="section-diagrams">
+<h2>4.2. Section diagrams<a class="headerlink" href="#section-diagrams" title="Permalink to this headline">¶</a></h2>
+<p>As can be seen in the M-N-Kappa diagram above, the interaction line shows many dots. By clicking on of these dots you will get visual
+feedback of the section strains and stresses acting on that point in the diagram.</p>
+<img alt="Section results" src="../_images/section_results.png" />
+<p><em>Section results.</em></p>
+<p>The section results screen will show the strain distribution acting on the entire section and the stress distribution of the cross sections
+material. Note that stress results of the reinforcement is not shown.</p>
+<p>The screen also shows the currently acting bending moment, curvature and the height of the cross section, named as X.</p>
+</div>
+<div class="section" id="axial-force">
+<h2>4.3. Axial force<a class="headerlink" href="#axial-force" title="Permalink to this headline">¶</a></h2>
+<p>Before computing the results, the axial force acting on the cross section can be set. A negative value will result in a acting compressive
+force. A positive inserted value will result in a tensile force acting on the cross section.</p>
+</div>
+<div class="section" id="axial-force-moment-interation-diagram">
+<h2>4.4. Axial force - moment interation diagram<a class="headerlink" href="#axial-force-moment-interation-diagram" title="Permalink to this headline">¶</a></h2>
+<p>When the N-M-Diagram option is checked an axial force - moment interaction diagram will be shown. This diagram shows the influence of a
+varying axial force on the bending moment capacity.</p>
+<img alt="../_images/axial_force_moment.png" src="../_images/axial_force_moment.png" />
+<p><em>Example of an axial moment diagram.</em></p>
 </div>
 </div>
 
@@ -221,10 +183,8 @@ rows are needed.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="5_results.html" class="btn btn-neutral float-right" title="4. Results" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="3_material.html" class="btn btn-neutral" title="2. Materials" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="4_reinforcement.html" class="btn btn-neutral" title="3. Reinforcement" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

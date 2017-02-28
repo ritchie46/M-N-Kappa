@@ -2,7 +2,7 @@
 Reinforcement
 =============
 
-Reinforcements can be added to your selected cross sections in the rebar tab.
+Reinforcements can be added to your selected cross sections in the **rebar** tab.
 In this input tab the amount of reinforcement and the type of reinforcement material can be selected
 or customised to your preferences. Both the amount of reinforcement layers as the amount of reinforcement
 materials in a cross section are not limited.
@@ -16,7 +16,7 @@ rows are needed.
 
 The input field of a rebar row is shown below.
 
-.. image:: ../_static/img/rebar_row_1.png
+.. image:: ../_static/img/rebar_row_1.PNG
 
 *Rebar row input*
 
@@ -58,6 +58,9 @@ The preset reinforcement materials are:
 * Y1770
 * Y1670
 
-*Carbon Fibre Reinforced Polymer*
+*(Carbon) Fibre Reinforced Polymer*
 
 * CFRP
+
+If a non-standard material is required. The material diagrams can be customised.
+
