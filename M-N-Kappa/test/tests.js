@@ -50,7 +50,7 @@ prestress) {
     }
     run.solver(top, promille);
     run.det_m_kappa();
-    console.log(run.moment)
+    console.log(run.moment);
     return [run.moment / 1e6, run.validity()];
 };
 
