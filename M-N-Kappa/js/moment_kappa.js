@@ -13,7 +13,7 @@ var mkap = (function () {
         this.force_compression = 0;
         this.normal_force = 0;
         this.iterations = 250;
-        this.div = 3;
+        this.div = 2;
 
         /*
         * Reinforcement.
@@ -181,16 +181,18 @@ var mkap = (function () {
             }
         }
 
+        var div = this.div;
+        var fHistoryHigh = 1e12;
+        var fHistoryLow = -1e12;
         var count = 0;
         // iterate until the convergence criteria is met
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                 this.solution = true;
-                if (print) {
-                    if (window.DEBUG) {
-                        console.log("convergence after %s iterations".replace("%s", count))
-                    }
+                if (window.DEBUG) {
+                    console.log("convergence after %s iterations".replace("%s", count))
                 }
+
                 return [0, count]; // [success, count]
             }
 
@@ -202,7 +204,7 @@ var mkap = (function () {
 
             else if (this.force_tensile > 0) {
                 this.set_div(btm_str);
-                var factor = std.convergence(this.force_tensile, this.force_compression, this.div);
+                var factor = std.convergence(this.force_tensile, this.force_compression, div);
                 btm_str = btm_str * factor;
             }
 
@@ -214,7 +216,22 @@ var mkap = (function () {
                 return [1, count];
 
             }
-            count += 1
+            count += 1;
+
+            // Adaptive convergence divider
+            // Change the division based on the factor history
+            if (factor > 1) {
+                if (factor > fHistoryHigh) {
+                    div++
+                }
+                fHistoryHigh = factor;
+            }
+            else {
+                if (factor < fHistoryLow) {
+                    div++
+                }
+                fHistoryLow = factor
+            }
         }
     };
 
@@ -223,6 +240,9 @@ var mkap = (function () {
          * @param btm_str: (float) strain to start
          * @param top_str: (float) strain to start
          */
+        var div = this.div;
+        var fHistoryHigh = 1e12;
+        var fHistoryLow = -1e12;
         var count = 0;
         // iterate until the convergence criteria is met
         while (1) {
@@ -246,7 +266,22 @@ var mkap = (function () {
                 }
                 return [1, count]
             }
-            count += 1
+            count += 1;
+
+            // Adaptive convergence divider
+            // Change the division based on the factor history
+            if (factor > 1) {
+                if (factor > fHistoryHigh) {
+                    div++
+                }
+                fHistoryHigh = factor;
+            }
+            else {
+                if (factor < fHistoryLow) {
+                    div++
+                }
+                fHistoryLow = factor
+            }
         }
     };
 
@@ -266,6 +301,9 @@ var mkap = (function () {
         var count = 0;
         // iterate until the convergence criteria is met
 
+        var div = this.div;
+        var fHistoryHigh = 1e12;
+        var fHistoryLow = -1e12;
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                 this.solution = true;
@@ -278,7 +316,7 @@ var mkap = (function () {
 
             this.set_div(btm_str);
 
-            var factor = std.convergence(this.force_compression, this.force_tensile, this.div);
+            var factor = std.convergence(this.force_compression, this.force_tensile, div);
             btm_str = btm_str * factor;
 
             this.det_force_distribution(top_str, btm_str);
@@ -290,7 +328,21 @@ var mkap = (function () {
                 }
                 return [1, count]
             }
-            count += 1
+            count += 1;
+            // Adaptive convergence divider
+            // Change the division based on the factor history
+            if (factor > 1) {
+                if (factor > fHistoryHigh) {
+                    div++
+                }
+                fHistoryHigh = factor;
+            }
+            else {
+                if (factor < fHistoryLow) {
+                    div++
+                }
+                fHistoryLow = factor
+            }
         }
     };
 
@@ -327,7 +379,7 @@ var mkap = (function () {
                     return sol[1]
                 }
                 else {
-                    total_iter += sol[1]
+                    total_iter += sol[1];
 
                     if (strain_top) {  // top strain remains constant
                         var sol = this.iterator_top_constant(btm_str, top_str);
