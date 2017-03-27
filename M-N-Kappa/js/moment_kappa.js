@@ -405,7 +405,6 @@ var mkap = (function () {
         }
         // Standard control flow
         else {
-            console.log("Standard first");
             if (strain_top) {  // top strain remains constant
                 var sol = this.iterator_top_constant(btm_str, top_str);
                 if (sol[0] === 0) {
@@ -633,7 +632,7 @@ var mkap = (function () {
 
 
         var count = 0;
-        while (!mkap.validity() && count < 150) {
+        while (!mkap.validity() && count < (1 / reduction)) {
             mkap.solver(top, strain);
             mkap.det_m_kappa();
             strain *= (1 - reduction);
