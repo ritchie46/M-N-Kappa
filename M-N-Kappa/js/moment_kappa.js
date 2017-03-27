@@ -159,7 +159,7 @@ var mkap = (function () {
          * @param str: (float) Strain.
          */
         if (Math.abs(str) < 0.15) {
-            this.iterations = 500
+            this.iterations = 200
         }
         else {
             this.iterations = 250;
@@ -185,6 +185,7 @@ var mkap = (function () {
         var fHistoryHigh = 1e12;
         var fHistoryLow = -1e12;
         var count = 0;
+        var offset = this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1];
         // iterate until the convergence criteria is met
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
@@ -200,15 +201,16 @@ var mkap = (function () {
             // Needed when the rebar is above the neutral line.
             else if (isNaN(this.force_tensile) || this.force_tensile == 0) {
                 btm_str = std.interpolate(this.cross_section.top, top_str, top_reinf, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
+                + offset
+
             }
 
             else if (this.force_tensile > 0) {
-                this.set_div(btm_str);
                 var factor = std.convergence(this.force_tensile, this.force_compression, div);
                 btm_str = btm_str * factor;
             }
 
-            this.det_force_distribution(top_str, btm_str);
+            this.det_force_distribution(top_str, btm_str - offset);
             if (count > this.iterations) {
                 if (window.DEBUG) {
                     console.log("no convergence found after %s iterations".replace("%s", count))
@@ -244,6 +246,7 @@ var mkap = (function () {
         var fHistoryHigh = 1e12;
         var fHistoryLow = -1e12;
         var count = 0;
+        var offset = this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1];
         // iterate until the convergence criteria is met
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
@@ -258,7 +261,7 @@ var mkap = (function () {
             var factor = std.convergence(this.force_compression, this.force_tensile, this.div);
             top_str = top_str * factor;
 
-            this.det_force_distribution(top_str, btm_str);
+            this.det_force_distribution(top_str - offset, btm_str);
 
             if (count > this.iterations) {
                 if (window.DEBUG) {
@@ -304,6 +307,7 @@ var mkap = (function () {
         var div = this.div;
         var fHistoryHigh = 1e12;
         var fHistoryLow = -1e12;
+        var offset = this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1];
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
                 this.solution = true;
@@ -314,12 +318,10 @@ var mkap = (function () {
                 return [0, count]
             }
 
-            this.set_div(btm_str);
-
             var factor = std.convergence(this.force_compression, this.force_tensile, div);
             btm_str = btm_str * factor;
 
-            this.det_force_distribution(top_str, btm_str);
+            this.det_force_distribution(top_str, btm_str - offset);
 
             if (count > this.iterations) {
 
@@ -373,7 +375,6 @@ var mkap = (function () {
                 /**
                  * Try to solve for a cross section completely under pressure.
                  */
-
                 sol = this.iterator_complete_pressure(top_str);
                 if (sol[0] === 0) {
                     return sol[1]
@@ -404,7 +405,7 @@ var mkap = (function () {
         }
         // Standard control flow
         else {
-
+            console.log("Standard first");
             if (strain_top) {  // top strain remains constant
                 var sol = this.iterator_top_constant(btm_str, top_str);
                 if (sol[0] === 0) {
@@ -428,7 +429,7 @@ var mkap = (function () {
                 /**
                  * Try to solve for a cross section completely under pressure.
                  */
-
+                console.log("complete pressure")
                 sol = this.iterator_complete_pressure(top_str);
                 if (sol[0] === 0) {
                     return sol[1]

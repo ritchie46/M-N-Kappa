@@ -25,6 +25,15 @@ QUnit.test("Instantiate standard M-Kappa", function (assert) {
 
 });
 
+QUnit.test("Benchmark", function (assert) {
+
+    for (var i = 0; i < 100; i++) {
+        t_3()
+    }
+    assert.equal(1, 1)
+});
+
+
 t_mkap = function (loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, top, promille,
 prestress) {
     // cross section
@@ -75,4 +84,48 @@ t_1 = function () {
     }
 };
 
+t_2 = function () {
+    // Sweet spot of no singular convergence due to iterating to zero. Note that this is only the case without the
+    //offset
+    b = 400; h = 500;
+    loc = [[0, 0], [b, 0], [b, h], [0, h], [0, 0]];
+    comp_strain = [0, 1.75, 3.5];
+    comp_stress = [0, 20, 20];
+    tens_strain = [0, 0.291];
+    tens_stress = [0, 2.21];
+    As = [1205];
+    rebar_z = [50];
+    normal_force = -2e6;
+    prestress = [0];
+    output = t_mkap(loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, false,
+        2.0, prestress);
 
+    if (output[1]) {
+        return output[0]
+    }
+    else {
+        return 1
+    }
+};
+
+
+t_3 = function () {
+    loc = [[0, 0], [500, 0], [500, 800], [0, 800], [0, 0]];
+    comp_strain = [0, 1.75, 3.5];
+    comp_stress = [0, 13.3, 13.3];
+    tens_strain = [0, 0.291];
+    tens_stress = [0, 2.21];
+    As = [4021, 4021];
+    rebar_z = [80, 720];
+    normal_force = -4e6;
+    prestress = [0, 0];
+    output = t_mkap(loc, comp_strain, comp_stress, tens_strain, tens_stress, As, rebar_z, normal_force, true,
+        1.6, prestress);
+
+    if (output[1]) {
+        return output[0]
+    }
+    else {
+        return 1
+    }
+};
