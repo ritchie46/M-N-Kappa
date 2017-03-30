@@ -244,7 +244,7 @@ Session.prototype.calc_hookup = function (reduction) {
 
 Session.prototype.compute_n_points = function (n) {
     this.all_computed_mkap = [];
-    if (this.apply_m0() != 1) {
+    if (this.apply_m0() !== 1) {
         var strain = this.calc_hookup(0.05);
         var d_str = strain / n;
         var moment = [];

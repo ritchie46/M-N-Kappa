@@ -152,19 +152,6 @@ var mkap = (function () {
 
     };
 
-    MomentKappa.prototype.set_div = function(str) {
-        /**
-         * Up the allowed iterations at small strains. Due to asymptotic behaviour there are more iterations needed.
-         *
-         * @param str: (float) Strain.
-         */
-        if (Math.abs(str) < 0.15) {
-            this.iterations = 200
-        }
-        else {
-            this.iterations = 250;
-        }
-    };
 
     MomentKappa.prototype.iterator_top_constant = function (btm_str, top_str) {
         /**
@@ -176,7 +163,7 @@ var mkap = (function () {
         // Find the index of the highest reinforcement layer.
         var top_reinf = Math.min.apply(null, this.rebar_z);
         for (var i = 0; i < this.rebar_As.length; i++) {
-            if (this.rebar_z[i] == top_reinf) {
+            if (this.rebar_z[i] === top_reinf) {
                 var rbr_index = i
             }
         }
@@ -199,7 +186,7 @@ var mkap = (function () {
 
             // Extrapolate the strain from the first significant rebar strain point, to the bottom strain.
             // Needed when the rebar is above the neutral line.
-            else if (isNaN(this.force_tensile) || this.force_tensile == 0) {
+            else if (isNaN(this.force_tensile) || this.force_tensile === 0) {
                 btm_str = std.interpolate(this.cross_section.top, top_str, top_reinf, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
                 + offset
 
@@ -288,67 +275,6 @@ var mkap = (function () {
         }
     };
 
-    MomentKappa.prototype.iterator_complete_pressure = function (top_str) {
-        /**
-         * Compression in bottom may not be higher than in top.
-         */
-
-        var btm_str = top_str;
-
-        this.det_force_distribution(top_str, btm_str);
-        if (this.force_tensile > this.force_compression) {
-            // No equilibrium possible with positive kappa.
-            return 1
-        }
-
-        var count = 0;
-        // iterate until the convergence criteria is met
-
-        var div = this.div;
-        var fHistoryHigh = 1e12;
-        var fHistoryLow = -1e12;
-        var offset = this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1];
-        while (1) {
-            if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
-                this.solution = true;
-
-                if (window.DEBUG) {
-                    console.log("convergence after %s iterations".replace("%s", count))
-                }
-                return [0, count]
-            }
-
-            var factor = std.convergence(this.force_compression, this.force_tensile, div);
-            btm_str = btm_str * factor;
-
-            this.det_force_distribution(top_str, btm_str - offset);
-
-            if (count > this.iterations) {
-
-                if (window.DEBUG) {
-                    console.log("no convergence found after %s iterations".replace("%s", count))
-                }
-                return [1, count]
-            }
-            count += 1;
-            // Adaptive convergence divider
-            // Change the division based on the factor history
-            if (factor > 1) {
-                if (factor > fHistoryHigh) {
-                    div++
-                }
-                fHistoryHigh = factor;
-            }
-            else {
-                if (factor < fHistoryLow) {
-                    div++
-                }
-                fHistoryLow = factor
-            }
-        }
-    };
-
-
     MomentKappa.prototype.solver = function (strain_top, strain) {
         /**
          * Return the .det_stress method several times and adapt the input until the convergence criteria is met.
@@ -369,74 +295,25 @@ var mkap = (function () {
         var top_str = -strain;
         this.det_force_distribution(top_str, btm_str);
 
-        // If the axial force is substantial start with a solver completely under pressure.
-        var a = this.compressive_diagram.det_stress(-top_str) * this.cross_section.area() * 0.75;
-        if (-this.normal_force > a) {
-            /**
-             * Try to solve for a cross section completely under pressure.
-             */
-            sol = this.iterator_complete_pressure(top_str);
+        if (strain_top) {  // top strain remains constant
+            var sol = this.iterator_top_constant(btm_str, top_str);
             if (sol[0] === 0) {
-                return {iterations: sol[1], solver: "complete pressure"}
+                return {iterations: sol[1], solver: "top strain"}
             }
             else {
-                total_iter += sol[1];
-
-                if (strain_top) {  // top strain remains constant
-                    var sol = this.iterator_top_constant(btm_str, top_str);
-                    if (sol[0] === 0) {
-                        return {iterations: sol[1], solver: "top strain"}
-                    }
-                    else {
-                        total_iter += sol[1]
-                    }
-                }
-                else { // bottom strain remains constant
-                    sol = this.iterator_btm_constant(btm_str, top_str);
-                    if (sol[0] === 0) {
-                        return {iterations: sol[1], solver: "bottom strain"}
-                    }
-                    else {
-                        total_iter += sol[1]
-                    }
-                }
-
+                total_iter += sol[1]
             }
         }
-        // Standard control flow
-        else {
-            if (strain_top) {  // top strain remains constant
-                var sol = this.iterator_top_constant(btm_str, top_str);
-                if (sol[0] === 0) {
-                    return {iterations: sol[1], solver: "top strain"}
-                }
-                else {
-                    total_iter += sol[1]
-                }
+        else { // bottom strain remains constant
+            sol = this.iterator_btm_constant(btm_str, top_str);
+            if (sol[0] === 0) {
+                return {iterations: sol[1], solver: "bottom strain"}
             }
-            else { // bottom strain remains constant
-                sol = this.iterator_btm_constant(btm_str, top_str);
-                if (sol[0] === 0) {
-                    return {iterations: sol[1], solver: "bottom strain"}
-                }
-                else {
-                    total_iter += sol[1]
-                }
-            }
-
-            if (!this.validity() && this.normal_force !== 0) {
-                /**
-                 * Try to solve for a cross section completely under pressure.
-                 */
-                sol = this.iterator_complete_pressure(top_str);
-                if (sol[0] === 0) {
-                    return {iterations: sol[1], solver: "complete pressure"}
-                }
-                else {
-                    total_iter += sol[1]
-                }
+            else {
+                total_iter += sol[1]
             }
         }
+
         return total_iter
     };
 
