@@ -372,43 +372,43 @@ var mkap = (function () {
         // If the axial force is substantial start with a solver completely under pressure.
         var a = this.compressive_diagram.det_stress(-top_str) * this.cross_section.area() * 0.75;
         if (-this.normal_force > a) {
-                /**
-                 * Try to solve for a cross section completely under pressure.
-                 */
-                sol = this.iterator_complete_pressure(top_str);
-                if (sol[0] === 0) {
-                    return sol[1]
-                }
-                else {
-                    total_iter += sol[1];
+            /**
+             * Try to solve for a cross section completely under pressure.
+             */
+            sol = this.iterator_complete_pressure(top_str);
+            if (sol[0] === 0) {
+                return {iterations: sol[1], solver: "complete pressure"}
+            }
+            else {
+                total_iter += sol[1];
 
-                    if (strain_top) {  // top strain remains constant
-                        var sol = this.iterator_top_constant(btm_str, top_str);
-                        if (sol[0] === 0) {
-                            return sol[1]
-                        }
-                        else {
-                            total_iter += sol[1]
-                        }
+                if (strain_top) {  // top strain remains constant
+                    var sol = this.iterator_top_constant(btm_str, top_str);
+                    if (sol[0] === 0) {
+                        return {iterations: sol[1], solver: "top strain"}
                     }
-                    else { // bottom strain remains constant
-                        sol = this.iterator_btm_constant(btm_str, top_str);
-                        if (sol[0] === 0) {
-                            return sol[1]
-                        }
-                        else {
-                            total_iter += sol[1]
-                        }
+                    else {
+                        total_iter += sol[1]
                     }
-
                 }
+                else { // bottom strain remains constant
+                    sol = this.iterator_btm_constant(btm_str, top_str);
+                    if (sol[0] === 0) {
+                        return {iterations: sol[1], solver: "bottom strain"}
+                    }
+                    else {
+                        total_iter += sol[1]
+                    }
+                }
+
+            }
         }
         // Standard control flow
         else {
             if (strain_top) {  // top strain remains constant
                 var sol = this.iterator_top_constant(btm_str, top_str);
                 if (sol[0] === 0) {
-                    return sol[1]
+                    return {iterations: sol[1], solver: "top strain"}
                 }
                 else {
                     total_iter += sol[1]
@@ -417,21 +417,20 @@ var mkap = (function () {
             else { // bottom strain remains constant
                 sol = this.iterator_btm_constant(btm_str, top_str);
                 if (sol[0] === 0) {
-                    return sol[1]
+                    return {iterations: sol[1], solver: "bottom strain"}
                 }
                 else {
                     total_iter += sol[1]
                 }
             }
 
-            if (!this.validity() && this.normal_force != 0) {
+            if (!this.validity() && this.normal_force !== 0) {
                 /**
                  * Try to solve for a cross section completely under pressure.
                  */
-                console.log("complete pressure")
                 sol = this.iterator_complete_pressure(top_str);
                 if (sol[0] === 0) {
-                    return sol[1]
+                    return {iterations: sol[1], solver: "complete pressure"}
                 }
                 else {
                     total_iter += sol[1]
@@ -577,7 +576,7 @@ var mkap = (function () {
             if (strain > this.strain[this.strain.length - 1]) {
                 return 0;
             }
-            else if (this.strain[i] == strain) {
+            else if (this.strain[i] === strain) {
                 return this.stress[i]
             }
             else if (this.strain[i] > strain) {
@@ -597,7 +596,7 @@ var mkap = (function () {
             if (stress > this.stress[this.stress.length - 1]) {
                 return 0;
             }
-            else if (this.stress[i] == stress) {
+            else if (this.stress[i] === stress) {
                 return this.strain[i]
             }
             else if (this.stress[i] > stress) {
@@ -627,18 +626,26 @@ var mkap = (function () {
             strain = mkap.tensile_diagram.strain[mkap.tensile_diagram.strain.length - 1];
         }
 
-        mkap.solver(top, strain);
+        var sol = mkap.solver(top, strain);
         mkap.det_m_kappa();
 
 
         var count = 0;
+        var iter;
         while (!mkap.validity() && count < (1 / reduction)) {
-            mkap.solver(top, strain);
+            iter = mkap.solver(top, strain);
             mkap.det_m_kappa();
             strain *= (1 - reduction);
             count += 1;
         }
-        return strain
+
+        if (mkap.validity()) {
+            return {strain: strain, solver: sol.solver}
+        }
+        else {
+            return false
+        }
+
     }
 
 

@@ -7,9 +7,7 @@ var compute_moment = function (moment, mkap, top) {
      * @param top: (bool) Depends if the hookup is sought for the top or the bottom of the cross section.
      */
     top = (typeof top !== "undefined") ? top : true;
-    var strain = calc_hookup(0.05, mkap, top);
-    mkap.solver(top, strain);
-    mkap.det_m_kappa();
+    var strain = session.calc_hookup(0.05, mkap, top);
 
     if (window.DEBUG) {
         console.log("In compute moment")
@@ -241,7 +239,7 @@ Session.prototype.pre_prestress= function () {
 };
 
 Session.prototype.calc_hookup = function (reduction) {
-    return mkap.calcHookup(reduction, this.mkap)
+    return mkap.calcHookup(reduction, this.mkap).strain
 };
 
 Session.prototype.compute_n_points = function (n) {
@@ -274,7 +272,7 @@ Session.prototype.compute_moment = function (moment, top) {
      * @param top: (bool) Depends if the hookup is sought for the top or the bottom of the cross section.
      */
     top = (typeof top !== "undefined") ? top : true;
-    if (compute_moment(moment, this.mkap, top) != 0) {
+    if (compute_moment(moment, this.mkap, top) !== 0) {
         return compute_moment(moment, this.mkap, !top)
     }
     else {
@@ -309,7 +307,7 @@ Session.prototype.calculate_significant_points = function () {
     this.sign_rebar_mkap = [];
 
     // check for phased analysis
-    if (this.apply_m0() != 1) {
+    if (this.apply_m0() !== 1) {
 
         // Solve for significant points in compression diagram
         for (var i = 1; i < this.mkap.compressive_diagram.strain.length; i++) {
