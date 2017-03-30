@@ -62,7 +62,7 @@ var calculate_mkappa = function () {
     $(".result_output").addClass("hidden");
     var option = $("#calculation_type").val();
 
-    if (option == "search moment") {
+    if (option === "search moment") {
         moment = -parseFloat($("#moment_input").val()) * Math.pow(10, 6);
         session.apply_m0();
         if (session.compute_prestress) {
@@ -71,14 +71,14 @@ var calculate_mkappa = function () {
         else {
             sol = session.compute_moment(moment, true);
         }
-        if (sol == 0) {
+        if (sol === 0) {
             plt.cross_section_view("#modal-svg", session.mkap)
         }
         else {
             window.alert("No solution found.")
         }
     }
-    else if (option == "discrete points") {
+    else if (option === "discrete points") {
         $("#moment_kappa_diagram_output").removeClass("hidden");
         sol = session.compute_n_points(50);
         moment = sol.moment;
@@ -204,7 +204,7 @@ function update_rebar_results(index) {
 
 
 
-console.log("version_27-02");
+console.log("version_30-03");
 
 
 
