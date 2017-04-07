@@ -152,7 +152,15 @@ var mkap = (function () {
 
     };
 
+    MomentKappa.prototype.axial_force_resistance = function () {
+        var F_rebar = 0;
+        for (var i = 0; i < this.rebar_As.length; i++) {
+            F_rebar += this.rebar_As[i] * this.rebar_diagram[i].stress[this.rebar_diagram[i].stress.length -1]
+        }
+        return this.cross_section.area() *
+            this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1] + F_rebar
 
+    };
     MomentKappa.prototype.iterator_top_constant = function (btm_str, top_str) {
         /**
          * @param btm_str: (float) strain to start
@@ -172,7 +180,14 @@ var mkap = (function () {
         var fHistoryHigh = 1e12;
         var fHistoryLow = -1e12;
         var count = 0;
-        var offset = this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1];
+        var n = 0;
+        if (this.axial_force_resistance() / 5 < -this.normal_force) {
+            var offset = this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1];
+        }
+        else {
+            offset = 0
+        }
+
         // iterate until the convergence criteria is met
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
@@ -211,13 +226,19 @@ var mkap = (function () {
             // Change the division based on the factor history
             if (factor > 1) {
                 if (factor > fHistoryHigh) {
-                    div++
+                    n++;
+                    if (n % 2 === 0) {
+                        div++
+                    }
                 }
                 fHistoryHigh = factor;
             }
             else {
                 if (factor < fHistoryLow) {
-                    div++
+                    n++;
+                    if (n % 2 === 0) {
+                        div++
+                    }
                 }
                 fHistoryLow = factor
             }
