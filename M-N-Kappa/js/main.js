@@ -49,7 +49,7 @@ var calculate_mkappa = function () {
     session.mkap.mp = 0;
 
     if (session.compute_prestress) {
-        if (session.pre_prestress() == 1) {
+        if (session.pre_prestress() === 1) {
             return 1;  // calculation not possible
         }
     }
@@ -81,10 +81,9 @@ var calculate_mkappa = function () {
     else if (option === "discrete points") {
         $("#moment_kappa_diagram_output").removeClass("hidden");
         sol = session.compute_n_points(50);
+
         moment = sol.moment;
         kappa = sol.kappa;
-        // moment.push(-session.mkap.mp);
-        // kappa.push(0);
         plt.moment_kappa(svg, kappa, moment.map(function (i) {
             return i / 1e6
         }), session);
@@ -204,7 +203,7 @@ function update_rebar_results(index) {
 
 
 
-console.log("version_07-04");
+console.log("version_21-06");
 
 
 

@@ -396,7 +396,7 @@ var plt = (function () {
             .range(svg.range_x);
 
         var scale_y = d3.scaleLinear()
-            .domain([0, (y_bound.max - y_bound.min) * 1.05])  // make sure that all the values fit in the domain, thus also negative values
+            .domain([0, y_bound.max * 1.05])  // make sure that all the values fit in the domain, thus also negative values
             .range(svg.range_y);
 
         var data = [];
@@ -409,7 +409,7 @@ var plt = (function () {
             if (floats) {
                 loc = {
                     x: scale_x(xstr[i] - x_bound.min),
-                    y: -scale_y(ystr[i] - y_bound.min) + height,
+                    y: -scale_y(ystr[i]) + height,
                     y_original: ystr[i]
                 };
 
@@ -419,7 +419,7 @@ var plt = (function () {
                 if (xstr[i].value.length > 0 && ystr[i].value.length > 0) {
                     loc = {
                         x: scale_x(parseFloat(xstr[i].value) - x_bound.min) + svg.padding,
-                        y: -scale_y(parseFloat(ystr[i].value) - y_bound.min) + height ,
+                        y: -scale_y(parseFloat(ystr[i].value)) + height ,
                         y_original: parseFloat(ystr[i].value)
                     };
                     data.push(loc)
