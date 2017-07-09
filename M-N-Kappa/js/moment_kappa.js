@@ -430,7 +430,7 @@ var mkap = (function () {
 
     MomentKappa.prototype.soft_validity = function() {
         var valid = true;
-
+        
         if (std.is_number(this.moment)
             && std.is_number(this.kappa)
             && this.solution
@@ -560,6 +560,8 @@ var mkap = (function () {
             mkap.det_m_kappa();
             strain *= (1 - reduction);
             count += 1;
+
+            console.log(strain, top)
 
             if (mkap.soft_validity()) {
                 return {strain: strain, solver: sol.solver}

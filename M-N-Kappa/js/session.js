@@ -12,7 +12,7 @@ var compute_moment = function (moment, mkap, top) {
     if (window.DEBUG) {
         console.log("In compute moment")
     }
-
+    console.log("Compute moment", moment)
     var count = 0;
     var factor;
 
@@ -36,6 +36,7 @@ var compute_moment = function (moment, mkap, top) {
     }
     var closest_index = std.closest(grid_m, moment);
     var strain = grid_strain[closest_index];
+    strain = (strain === 0) ? 0.5 : strain;
 
     while (1) {
         if (std.convergence_conditions(mkap.moment, moment, 1.01, 0.99)) {
@@ -113,7 +114,7 @@ Session.prototype.apply_m0 = function () {
                 original_diagram = this.mkap.rebar_diagram[i];
                 this.mkap.rebar_diagram[i] = new mkap.StressStrain([0, 0], [0, 0]);
 
-                this.compute_moment(this.mkap.m0[i]);
+                this.compute_moment(this.mkap.m0[i], true);
 
                 if (this.mkap.rebar_strain[i] < 0) {
                     this.mkap.d_strain[i] = -this.mkap.rebar_strain[i];
