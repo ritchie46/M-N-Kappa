@@ -63,7 +63,7 @@ var calculate_mkappa = function () {
     var option = $("#calculation_type").val();
 
     if (option === "search moment") {
-        moment = -parseFloat($("#moment_input").val()) * Math.pow(10, 6);
+        moment = parseFloat($("#moment_input").val()) * Math.pow(10, 6);
         session.apply_m0();
         if (session.compute_prestress) {
             var sol = session.compute_moment(moment, false);
@@ -84,6 +84,7 @@ var calculate_mkappa = function () {
 
         moment = sol.moment;
         kappa = sol.kappa;
+
         plt.moment_kappa(svg, kappa, moment.map(function (i) {
             return i / 1e6
         }), session);
@@ -203,7 +204,7 @@ function update_rebar_results(index) {
 
 
 
-console.log("version_21-06");
+console.log("version_09-07");
 
 
 

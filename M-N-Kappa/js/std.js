@@ -91,11 +91,24 @@ var std = (function () {
         return ret
     }
 
+    function closest(array, x) {
+        var min,
+            chosen = 0;
+        for (var i in array) {
+            min = Math.abs(array[chosen] - x);
+            if (Math.abs(array[i] - x) < min) {
+                chosen = i;
+            }
+        }
+        return chosen;
+    }
+
 
 
 
     // return from namespace
     return {
+        closest: closest,
         interpolate: interpolate,
         convergence: convergence,
         convergence_conditions: convergence_conditions,

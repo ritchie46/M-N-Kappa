@@ -216,6 +216,7 @@ var mkap = (function () {
             if (count > this.iterations) {
                 if (window.DEBUG) {
                     console.log("no convergence found after %s iterations".replace("%s", count))
+                    console.log("offset:", offset)
                 }
                 return [1, count];
 
@@ -401,6 +402,7 @@ var mkap = (function () {
          * @type {boolean}
          */
         var valid = true;
+
         if (std.is_number(this.moment)
             && std.is_number(this.kappa)
             && this.solution
@@ -425,6 +427,30 @@ var mkap = (function () {
         }
         return valid
     };
+
+    MomentKappa.prototype.soft_validity = function() {
+        var valid = true;
+
+        if (std.is_number(this.moment)
+            && std.is_number(this.kappa)
+            && this.solution
+            && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
+            && this.strain_top < 0
+        ) {
+
+            if (std.is_close(this.strain_btm, 0, 0.01, 0.01)) {
+                if (this.xu >= (this.cross_section.top - this.cross_section.bottom)) {
+                    return false
+                }
+            }
+        }
+
+        else {
+            valid = false;
+        }
+        return valid
+    };
+
 
     MomentKappa.prototype.instantiate_standard_reinforcement = function(As, rebar_z, rebar_diagram) {
         /**
@@ -527,21 +553,25 @@ var mkap = (function () {
         var sol = mkap.solver(top, strain);
         mkap.det_m_kappa();
 
-
         var count = 0;
         var iter;
-        while (!mkap.validity() && count < (1 / reduction)) {
+        while (!mkap.soft_validity() && count < (4 / reduction)) {
             iter = mkap.solver(top, strain);
             mkap.det_m_kappa();
             strain *= (1 - reduction);
             count += 1;
+
+            if (mkap.soft_validity()) {
+                return {strain: strain, solver: sol.solver}
+            }
         }
 
-        if (mkap.validity()) {
+        if (mkap.soft_validity()) {
             return {strain: strain, solver: sol.solver}
         }
         else {
-            return false
+            console.log("Calchookup non valid. Results may be inaccurate");
+            return {strain: strain, solver: sol.solver}
         }
 
     }

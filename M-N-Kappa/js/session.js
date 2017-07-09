@@ -1,4 +1,5 @@
 ﻿"use strict";
+window.DEBUG = false;
 
 var compute_moment = function (moment, mkap, top) {
     /**
@@ -7,7 +8,6 @@ var compute_moment = function (moment, mkap, top) {
      * @param top: (bool) Depends if the hookup is sought for the top or the bottom of the cross section.
      */
     top = (typeof top !== "undefined") ? top : true;
-    var strain = session.calc_hookup(0.05, mkap, top);
 
     if (window.DEBUG) {
         console.log("In compute moment")
@@ -15,25 +15,47 @@ var compute_moment = function (moment, mkap, top) {
 
     var count = 0;
     var factor;
+
+    // grid search
+    var grid_m = [];
+    var grid_strain = [];
+
+    var max_strain = mkap.compressive_diagram.strain[mkap.compressive_diagram.strain.length - 1];
+
+    for (var i = 0; i < 30; i += 1) {
+        mkap.solver(true, max_strain / 30 * i);
+        mkap.det_m_kappa();
+        grid_m.push(mkap.moment);
+
+        if (top) {
+            grid_strain.push(Math.abs(mkap.strain_top))
+        }
+        else {
+            grid_strain.push(mkap.strain_btm)
+        }
+    }
+    var closest_index = std.closest(grid_m, moment);
+    var strain = grid_strain[closest_index];
+
     while (1) {
-        if (std.convergence_conditions(mkap.moment, moment, 1.001, 0.999)) {
+        if (std.convergence_conditions(mkap.moment, moment, 1.01, 0.99)) {
             if (window.DEBUG) {
                 console.log("moment convergence after %s iterations".replace("%s", count) + "moment :" + (moment));
                 console.log("validity " + (mkap.validity()), "straintop ", mkap.strain_top, "mkap",mkap.kappa,
                 "strainbtm", mkap.strain_btm, mkap.force_compression, mkap.force_tensile)
             }
-            if (mkap.validity()) {
+            if (mkap.soft_validity()) {
                 return 0
             }
-            break
         }
         mkap.det_m_kappa();
-        factor = std.convergence(Math.abs(mkap.moment), moment, 2.5);
+        factor = std.convergence(Math.abs(mkap.moment), moment, 5);
         strain *= factor;
 
-        mkap.solver(top, strain, false);
+        mkap.solver(top, strain);
 
         if (count > 80) {
+
             if (window.DEBUG) {
                 console.log("no moment convergence found after %s iterations".replace("%s", count));
                 console.log("validity " + (mkap.validity()), "straintop ", mkap.strain_top, "mkap",mkap.kappa,
@@ -90,7 +112,8 @@ Session.prototype.apply_m0 = function () {
             if (this.mkap.m0[i] > 0) {
                 original_diagram = this.mkap.rebar_diagram[i];
                 this.mkap.rebar_diagram[i] = new mkap.StressStrain([0, 0], [0, 0]);
-                this.compute_moment(-this.mkap.m0[i]);
+
+                this.compute_moment(this.mkap.m0[i]);
 
                 if (this.mkap.rebar_strain[i] < 0) {
                     this.mkap.d_strain[i] = -this.mkap.rebar_strain[i];
@@ -239,6 +262,7 @@ Session.prototype.pre_prestress= function () {
 };
 
 Session.prototype.calc_hookup = function (reduction) {
+
     return mkap.calcHookup(reduction, this.mkap).strain
 };
 
@@ -246,6 +270,7 @@ Session.prototype.compute_n_points = function (n) {
     this.all_computed_mkap = [];
     if (this.apply_m0() !== 1) {
         var strain = this.calc_hookup(0.05);
+
         var d_str = strain / n;
         var moment = [];
         var kappa = [];
