@@ -262,7 +262,7 @@ var mkap = (function () {
         else {
             offset = this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1];
         }
-        console.log("start")
+
         // iterate until the convergence criteria is met
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
@@ -321,7 +321,7 @@ var mkap = (function () {
 
         // default parameter
         strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
-        strain_top = (typeof strain_top !== "undefined") ? strain_top : false;
+        inverse = (typeof inverse !== "undefined") ? inverse : false;
         var btm_str;
         var top_str;
         if (inverse) {
@@ -452,14 +452,15 @@ var mkap = (function () {
         return valid
     };
 
-    MomentKappa.prototype.soft_validity = function() {
+    MomentKappa.prototype.soft_validity = function(inverse) {
         var valid = true;
+        inverse = (typeof inverse !== "undefined") ? inverse : false;
 
         if (std.is_number(this.moment)
-            // && std.is_number(this.kappa)
-            // && this.solution
-            // && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
-            // && this.strain_top < 0
+            && std.is_number(this.kappa)
+            && this.solution
+            && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
+            && this.strain_top < 0
         ) {
 
             if (std.is_close(this.strain_btm, 0, 0.01, 0.01)) {

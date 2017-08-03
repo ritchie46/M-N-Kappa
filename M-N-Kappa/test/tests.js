@@ -80,7 +80,7 @@ t_1 = function () {
         return output[0]
     }
     else {
-        return 1
+        return output
     }
 };
 
@@ -128,4 +128,4 @@ t_3 = function () {
     else {
         return 1
     }
-};
+};2

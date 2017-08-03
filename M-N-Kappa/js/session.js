@@ -1,13 +1,14 @@
 ﻿"use strict";
 window.DEBUG = true;
 
-var compute_moment = function (moment, mkap, top) {
+var compute_moment = function (moment, mkap, top, inverse) {
     /**
      * @param moment: Query moment
      * @param mkap: Object from the MomentKappa class
      * @param top: (bool) Depends if the hookup is sought for the top or the bottom of the cross section.
      */
     top = (typeof top !== "undefined") ? top : true;
+    inverse = (typeof inverse !== "undefined") ? inverse : false;
 
     if (window.DEBUG) {
         console.log("In compute moment")
@@ -23,7 +24,7 @@ var compute_moment = function (moment, mkap, top) {
     var max_strain = mkap.compressive_diagram.strain[mkap.compressive_diagram.strain.length - 1];
 
     for (var i = 0; i < 30; i += 1) {
-        mkap.solver(true, max_strain / 30 * i);
+        mkap.solver(true, max_strain / 30 * i, inverse);
         mkap.det_m_kappa();
         grid_m.push(mkap.moment);
 
@@ -45,7 +46,7 @@ var compute_moment = function (moment, mkap, top) {
                 console.log("validity " + (mkap.validity()), "straintop ", mkap.strain_top, "mkap",mkap.kappa,
                 "strainbtm", mkap.strain_btm, mkap.force_compression, mkap.force_tensile)
             }
-            if (mkap.soft_validity()) {
+            if (mkap.soft_validity(inverse)) {
                 return 0
             }
         }
@@ -105,16 +106,23 @@ function Session() {
 Session.prototype.apply_m0 = function () {
         this.mkap.rebar_strain0_plt = Array.apply(null, Array(25)).map(Number.prototype.valueOf, 0);
         var original_diagram;
+        var inverse = false;
 
     if (window.DEBUG) {
     }
 
         for (var i = 0; i < this.mkap.m0.length; i++) {
             if (this.mkap.m0[i] > 0) {
+                if (Math.abs(this.mkap.m0[i]) < Math.abs(this.mkap.mp)) {
+                    window.alert("Moment at placement only works if there is tensile stress in the cross section " +
+                        "during application. Check your input.");
+                    return 1
+                }
+
                 original_diagram = this.mkap.rebar_diagram[i];
                 this.mkap.rebar_diagram[i] = new mkap.StressStrain([0, 0], [0, 0]);
 
-                this.compute_moment(this.mkap.m0[i], true);
+                this.compute_moment(this.mkap.m0[i], true, inverse);
 
                 if (this.mkap.rebar_strain[i] < 0) {
                     this.mkap.d_strain[i] = -this.mkap.rebar_strain[i];
@@ -133,12 +141,6 @@ Session.prototype.apply_m0 = function () {
                  */
                 for (var j = 2; j < this.mkap.rebar_diagram[i].strain.length; j ++) {
                     this.mkap.rebar_diagram[i].strain[j] += this.mkap.rebar_strain[i]
-                }
-
-                if (Math.abs(this.mkap.m0[i]) < Math.abs(this.mkap.mp)) {
-                    window.alert("Moment at placement only works if there is tensile stress in the cross section " +
-                        "during application. Check your input.");
-                    return 1
                 }
             }
         }
@@ -294,13 +296,13 @@ Session.prototype.compute_n_points = function (n) {
     }
 };
 
-Session.prototype.compute_moment = function (moment, top) {
+Session.prototype.compute_moment = function (moment, top, inverse) {
     /**
      * @param top: (bool) Depends if the hookup is sought for the top or the bottom of the cross section.
      */
     top = (typeof top !== "undefined") ? top : true;
     if (compute_moment(moment, this.mkap, top) !== 0) {
-        return compute_moment(moment, this.mkap, !top)
+        return compute_moment(moment, this.mkap, !top, inverse)
     }
     else {
         return 0
