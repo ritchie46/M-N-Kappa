@@ -16,9 +16,9 @@ var mkap = (function () {
         this.div = 2;
 
         /*
-        * Reinforcement.
-        * For n layers of reinforcement, n parameters need to be initiated in the arrays.
-        */
+         * Reinforcement.
+         * For n layers of reinforcement, n parameters need to be initiated in the arrays.
+         */
         this.rebar_As = [];
         // distance rebar from the bottom of the master cross section
         this.rebar_z = [];
@@ -39,10 +39,10 @@ var mkap = (function () {
         // Used by session.js when prestress is applied.
         this.original_rebar_diagrams = [];
 
-    
+
         /**
-        results
-        */
+         results
+         */
         this.solution = null;
         this.rebar_force = [];
         this.rebar_strain = [];
@@ -89,8 +89,8 @@ var mkap = (function () {
         var dh = this.cross_section.y_val[1];
 
         //cross section
-        var crs_btm = this.cross_section.bottom;
-        var crs_top = this.cross_section.top;
+        var crs_btm = this.cross_section.y_val[0];
+        var crs_top = this.cross_section.y_val[this.cross_section.y_val.length - 1];
 
         // iterate over the y-axis of the master cross section and determine the stresses.
         // y-axis starts at bottom.
@@ -99,7 +99,7 @@ var mkap = (function () {
             // interpolate the strain at this y-value
             var strain_y = std.interpolate(crs_btm, strain_btm,
                 crs_top, strain_top, this.cross_section.y_val[i]);
-        
+
 
             // Send the strain value as parameter in the stress strain diagram
             if (strain_y < 0) {
@@ -115,7 +115,7 @@ var mkap = (function () {
             this.stress.push(stress)
         }
 
-    
+
         // determine reinforcement forces
         this.rebar_force = [];
         for (i = 0; i < this.rebar_As.length; i++) {
@@ -126,7 +126,7 @@ var mkap = (function () {
 
             // absolute value
             var force = this.rebar_As[i] * stress;
-        
+
             var stress_reduct;
             if (strain < 0 && this.prestress[i] == 0) {
                 this.force_compression += force;
@@ -167,8 +167,8 @@ var mkap = (function () {
          * @param top_str: (float) strain to start
          */
 
-        // If the reinforcement is above the zero line, there will sometimes be no tensile force
-        // Find the index of the highest reinforcement layer.
+            // If the reinforcement is above the zero line, there will sometimes be no tensile force
+            // Find the index of the highest reinforcement layer.
         var top_reinf = Math.min.apply(null, this.rebar_z);
         for (var i = 0; i < this.rebar_As.length; i++) {
             if (this.rebar_z[i] === top_reinf) {
@@ -203,11 +203,11 @@ var mkap = (function () {
             // Needed when the rebar is above the neutral line.
             else if (isNaN(this.force_tensile) || this.force_tensile === 0) {
                 btm_str = std.interpolate(this.cross_section.top, top_str, top_reinf, this.rebar_diagram[rbr_index].strain[1], this.cross_section.bottom)
-                + offset
+                    + offset
 
             }
 
-            else if (this.force_tensile > 0 && this.strain_btm > 0) {
+            else if (this.force_tensile > 0) {
                 var factor = std.convergence(this.force_tensile, this.force_compression, div);
                 btm_str = btm_str * factor;
             }
@@ -215,7 +215,7 @@ var mkap = (function () {
             this.det_force_distribution(top_str, btm_str - offset);
             if (count > this.iterations) {
                 if (window.DEBUG) {
-                    console.log("no convergence found after %s iterations".replace("%s", count));
+                    console.log("no convergence found after %s iterations".replace("%s", count))
                     console.log("offset:", offset)
                 }
                 return [1, count];
@@ -365,18 +365,18 @@ var mkap = (function () {
 
     MomentKappa.prototype.det_m_kappa = function () {
         /**
-        Determines the moment and kappa values.
-    
-        For each sections center of gravity the moment around the origin is determined.
-    
-    
-        ______     <---- - F compression 
-        |     |         
-        |     |                           |y
-        |     |                           |
-        |_____|    ----> + F tensile      |0____x
-        
-        */
+         Determines the moment and kappa values.
+
+         For each sections center of gravity the moment around the origin is determined.
+
+
+         ______     <---- - F compression
+         |     |
+         |     |                           |y
+         |     |                           |
+         |_____|    ----> + F tensile      |0____x
+
+         */
 
         // center of gravity offset of a section
         this.kappa = (-this.strain_top + this.strain_btm) / (this.cross_section.top - this.cross_section.bottom);
@@ -389,7 +389,7 @@ var mkap = (function () {
         for (var i = 0; i < this.cross_section.y_val.length; i++) {
             var arm = this.cross_section.y_val[i] + offset;
             var force = this.stress[i] * this.cross_section.width_array[i] * dh;
-       
+
             this.moment += arm * force;
         }
 
@@ -432,7 +432,7 @@ var mkap = (function () {
             && this.solution
             && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
             && this.strain_top < 0
-            ) {
+        ) {
             for (var i in this.rebar_strain) {
                 if (Math.abs(this.rebar_strain[i]) > Math.max.apply(null, this.rebar_diagram[i].strain)) {
                     valid = false;
@@ -444,13 +444,14 @@ var mkap = (function () {
                     return false
                 }
             }
-            }
+        }
 
         else {
             valid = false;
         }
         return valid
     };
+
 
     MomentKappa.prototype.soft_validity = function(inverse) {
         var valid = true;
@@ -459,8 +460,8 @@ var mkap = (function () {
         if (std.is_number(this.moment)
             && std.is_number(this.kappa)
             && this.solution
-            && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
-            && this.strain_top < 0
+            && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1] !== inverse
+            && this.strain_top < 0 !== inverse
         ) {
 
             if (std.is_close(this.strain_btm, 0, 0.01, 0.01)) {
@@ -507,7 +508,7 @@ var mkap = (function () {
          *
          * @param strain: (array) Strain values of the diagram.
          * @param stress: (array) Stress values of the diagram.
-        */
+         */
 
         this.strain = strain;
         this.stress = stress
@@ -586,6 +587,8 @@ var mkap = (function () {
             strain *= (1 - reduction);
             count += 1;
 
+            console.log(strain, top)
+
             if (mkap.soft_validity()) {
                 return {strain: strain, solver: sol.solver}
             }
@@ -603,8 +606,10 @@ var mkap = (function () {
 
 
     return {    MomentKappa: MomentKappa,
-                StressStrain: StressStrain,
-                calcHookup: calcHookup
+        StressStrain: StressStrain,
+        calcHookup: calcHookup
     }
 
 })();  // mkap namespace
+
+
