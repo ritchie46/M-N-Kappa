@@ -1,5 +1,5 @@
 ﻿"use strict";
-window.DEBUG = false;
+window.DEBUG = true;
 
 var compute_moment = function (moment, mkap, top) {
     /**
@@ -12,7 +12,7 @@ var compute_moment = function (moment, mkap, top) {
     if (window.DEBUG) {
         console.log("In compute moment")
     }
-    console.log("Compute moment", moment)
+
     var count = 0;
     var factor;
 
@@ -156,7 +156,7 @@ Session.prototype.pre_prestress= function () {
 
     for (var i in mkap.rebar_As) {
 
-        /** Set the reinforcement As equal to 0. We are going to compute the strain due to mp with a zero stiffness.
+        /** Set the reinforcement 'As' equal to 0. We are going to compute the strain due to mp with a zero stiffness.
          * The forces due to pre-stress can be represented as outer loads, thus no stiffness.
          * Afterwards the Moment due to pre-stress must be determined. As the zero stiffness of the pre-stress
          * reinforcement has influence on the zero line.
@@ -278,6 +278,7 @@ Session.prototype.compute_n_points = function (n) {
         while (strain > 0) {
             this.mkap.solver(true, strain);
             this.mkap.det_m_kappa();
+
             if (this.mkap.validity() && this.mkap.kappa > 0 && this.mkap.moment > 0) {
                 moment.push(this.mkap.moment);
                 kappa.push(this.mkap.kappa);

@@ -89,8 +89,8 @@ var mkap = (function () {
         var dh = this.cross_section.y_val[1];
 
         //cross section
-        var crs_btm = this.cross_section.y_val[0];
-        var crs_top = this.cross_section.y_val[this.cross_section.y_val.length - 1];
+        var crs_btm = this.cross_section.bottom;
+        var crs_top = this.cross_section.top;
 
         // iterate over the y-axis of the master cross section and determine the stresses.
         // y-axis starts at bottom.
@@ -207,7 +207,7 @@ var mkap = (function () {
 
             }
 
-            else if (this.force_tensile > 0) {
+            else if (this.force_tensile > 0 && this.strain_btm > 0) {
                 var factor = std.convergence(this.force_tensile, this.force_compression, div);
                 btm_str = btm_str * factor;
             }
@@ -215,7 +215,7 @@ var mkap = (function () {
             this.det_force_distribution(top_str, btm_str - offset);
             if (count > this.iterations) {
                 if (window.DEBUG) {
-                    console.log("no convergence found after %s iterations".replace("%s", count))
+                    console.log("no convergence found after %s iterations".replace("%s", count));
                     console.log("offset:", offset)
                 }
                 return [1, count];
@@ -255,7 +255,14 @@ var mkap = (function () {
         var fHistoryHigh = 1e12;
         var fHistoryLow = -1e12;
         var count = 0;
-        var offset = this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1];
+        var offset;
+        if (btm_str < 0) {
+            offset = 0;
+        }
+        else {
+            offset = this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1];
+        }
+        console.log("start")
         // iterate until the convergence criteria is met
         while (1) {
             if (std.convergence_conditions(this.force_compression, this.force_tensile)) {
@@ -268,7 +275,12 @@ var mkap = (function () {
             }
 
             var factor = std.convergence(this.force_compression, this.force_tensile, this.div);
-            top_str = top_str * factor;
+            if (top_str < 0) {
+                top_str = top_str * factor;
+            }
+            else {
+                top_str = top_str / factor
+            }
 
             this.det_force_distribution(top_str - offset, btm_str);
 
@@ -297,24 +309,35 @@ var mkap = (function () {
         }
     };
 
-    MomentKappa.prototype.solver = function (strain_top, strain) {
+    MomentKappa.prototype.solver = function (strain_top, strain, inverse) {
         /**
          * Return the .det_stress method several times and adapt the input until the convergence criteria is met.
          *
          * @param strain_top: (bool) Constant strain at the top. If true, the strain at the top will remain constant
          *                      and the strain at the bottom will be iterated over. If false vice versa for strain_bottom.
          * @param strain: (float) Constant strain at the top or bottom.
+         * @param inverse: (bool) inverse the rotation. This can occur with pre-stressed beams
          */
 
         // default parameter
         strain_top = (typeof strain_top !== "undefined") ? strain_top : true;
+        strain_top = (typeof strain_top !== "undefined") ? strain_top : false;
+        var btm_str;
+        var top_str;
+        if (inverse) {
+            btm_str = -strain;
+            top_str = strain;
+            strain_top = false
+        }
+        else {
+            btm_str = strain;
+            top_str = -strain;
+        }
 
         this.solution = false;
         var total_iter = 0;
 
         // first iteration
-        var btm_str = strain;
-        var top_str = -strain;
         this.det_force_distribution(top_str, btm_str);
 
         if (strain_top) {  // top strain remains constant
@@ -335,6 +358,7 @@ var mkap = (function () {
                 total_iter += sol[1]
             }
         }
+
 
         return total_iter
     };
@@ -430,12 +454,12 @@ var mkap = (function () {
 
     MomentKappa.prototype.soft_validity = function() {
         var valid = true;
-        
+
         if (std.is_number(this.moment)
-            && std.is_number(this.kappa)
-            && this.solution
-            && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
-            && this.strain_top < 0
+            // && std.is_number(this.kappa)
+            // && this.solution
+            // && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
+            // && this.strain_top < 0
         ) {
 
             if (std.is_close(this.strain_btm, 0, 0.01, 0.01)) {
@@ -560,8 +584,6 @@ var mkap = (function () {
             mkap.det_m_kappa();
             strain *= (1 - reduction);
             count += 1;
-
-            console.log(strain, top)
 
             if (mkap.soft_validity()) {
                 return {strain: strain, solver: sol.solver}
