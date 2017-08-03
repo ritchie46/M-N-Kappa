@@ -1,5 +1,5 @@
 ﻿"use strict";
-window.DEBUG = true;
+window.DEBUG = false;
 
 var compute_moment = function (moment, mkap, top, inverse) {
     /**
@@ -106,17 +106,20 @@ function Session() {
 Session.prototype.apply_m0 = function () {
         this.mkap.rebar_strain0_plt = Array.apply(null, Array(25)).map(Number.prototype.valueOf, 0);
         var original_diagram;
-        var inverse = false;
+        var inverse;
 
     if (window.DEBUG) {
+        console.log("In apply m0, mp", this.mkap.mp / 1e6)
     }
 
         for (var i = 0; i < this.mkap.m0.length; i++) {
             if (this.mkap.m0[i] > 0) {
                 if (Math.abs(this.mkap.m0[i]) < Math.abs(this.mkap.mp)) {
-                    window.alert("Moment at placement only works if there is tensile stress in the cross section " +
-                        "during application. Check your input.");
-                    return 1
+                    console.log("Alpha stage. M0 is applied at a moment lower than mp");
+                    inverse = true
+                }
+                else {
+                    inverse = false
                 }
 
                 original_diagram = this.mkap.rebar_diagram[i];
@@ -288,7 +291,8 @@ Session.prototype.compute_n_points = function (n) {
             }
             strain -= d_str;
         }
-
+        console.log("moment", moment.map(function(x) {return x / 1e6}));
+        console.log("kappa:", kappa);
         return {
             moment: moment, //moment.reverse(),
             kappa: kappa //kappa.reverse()
