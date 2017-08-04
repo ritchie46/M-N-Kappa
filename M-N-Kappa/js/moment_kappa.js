@@ -359,7 +359,6 @@ var mkap = (function () {
             }
         }
 
-
         return total_iter
     };
 
@@ -419,19 +418,28 @@ var mkap = (function () {
         this.xu = this.cross_section.top - this.zero_line
     };
 
-    MomentKappa.prototype.validity = function () {
+    MomentKappa.prototype.validity = function (inverse) {
         /**
          * Check if the found equilibrium solution could be regarded as valid.
          *
          * @type {boolean}
          */
         var valid = true;
+        inverse = (typeof inverse !== "undefined") ? inverse : false;
+        var strain;
+
+        if (inverse) {
+            strain = this.strain_btm
+        }
+        else {
+            strain = this.strain_top
+        }
 
         if (std.is_number(this.moment)
             && std.is_number(this.kappa)
             && this.solution
-            && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
-            && this.strain_top < 0
+            && strain >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1]
+            && strain < 0
         ) {
             for (var i in this.rebar_strain) {
                 if (Math.abs(this.rebar_strain[i]) > Math.max.apply(null, this.rebar_diagram[i].strain)) {
@@ -456,12 +464,20 @@ var mkap = (function () {
     MomentKappa.prototype.soft_validity = function(inverse) {
         var valid = true;
         inverse = (typeof inverse !== "undefined") ? inverse : false;
+        var strain;
+
+        if (inverse) {
+            strain = this.strain_btm
+        }
+        else {
+            strain = this.strain_top
+        }
 
         if (std.is_number(this.moment)
             && std.is_number(this.kappa)
             && this.solution
-            && this.strain_top >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1] !== inverse
-            && this.strain_top < 0 !== inverse
+            && strain >= -this.compressive_diagram.strain[this.compressive_diagram.strain.length - 1] !== inverse
+            && strain < 0 !== inverse
         ) {
 
             if (std.is_close(this.strain_btm, 0, 0.01, 0.01)) {
@@ -586,8 +602,6 @@ var mkap = (function () {
             mkap.det_m_kappa();
             strain *= (1 - reduction);
             count += 1;
-
-            console.log(strain, top)
 
             if (mkap.soft_validity()) {
                 return {strain: strain, solver: sol.solver}
