@@ -22,9 +22,10 @@ var compute_moment = function (moment, mkap, top, inverse) {
     var grid_strain = [];
 
     var max_strain = mkap.compressive_diagram.strain[mkap.compressive_diagram.strain.length - 1];
+    var n = 100;
 
-    for (var i = 0; i < 30; i += 1) {
-        mkap.solver(true, max_strain / 30 * i, inverse);
+    for (var i = 0; i < n; i += 1) {
+        mkap.solver(true, max_strain / n * i, inverse);
         mkap.det_m_kappa();
         grid_m.push(mkap.moment);
 
@@ -40,7 +41,7 @@ var compute_moment = function (moment, mkap, top, inverse) {
     strain = (strain === 0) ? 0.5 : strain;
 
     while (1) {
-        if (std.convergence_conditions(mkap.moment, moment, 1.01, 0.99)) {
+        if (std.convergence_conditions(mkap.moment, moment, 1.001, 0.999)) {
             if (window.DEBUG) {
                 console.log("moment convergence after %s iterations".replace("%s", count) + "moment :" + (moment));
                 console.log("validity " + (mkap.validity()), "straintop ", mkap.strain_top, "mkap",mkap.kappa,
