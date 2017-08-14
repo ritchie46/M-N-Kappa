@@ -226,7 +226,8 @@ var trigger_rebar_strain = function () {
         var fact = parseFloat($($(".rebar_curve")[i]).find(".rebar_material_factor").val());
         // reduce with the material factor
         for (var j = 0; j < stress.length; j++) {
-            stress[j] /= fact
+            stress[j] /= fact;
+            strain[j] /= fact
         }
         var rebar_number = id[id.length - 1];
         session.rebar_diagrams[rebar_number - 1] = new mkap.StressStrain(strain, stress);
@@ -237,7 +238,7 @@ var trigger_rebar_strain = function () {
 
 // Make sure that pre-stressed rebar is not phased!
 function toggle_phased() {
-    $(".rebar_M0").removeAttr("disabled")
+    $(".rebar_M0").removeAttr("disabled");
     for (i = 0; i < $(".rebar_curve").length; i++) {
         var prestress = $($(".rebar_curve")[i]).find(".prestress_container").find(".prestress_checkbox").is(":checked");
         var n = parseInt($($(".rebar_curve")[i]).attr("id")[$($(".rebar_curve")[i]).attr("id").length -1]);

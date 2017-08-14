@@ -3,4 +3,4 @@ module.exports = {
     mkap: mkap,
     vector: vector,
     crsn: crsn
-}
+};
