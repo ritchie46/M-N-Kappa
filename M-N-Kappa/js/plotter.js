@@ -513,7 +513,7 @@ var plt = (function () {
         // Modal popup
         $("#myModal").modal();
         $(selector).find("svg").remove();
-        $("#strain_diagram_moment").html("<br><strong>bending moment: $ *10<sup>6</sup> kNm</strong>".replace("$",
+        $("#strain_diagram_moment").html("<br><strong>bending moment: $ kNm</strong>".replace("$",
             Math.round(mkap.moment / Math.pow(10, 4)) / 100) +
             "<br><strong>curvature: $ 1/m</strong>".replace("$", Math.round(mkap.kappa * 1e4) / 1e4) +
             "<br><strong>X: $ mm</strong>".replace("$", Math.round(mkap.xu)) +
